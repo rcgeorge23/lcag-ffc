@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+    <script src="https:////cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+    <link rel="stylesheet" href="/css/lcag.css">
+    <script src="/js/lcag-common.js"></script>
+    <title>Loan Charge Action Group | Fighting Fund Contribution Form</title>
+</head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a href="#" class="navbar-brand">
+                        <img alt="Brand" src="/images/lcag_logo.jpg" width="60">
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Fighting Fund Contribution Form for <strong><span id="salutation">LCAG Member</span></strong>
+                        </div>
+                        <div class="panel-body">
+                            <p>In order to include you in the forthcoming loan charge legal challenge we need to collect some further information.</p>
+                            <p>If you have any questions please contact <a href="mailto:ffc@hmrcloancharge.info">ffc@hmrcloancharge.info</a></p>
+                            <p>Many thanks,<br/>LCAG Claim Team</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-1 col-sm-2">
+                                <i class="fa fa-info-circle fa-2x"></i>
+                            </div>
+                            <div class="col-md-11 col-sm-10">
+                                <strong>GDPR Disclaimer</strong>: The information that you provide will be shared with Ethos Accountancy Services Limited, who are organising the lawsuit.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <div class="row">
+                            <div class="col-md-1 col-sm-2">
+                                <i class="fa fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                            <div class="col-md-11 col-sm-10">
+                                Do not share this link with anyone else as it will jeopardise your participation in the legal proceedings.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="inputFieldForm" action="/submit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="claimToken" value="" id="claimToken" />
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">Fighting Fund Contribution Form<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+
+                            <div class="panel-body">
+
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="title" class="form-control" id="title" placeholder="Please enter your title" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Please enter your first name" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Please enter your last name" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emailAddress">Email address</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></div>
+                                        <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="addressLine1">Address Line 1</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="addressLine1" class="form-control" id="addressLine1" placeholder="Please enter the first line of your address" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="addressLine2">Address Line 2</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="addressLine2" class="form-control" id="addressLine2" placeholder="Please enter the second line of your address" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="city" class="form-control" id="city" placeholder="Please enter your city" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="postcode">Postcode</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="postcode" class="form-control" id="postcode" placeholder="Please enter your postcode" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="country" class="form-control" id="country" placeholder="Please enter your country" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phoneNumber">Phone Number</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                        <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" placeholder="Please enter your phone number" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-footer clearfix">
+                                <div class="pull-right">
+                                    <button type="submit" class="btn btn-primary" id="uploadButton">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var member = null;
+
+            function getParameterByName(name, url) {
+                if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+
+            $(function () {
+                $("input[type=radio][name=memberOfBigGroup]").change(function() {
+                    if (this.value == 'true') {
+                        showBigGroupUsernameSection();
+                    } else {
+                        showDocumentUploadSection();
+                    }
+                });
+
+                $.ajax({
+                    url: '/member?token=' + getParameterByName('token'),
+                    method: "GET",
+                    dataType: "json",
+                    complete: function(response, status) {
+                        if (status == "success") {
+                            member = response.responseJSON;
+
+                            console.log("member", response.responseJSON);
+
+                            $('#salutation').text(member.name);
+                            $('#emailAddress').val(member.emailAddress);
+                            $('#mpSympatheticYes').prop("checked", member.mpSympathetic);
+                            $('#schemeDetails').val(member.schemes);
+
+                        }
+                    }
+                });
+
+                $('#claimToken').val(getParameterByName('token'));
+
+                $("#inputFieldForm").validate({
+                    errorElement: "em",
+                    errorPlacement: function ( error, element ) {
+                        error.addClass( "help-block" );
+                        element.parents( ".form-group" ).addClass( "has-feedback" );
+
+                        if ($(element).attr('type') == 'radio') {
+                            error.insertAfter( $(element).parent().parent() );
+                        } else {
+                            error.insertAfter( $(element).parent() );
+                        }
+
+                        if ( !element.next( "span" )[ 0 ] ) {
+                            if ($(element).attr('type') == 'radio') {
+                                $( "<span class='glyphicon glyphicon-remove form-control-feedback'></span>" ).insertAfter( $(element).parent().parent() );
+                            } else {
+                                $( "<span class='glyphicon glyphicon-remove form-control-feedback'></span>" ).insertAfter( $(element) );
+                            }
+                        }
+                    },
+                    success: function ( label, element ) {
+                        if ($(element).attr('type') == 'radio') {
+                            if ( !$( element ).parent().parent().next( "span" )[ 0 ] ) {
+                                $( "<span class='glyphicon glyphicon-ok form-control-feedback'></span>" ).insertAfter( $(element).parent().parent() );
+                            }
+                        } else {
+                            if ( !$( element ).next( "span" )[ 0 ] ) {
+                                $( "<span class='glyphicon glyphicon-ok form-control-feedback'></span>" ).insertAfter( $(element) );
+                            }
+                        }
+                    },
+                    highlight: function ( element, errorClass, validClass ) {
+                        $( element ).parents( ".form-group" ).addClass( "has-error" ).removeClass( "has-success" );
+                        if ($(element).attr('type') == 'radio') {
+                            $( element ).parent().parent().next( "span" ).addClass( "glyphicon-remove" ).removeClass( "glyphicon-ok" );
+                        } else {
+                            $( element ).next( "span" ).addClass( "glyphicon-remove" ).removeClass( "glyphicon-ok" );
+                        }
+                    },
+                    unhighlight: function ( element, errorClass, validClass ) {
+                        $( element ).parents( ".form-group" ).addClass( "has-success" ).removeClass( "has-error" );
+                        if ($(element).attr('type') == 'radio') {
+                            console.log("element", $(element));
+                            $( element ).parent().parent().next( "span" ).addClass( "glyphicon-ok" ).removeClass( "glyphicon-remove" );
+                        } else {
+                            $( element ).next( "span" ).addClass( "glyphicon-ok" ).removeClass( "glyphicon-remove" );
+                        }
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>
