@@ -28,134 +28,192 @@
             </div>
         </nav>
 
-
-
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Fighting Fund Contribution Form for <strong><span id="salutation">LCAG Member</span></strong>
-                        </div>
-                        <div class="panel-body">
-                            <p>In order to include you in the forthcoming loan charge legal challenge we need to collect some further information.</p>
-                            <p>If you have any questions please contact <a href="mailto:ffc@hmrcloancharge.info">ffc@hmrcloancharge.info</a></p>
-                            <p>Many thanks,<br/>LCAG Claim Team</p>
-                        </div>
+                    <div id="lcagMemberPreQuestionSection">
+                        <form action="/charge" method="post" id="payment-form">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Loan Charge Action Group - Fighting Fund Contribution<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>Do you already have an LCAG account?</label>
+                                        <div>
+                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
+                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
+                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
+                                        </div>
+                                    </div>
+                                    <div id="lcagUsernameSection" class="form-group" style="display: none;">
+                                        <label for="lcagUsername">LCAG username:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="lcagUsername" class="form-control" id="lcagUsername" placeholder="Please enter your LCAG username" required />
+                                        </div>
+                                    </div>
+                                    <div id="paymentOnlySection" class="form-group" style="display: none;">
+                                        <label for="amount">LCAG username:</label>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-addon">£</div>
+                                                <input type="text" name="amount" class="form-control" id="amount" placeholder="Please enter the amount you wish to donate" required />
+                                            </div>
+                                        </div>
+
+                                        <label for="card-element">Credit or debit card</label>
+                                        <div id="card-element" class="form-control">
+                                        </div>
+                                        <div id="card-errors" role="alert"></div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer clearfix">
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="alert alert-info">
+                    <div class="alert alert-success" style="display: none;">
                         <div class="row">
                             <div class="col-md-1 col-sm-2">
-                                <i class="fa fa-info-circle fa-2x"></i>
+                                <i class="fa fa-check-circle fa-2x"></i>
                             </div>
                             <div class="col-md-11 col-sm-10">
-                                <strong>GDPR Disclaimer</strong>: The information that you provide will be shared with Ethos Accountancy Services Limited, who are organising the lawsuit.</p>
+                                <p id="successMessage"></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="alert alert-warning">
-                        <div class="row">
-                            <div class="col-md-1 col-sm-2">
-                                <i class="fa fa-exclamation-triangle fa-2x"></i>
-                            </div>
-                            <div class="col-md-11 col-sm-10">
-                                Do not share this link with anyone else as it will jeopardise your participation in the legal proceedings.
+                    <div id="mainQuestionsSection" style="display: none;">
+                        <div class="alert alert-info">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2">
+                                    <i class="fa fa-info-circle fa-2x"></i>
+                                </div>
+                                <div class="col-md-11 col-sm-10">
+                                    <strong>GDPR Disclaimer</strong>: The information that you provide will be shared with Ethos Accountancy Services Limited, who are organising the lawsuit.</p>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="alert alert-warning">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2">
+                                    <i class="fa fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                                <div class="col-md-11 col-sm-10">
+                                    Do not share this link with anyone else as it will jeopardise your participation in the legal proceedings.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2">
+                                    <i class="fa fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                                <div class="col-md-11 col-sm-10">
+                                    If you are an existing LCAG member then please complete the LCAG member's litigation form instead.
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="inputFieldForm" action="/submit" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="claimToken" value="" id="claimToken" />
+                            <div class="panel panel-default">
+
+                                <div class="panel-heading">Fighting Fund Contribution Form<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+
+                                <div class="panel-body">
+
+                                    <div class="form-group">
+                                        <label for="title">Title</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="title" class="form-control" id="title" placeholder="Please enter your title" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="firstName">First Name</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Please enter your first name" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Last Name</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Please enter your last name" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="emailAddress">Email address</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></div>
+                                            <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="addressLine1">Address Line 1</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="addressLine1" class="form-control" id="addressLine1" placeholder="Please enter the first line of your address" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="addressLine2">Address Line 2</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="addressLine2" class="form-control" id="addressLine2" placeholder="Please enter the second line of your address" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="city">City</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="city" class="form-control" id="city" placeholder="Please enter your city" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="postcode">Postcode</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="postcode" class="form-control" id="postcode" placeholder="Please enter your postcode" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="country">Country</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="country" class="form-control" id="country" placeholder="Please enter your country" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Phone Number</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                            <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" placeholder="Please enter your phone number" required />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel-footer clearfix">
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn btn-primary" id="uploadButton">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-
-                    <form id="inputFieldForm" action="/submit" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="claimToken" value="" id="claimToken" />
-                        <div class="panel panel-default">
-
-                            <div class="panel-heading">Fighting Fund Contribution Form<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
-
-                            <div class="panel-body">
-
-                                <div class="form-group">
-                                    <label for="title">Title</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="title" class="form-control" id="title" placeholder="Please enter your title" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="firstName">First Name</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Please enter your first name" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="lastName">Last Name</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Please enter your last name" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="emailAddress">Email address</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></div>
-                                        <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="addressLine1">Address Line 1</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="addressLine1" class="form-control" id="addressLine1" placeholder="Please enter the first line of your address" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="addressLine2">Address Line 2</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="addressLine2" class="form-control" id="addressLine2" placeholder="Please enter the second line of your address" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="city">City</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="city" class="form-control" id="city" placeholder="Please enter your city" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="postcode">Postcode</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="postcode" class="form-control" id="postcode" placeholder="Please enter your postcode" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="country">Country</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="country" class="form-control" id="country" placeholder="Please enter your country" required />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phoneNumber">Phone Number</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                        <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" placeholder="Please enter your phone number" required />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer clearfix">
-                                <div class="pull-right">
-                                    <button type="submit" class="btn btn-primary" id="uploadButton">Submit</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
+
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="/js/lcag-stripe.js"></script>
 
         <script type="text/javascript">
             var member = null;
@@ -170,12 +228,35 @@
                 return decodeURIComponent(results[2].replace(/\+/g, " "));
             }
 
+            function showLcagUsernameSection() {
+                $("#lcagUsernameSection").show();
+                $("#mainQuestionsSection").hide();
+                $("#paymentOnlySection").hide();
+                $("#lcagUsername").prop('required',true);
+            }
+
+            function showPaymentOnlySection() {
+                $("#lcagUsernameSection").hide();
+                $("#paymentOnlySection").show();
+                $("#mainQuestionsSection").hide();
+                $("#lcagUsername").removeAttr("required");
+            }
+
+            function showMainForm() {
+                $("#lcagUsernameSection").hide();
+                $("#mainQuestionsSection").show();
+                $("#paymentOnlySection").hide();
+                $("#lcagUsername").removeAttr("required");
+            }
+
             $(function () {
-                $("input[type=radio][name=memberOfBigGroup]").change(function() {
-                    if (this.value == 'true') {
-                        showBigGroupUsernameSection();
+                $("input[type=radio][name=existingLcagAccount]").change(function() {
+                    if (this.value == 'yes') {
+                        showLcagUsernameSection();
+                    } else if (this.value == 'anonymous') {
+                        showPaymentOnlySection();
                     } else {
-                        showDocumentUploadSection();
+                        showMainForm();
                     }
                 });
 

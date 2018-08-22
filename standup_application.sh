@@ -15,6 +15,8 @@ docker run -d \
 	-e "BCC_RECIPIENTS=test@bcc.com" \
 	-e "EMAIL_FROM_NAME=LCAG" \
 	-e "EMAIL_SUBJECT=LCAG Fighting Fund Contribution" \
+	-e "PUBLISHABLE_STRIPE_API_KEY=xxxx" \
+	-e "SECRET_STRIPE_API_KEY=xxxx" \
 	-e "VIRTUAL_PORT=8484" \
 	-e "SERVER_PORT=8484" \
 	--name lcag-claim \
