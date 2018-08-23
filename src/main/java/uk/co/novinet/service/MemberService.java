@@ -116,6 +116,25 @@ public class MemberService {
         return members.get(0);
     }
 
+    public Member findMemberByUsername(String username) {
+        if (StringUtils.isBlank(username)) {
+            return null;
+        }
+
+        List<Member> members = jdbcTemplate.query("select * from " + usersTableName() + " u where lower(u.username) = ?", new Object[] { username.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
+
+        if (members == null || members.size() == 0) {
+            return null;
+        }
+
+        if (members.size() > 1) {
+            LOGGER.error("More than one member found for username: {}, members: ", username, members);
+            throw new RuntimeException("More than one member found for token: " + username);
+        }
+
+        return members.get(0);
+    }
+
     private Member buildMember(ResultSet rs) throws SQLException {
         return new Member(
                 rs.getLong("uid"),

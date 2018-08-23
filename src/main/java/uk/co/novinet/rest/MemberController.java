@@ -15,20 +15,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class PaymentController {
+public class MemberController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
 
     @Autowired
     private MemberService memberService;
 
-    @Value("${publishableStripeApiKey}")
-    private String publishableStripeApiKey;
-
-    @CrossOrigin
-    @GetMapping(path = "/publicStripeKey")
-    public Map<String, String> publicStripeKey() {
-        return new HashMap<String, String>() {{ put("key", publishableStripeApiKey); }};
+    @GetMapping("/member")
+    public Member getMemberByUsername(@RequestParam("username") String username) {
+        return memberService.findMemberByUsername(username);
     }
 
 }
