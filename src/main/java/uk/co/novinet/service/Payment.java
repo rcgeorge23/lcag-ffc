@@ -23,6 +23,7 @@ public class Payment {
     private String stripeToken;
     private PaymentStatus paymentStatus = PaymentStatus.NEW;
     private PaymentType paymentType;
+    private ContributionType contributionType;
 
     public Payment() {}
 
@@ -40,7 +41,8 @@ public class Payment {
             Instant date,
             String stripeToken,
             PaymentStatus paymentStatus,
-            PaymentType paymentType) {
+            PaymentType paymentType,
+            ContributionType contributionType) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -55,6 +57,7 @@ public class Payment {
         this.stripeToken = stripeToken;
         this.paymentStatus = paymentStatus;
         this.paymentType = paymentType;
+        this.contributionType = contributionType;
     }
 
     public Long getId() {
@@ -172,5 +175,13 @@ public class Payment {
 
     public void setMembershipToken(String membershipToken) {
         this.membershipToken = membershipToken;
+    }
+
+    public ContributionType getContributionType() {
+        return contributionType;
+    }
+
+    public void setContributionType(ContributionType contributionType) {
+        this.contributionType = contributionType;
     }
 }

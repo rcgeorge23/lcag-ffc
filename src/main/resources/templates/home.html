@@ -123,7 +123,7 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outline in the terms and conditions above.<br/><br/>
+                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above.<br/><br/>
                                                     Minimum payment for a Contribution Agreement is £1000.
                                                 </div>
                                             </div>
@@ -305,7 +305,10 @@
                         $("#contributionAgreementInfoSection").show();
                         $("#donationInfoSection").hide();
                     }
-                    $("#payment-form").validate().element("input[name=amount]");
+
+                    if ($("input[name=amount]").val() != null && $("input[name=amount]").val() != "") {
+                        $("#payment-form").validate().element("input[name=amount]");
+                    }
                 });
 
                  $("#acceptTermsAndConditions").change(function() {
@@ -316,18 +319,17 @@
                 });
 
                 $("input[type=radio][name=existingLcagAccount]").change(function() {
+                    $("#payment-form").validate().element("input[name=contributionType]");
+
                     if (this.value == 'yes') {
-                        $("#payment-form").validate().element("input[name=contributionType]");
                         $("input[name=contributionType]").attr("disabled", false);
                         showLcagUsernameSection();
                     } else if (this.value == 'anonymous') {
                         $("#contributionTypeDonation").prop("checked", true).change();
                         $("#contributionTypeContributionAgreement").prop("checked", false).change();
-                        $("#payment-form").validate().element("input[name=contributionType]");
                         $("input[name=contributionType]").attr("disabled", true);
                         showPaymentFieldsSection();
                     } else {
-                        $("#payment-form").validate().element("input[name=contributionType]");
                         $("input[name=contributionType]").attr("disabled", false);
                         showNewLcagJoinerSection();
                     }

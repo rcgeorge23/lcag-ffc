@@ -356,7 +356,8 @@ public class MemberService {
                 dateFromMyBbRow(rs, "date"),
                 rs.getString("stripe_token"),
                 PaymentStatus.valueOf(rs.getString("status")),
-                PaymentType.valueOf(rs.getString("type"))
+                PaymentType.valueOf(rs.getString("payment_type")),
+                ContributionType.valueOf(rs.getString("contribution_type"))
         );
     }
 
