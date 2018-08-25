@@ -5,180 +5,343 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import uk.co.novinet.rest.PaymentStatus;
+import uk.co.novinet.rest.PaymentType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
+    private static final long REFERENCE_SEED = 90000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void update(Claim claim) {
-        Member existingMember = findMemberByClaimToken(claim.getClaimToken());
+    private Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
 
-        if (existingMember == null) {
-            throw new RuntimeException("Member with claim token " + claim.getClaimToken() + " not found");
+    private Map<String, Member> memberByEmailCache = new ConcurrentHashMap<>();
+
+    @Scheduled(initialDelayString = "${refreshMemberCacheInitialDelayMilliseconds}", fixedRateString = "${refreshMemberCacheIntervalMilliseconds}")
+    public void refreshMemberCache() {
+        List<Member> members = jdbcTemplate.query(buildUserTableSelect() + buildUserTableGroupBy(), new Object[]{}, (rs, rowNum) -> buildMember(rs));
+        for (Member member : members) {
+            memberByUsernameCache.put(member.getUsername().toLowerCase(), member);
+            memberByEmailCache.put(member.getEmailAddress().toLowerCase(), member);
         }
-
-        Long nextAvailableId = findNextAvailableId("id", claimTableName());
-
-        String claimSql = "insert into " + claimTableName() + " (" +
-                "`id`, " +
-                "`user_id`, " +
-                "`title`, " +
-                "`first_name`, " +
-                "`last_name`, " +
-                "`email_address`, " +
-                "`address_line_1`, " +
-                "`address_line_2`, " +
-                "`city`, " +
-                "`postcode`, " +
-                "`country`, " +
-                "`phone_number`, " +
-                "`can_supply_written_evidence`, " +
-                "`scheme_details`, " +
-                "`names_and_contact_details_of_scheme_advisors`, " +
-                "`any_other_information`" +
-                ") " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        LOGGER.info("Going to execute insert claim sql: {}", claimSql);
-
-        int claimInsertionResult = jdbcTemplate.update(claimSql,
-                nextAvailableId,
-                existingMember.getId(),
-                claim.getTitle(),
-                claim.getFirstName(),
-                claim.getLastName(),
-                claim.getEmailAddress(),
-                claim.getAddressLine1(),
-                claim.getAddressLine2(),
-                claim.getCity(),
-                claim.getPostcode(),
-                claim.getCountry(),
-                claim.getPhoneNumber(),
-                claim.getCanShowWrittenEvidence(),
-                claim.getSchemeDetails(),
-                claim.getSchemeAdvisorDetails(),
-                claim.getAdditionalInformation()
-        );
-
-        LOGGER.info("Claim insertion result: {}", claimInsertionResult);
-
-        if (claimInsertionResult != 1) {
-            throw new RuntimeException("Unable to insert claim: " + claim);
-        }
-
-        LOGGER.info("Going to update member: {}", existingMember);
-
-        String memberSql = "update " + usersTableName() + " u " +
-                "set u.has_completed_claim_participant_form = ? " +
-                "where u.claim_token = ?";
-
-        LOGGER.info("Created memberSql: {}", memberSql);
-
-        int result = jdbcTemplate.update(
-                memberSql,
-                true,
-                existingMember.getClaimToken()
-        );
-
-        LOGGER.info("Update result: {}", result);
-
-        if (result != 1) {
-            throw new RuntimeException("Unable to update member: " + existingMember);
-        }
-    }
-
-    public Member findMemberByClaimToken(String token) {
-        if (StringUtils.isBlank(token)) {
-            return null;
-        }
-
-        List<Member> members = jdbcTemplate.query("select * from " + usersTableName() + " u where lower(u.claim_token) = ?", new Object[] { token.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
-
-        if (members == null || members.size() == 0) {
-            return null;
-        }
-
-        if (members.size() > 1) {
-            LOGGER.error("More than one member found for token: {}, members: ", token, members);
-            throw new RuntimeException("More than one member found for token: " + token);
-        }
-
-        return members.get(0);
     }
 
     public Member findMemberByUsername(String username) {
-        if (StringUtils.isBlank(username)) {
-            return null;
-        }
-
-        List<Member> members = jdbcTemplate.query("select * from " + usersTableName() + " u where lower(u.username) = ?", new Object[] { username.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
-
-        if (members == null || members.size() == 0) {
-            return null;
-        }
-
-        if (members.size() > 1) {
-            LOGGER.error("More than one member found for username: {}, members: ", username, members);
-            throw new RuntimeException("More than one member found for token: " + username);
-        }
-
-        return members.get(0);
+        return memberByUsernameCache.get(username.toLowerCase());
     }
 
     private Member buildMember(ResultSet rs) throws SQLException {
         return new Member(
                 rs.getLong("uid"),
+                rs.getString("email"),
                 rs.getString("username"),
                 rs.getString("name"),
-                rs.getString("email"),
+                rs.getString("group"),
+                dateFromMyBbRow(rs, "regdate"),
+                rs.getBoolean("hmrc_letter_checked"),
+                rs.getBoolean("identification_checked"),
                 rs.getString("mp_name"),
                 rs.getString("schemes"),
                 rs.getBoolean("mp_engaged"),
                 rs.getBoolean("mp_sympathetic"),
                 rs.getString("mp_constituency"),
                 rs.getString("mp_party"),
+                rs.getBoolean("agreed_to_contribute_but_not_paid"),
+                rs.getString("notes"),
                 rs.getString("industry"),
                 rs.getString("token"),
                 rs.getBoolean("has_completed_membership_form"),
-                rs.getBoolean("member_of_big_group"),
+                null,
                 rs.getString("how_did_you_hear_about_lcag"),
+                rs.getBoolean("member_of_big_group"),
                 rs.getString("big_group_username"),
-                rs.getBoolean("hmrc_letter_checked"),
-                rs.getBoolean("identification_checked"),
-                rs.getBoolean("document_upload_error"),
-                rs.getString("claim_token"),
+                rs.getString("verified_by"),
+                dateFromMyBbRow(rs, "verified_on"),
+                rs.getBoolean("already_have_an_lcag_account_email_sent"),
+                rs.getBoolean("registered_for_claim"),
                 rs.getBoolean("has_completed_claim_participant_form"),
-                rs.getBoolean("has_been_sent_claim_confirmation_email")
+                rs.getBoolean("has_been_sent_claim_confirmation_email"),
+                rs.getBoolean("opted_out_of_claim"),
+                rs.getString("claim_token")
         );
     }
 
-    public void markHasBeenSentClaimConfirmationEmail(Member existingMember) {
-        String memberSql = "update " + usersTableName() + " u " +
-                "set u.has_been_sent_claim_confirmation_email = ? " +
-                "where u.uid = ?";
+    public List<Member> findExistingForumUsersByField(String field, String value) {
+        return jdbcTemplate.query(buildUserTableSelect() + "where lower(u." + field + ") = ?" + buildUserTableGroupBy(), new Object[] { value.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
+    }
 
-        LOGGER.info("Created memberSql: {}", memberSql);
+    private String buildUserTableSelect() {
+        return "select u.uid, u.username, u.name, u.email, u.regdate, u.hmrc_letter_checked, u.identification_checked, u.agreed_to_contribute_but_not_paid, " +
+                "u.mp_name, u.mp_engaged, u.mp_sympathetic, u.mp_constituency, u.mp_party, u.schemes, u.notes, u.industry, u.token, u.has_completed_membership_form, " +
+                "u.how_did_you_hear_about_lcag, u.member_of_big_group, u.big_group_username, u.verified_on, u.verified_by, u.already_have_an_lcag_account_email_sent, " +
+                "u.registered_for_claim, u.has_completed_claim_participant_form, u.has_been_sent_claim_confirmation_email, u.opted_out_of_claim, u.claim_token, ug.title as `group` " +
+                "from " + usersTableName() + " u inner join " + userGroupsTableName() + " ug on u.usergroup = ug.gid";
+    }
 
-        int result = jdbcTemplate.update(
-                memberSql,
-                true,
-                existingMember.getId()
-        );
+    private String buildUserTableGroupBy() {
+        return " group by u.uid ";
+    }
+
+    public MemberCreationResult createForumUserIfNecessary(Payment payment) {
+        if (payment.getPaymentType() == PaymentType.ANONYMOUS) {
+            return null;
+        }
+
+        Member member = memberByEmailCache.get(payment.getEmailAddress().toLowerCase());
+
+        if (member != null) {
+            LOGGER.info("Already existing forum user with email address {}", payment.getEmailAddress());
+            LOGGER.info("Skipping");
+            return new MemberCreationResult(true, member);
+        } else {
+            LOGGER.info("No existing forum user found with email address: {}", payment.getEmailAddress());
+            LOGGER.info("Going to create one");
+
+            member = new Member(
+                    null,
+                    payment.getEmailAddress(),
+                    extractUsername(payment.getEmailAddress()),
+                    payment.getFirstName() + " " + payment.getLastName(),
+                    null,
+                    Instant.now(),
+                    false,
+                    false,
+                    "",
+                    "",
+                    false,
+                    false,
+                    "",
+                    "",
+                    false,
+                    "",
+                    "",
+                    guid(),
+                    false,
+                    PasswordSource.getRandomPasswordDetails(),
+                    "",
+                    false,
+                    "",
+                    "",
+                    null,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    guid()
+            );
+
+            Long nextAvailableId = findNextAvailableId("uid", usersTableName());
+
+            String insertSql = "insert into " + usersTableName() + " (`uid`, `username`, `password`, `salt`, `loginkey`, `email`, `postnum`, `threadnum`, `avatar`, " +
+                    "`avatardimensions`, `avatartype`, `usergroup`, `additionalgroups`, `displaygroup`, `usertitle`, `regdate`, `lastactive`, `lastvisit`, `lastpost`, `website`, `icq`, " +
+                    "`aim`, `yahoo`, `skype`, `google`, `birthday`, `birthdayprivacy`, `signature`, `allownotices`, `hideemail`, `subscriptionmethod`, `invisible`, `receivepms`, `receivefrombuddy`, " +
+                    "`pmnotice`, `pmnotify`, `buddyrequestspm`, `buddyrequestsauto`, `threadmode`, `showimages`, `showvideos`, `showsigs`, `showavatars`, `showquickreply`, `showredirect`, `ppp`, `tpp`, " +
+                    "`daysprune`, `dateformat`, `timeformat`, `timezone`, `dst`, `dstcorrection`, `buddylist`, `ignorelist`, `style`, `away`, `awaydate`, `returndate`, `awayreason`, `pmfolders`, `notepad`, " +
+                    "`referrer`, `referrals`, `reputation`, `regip`, `lastip`, `language`, `timeonline`, `showcodebuttons`, `totalpms`, `unreadpms`, `warningpoints`, `moderateposts`, `moderationtime`, " +
+                    "`suspendposting`, `suspensiontime`, `suspendsignature`, `suspendsigtime`, `coppauser`, `classicpostbit`, `loginattempts`, `usernotes`, `sourceeditor`, `name`, `token`, `has_completed_membership_form`, `claim_token`, " +
+                    "`mp_name`, `mp_constituency`, `mp_party`, `mp_engaged`, `mp_sympathetic`, `schemes`, `industry`, `how_did_you_hear_about_lcag`, `member_of_big_group`, `big_group_username`) " +
+                    "VALUES (?, ?, ?, ?, 'lvhLksjhHGcZIWgtlwNTJNr3bjxzCE2qgZNX6SBTBPbuSLx21u', ?, 0, 0, '', '', '', 8, '', 0, '', ?, ?, ?, 0, '', '0', '', '', '', '', '', " +
+                    "'all', '', 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 'linear', 1, 1, 1, 1, 1, 1, 0, 0, 0, '', '', '', 0, 0, '', '', 0, 0, 0, '0', '', '', '', 0, 0, 0, '', '', '', 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
+                    "0, 0, 1, '', 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+            LOGGER.info("Going to execute insert sql: {}", insertSql);
+
+            int result = jdbcTemplate.update(insertSql,
+                    nextAvailableId,
+                    member.getUsername(),
+                    member.getPasswordDetails().getPasswordHash(),
+                    member.getPasswordDetails().getSalt(),
+                    member.getEmailAddress(),
+                    unixTime(member.getRegistrationDate()),
+                    0L,
+                    0L,
+                    member.getName(),
+                    member.getToken(),
+                    false,
+                    member.getClaimToken(),
+                    "",
+                    "",
+                    "",
+                    false,
+                    false,
+                    "",
+                    "",
+                    "",
+                    false,
+                    false
+            );
+
+            member.setId(nextAvailableId);
+
+            LOGGER.info("Insertion result: {}", result);
+
+            return new MemberCreationResult(false, member);
+        }
+    }
+
+    private String emptyStringIfNull(String string) {
+        return string == null ? "" : string;
+    }
+
+    private String guid() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private String extractUsername(String emailAddress) {
+        String usernameCandidate = firstBitOfEmailAddress(emailAddress);
+        LOGGER.info("Candidate username: {}", usernameCandidate);
+
+        if (usernameCandidate.length() < 3 || !findExistingForumUsersByField("username", usernameCandidate).isEmpty()) {
+            do {
+                LOGGER.info("Candidate username: {} already exists! Going to try creating another one.", usernameCandidate);
+                usernameCandidate = usernameCandidate(emailAddress);
+                LOGGER.info("New candidate username: {}", usernameCandidate);
+            } while (!findExistingForumUsersByField("username", usernameCandidate).isEmpty());
+        }
+
+        LOGGER.info("Settled on username: {}", usernameCandidate);
+
+        return usernameCandidate;
+    }
+
+    private String usernameCandidate(String emailAddress) {
+        return firstBitOfEmailAddress(emailAddress) + randomDigit() + randomDigit();
+    }
+
+    private String randomDigit() {
+        return String.valueOf(new Random().nextInt(9));
+    }
+
+    private String firstBitOfEmailAddress(String emailAddress) {
+        return emailAddress.substring(0, emailAddress.indexOf("@"));
+    }
+
+    public void fillInBlanks(Payment payment) {
+        switch (payment.getPaymentType()) {
+            case ANONYMOUS:
+            case NEW_LCAG_MEMBER:
+                return;
+            case EXISTING_LCAG_MEMBER:
+                Member member = memberByUsernameCache.get(payment.getUsername());
+                payment.setFirstName(firstName(member.getName()));
+                payment.setLastName(lastName(member.getName()));
+                payment.setEmailAddress(member.getEmailAddress());
+                payment.setUserId(member.getId());
+        }
+    }
+
+    private String lastName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+
+        List<String> parts = asList(name.split("(\\s)+"));
+        Collections.reverse(parts);
+        return parts.get(0);
+    }
+
+
+    private String firstName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+
+        List<String> nameParts = new ArrayList<>(asList(name.split("(\\s)+")));
+
+        if (nameParts.size() == 1) {
+            return nameParts.get(0);
+        }
+
+        nameParts.remove(nameParts.size() - 1);
+
+        return nameParts.stream().collect(joining(" "));
+    }
+
+    public Payment createFfcContribution(Payment payment) {
+        LOGGER.info("Going to create new contribution for payment: {}", payment);
+
+        Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
+
+        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        LOGGER.info("Going to execute insert sql: {}", insertSql);
+
+        int result = jdbcTemplate.update(insertSql,
+                nextAvailableId,
+                payment.getUserId(),
+                payment.getUsername(),
+                payment.getFirstName(),
+                payment.getLastName(),
+                payment.getEmailAddress(),
+                payment.getAmount(),
+                unixTime(Instant.now()),
+                payment.getPaymentType().toString(),
+                payment.getStripeToken(),
+                PaymentStatus.NEW.toString(),
+                buildReference(nextAvailableId)
+            );
+
+        LOGGER.info("Insertion result: {}", result);
+
+        payment.setId(nextAvailableId);
+
+        return payment;
+    }
+
+    public void updateFfcContributionStatus(Payment payment, PaymentStatus paymentStatus) {
+        LOGGER.info("Going to update contribution: {} payment status to : {}", payment, paymentStatus);
+
+        String updateSql = "update " + contributionsTableName() + " set `status` = ? where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(updateSql, paymentStatus.toString(), payment.getId());
 
         LOGGER.info("Update result: {}", result);
+    }
 
-        if (result != 1) {
-            throw new RuntimeException("Unable to update member: " + existingMember);
-        }
+    public List<Payment> getFfcContributionsAwaitingEmails() {
+        LOGGER.info("Going to find contributions awaiting emails");
+
+        String sql = "select * from " + contributionsTableName() + " where `email_sent` = 0;";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> buildPayment(rs));
+    }
+
+    private Payment buildPayment(ResultSet rs) throws SQLException {
+        return new Payment(
+                rs.getLong("id"),
+                rs.getLong("user_id"),
+                rs.getString("username"),
+                rs.getString("reference"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("email_address"),
+                rs.getBigDecimal("amount"),
+                dateFromMyBbRow(rs, "date"),
+                rs.getString("stripe_token"),
+                PaymentStatus.valueOf(rs.getString("status")),
+                PaymentType.valueOf(rs.getString("type"))
+        );
+    }
+
+    private String buildReference(Long nextAvailableId) {
+        return "LCAGFFC" + (REFERENCE_SEED + nextAvailableId);
     }
 }

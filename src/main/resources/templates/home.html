@@ -93,7 +93,8 @@
                     </div>
 
                     <div id="paymentFormSection" style="display:none;">
-                        <form action="/charge" method="post" id="payment-form">
+                        <form action="/submit" method="post" id="payment-form">
+                            <input type="hidden" id="paymentType" name="paymentType" value="" />
                             <div class="panel panel-default">
                                 <div class="panel-heading">Payment<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                                 <div class="panel-body">
@@ -107,10 +108,10 @@
                                     </div>
                                     <div id="lcagUsernameSection" style="display: none;">
                                         <div class="form-group">
-                                            <label for="lcagUsername">LCAG username:</label>
+                                            <label for="username">LCAG username:</label>
                                             <div class="input-group">
                                                 <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
-                                                <input type="text" name="lcagUsername" class="form-control" id="lcagUsername" placeholder="Please enter your LCAG username" required />
+                                                <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
                                             </div>
                                         </div>
                                     </div>
@@ -126,7 +127,21 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="emailAddress">Email Address:</label>
+                                            <label for="firstName">First name:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="firstName" class="form-control" id="firstNAme" placeholder="Please enter your first name" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastName">Last name:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Please enter your last name" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="emailAddress">Email address:</label>
                                             <div class="input-group">
                                                 <div class="input-group-addon">@</div>
                                                 <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
@@ -145,7 +160,7 @@
                                         <label for="card-element">Credit or debit card:</label>
                                         <div id="card-element" classes="form-control">
                                         </div>
-                                        <div id="card-errors" role="alert"></div>
+                                        <div id="card-errors" class="error help-block" role="alert"></div>
                                     </div>
                                 </div>
                                 <div class="panel-footer clearfix">
@@ -209,27 +224,30 @@
                 $("#lcagUsernameSection").show();
                 $("#newLcagJoinerSection").hide();
                 $("#paymentFieldsSection").show();
-                $("#lcagUsername").prop('required',true);
+                $("#username").prop('required',true);
                 $("#emailAddress").removeAttr("required");
                 $("#submitButton").show();
+                $("#paymentType").val("EXISTING_LCAG_MEMBER");
             }
 
             function showPaymentFieldsSection() {
                 $("#lcagUsernameSection").hide();
                 $("#paymentFieldsSection").show();
                 $("#newLcagJoinerSection").hide();
-                $("#lcagUsername").removeAttr("required");
+                $("#username").removeAttr("required");
                 $("#emailAddress").removeAttr("required");
                 $("#submitButton").show();
+                $("#paymentType").val("NEW_LCAG_MEMBER");
             }
 
             function showNewLcagJoinerSection() {
                 $("#lcagUsernameSection").hide();
                 $("#newLcagJoinerSection").show();
                 $("#paymentFieldsSection").show();
-                $("#lcagUsername").removeAttr("required");
+                $("#username").removeAttr("required");
                 $("#emailAddress").prop("required", true);
                 $("#submitButton").show();
+                $("#paymentType").val("ANONYMOUS");
             }
 
             $(function () {
@@ -277,7 +295,7 @@
                             required: true,
                             currency: true
                         },
-                        lcagUsername: {
+                        username: {
                             required: true,
                             lcagUsername: true
                         }

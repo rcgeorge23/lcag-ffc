@@ -39,6 +39,11 @@ input.invalid {
   outline: 0;
 }
 
+div.card-errors {
+    font-style: italic;
+    color: #a94442;
+}
+
 .StripeElement--invalid {
   border-color: #fa755a;
 }

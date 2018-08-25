@@ -3,18 +3,13 @@ package uk.co.novinet.rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.novinet.service.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -23,9 +18,6 @@ public class HomeController {
 
     @Autowired
     private MemberService memberService;
-
-    @Autowired
-    private MailSenderService mailSenderService;
 
     @Autowired
     private PaymentService paymentService;
@@ -37,13 +29,18 @@ public class HomeController {
 
     @CrossOrigin
     @PostMapping(path = "/submit")
-    public ModelAndView submit(ModelMap model, PaymentBean paymentBean) {
+    public ModelAndView submit(ModelMap model, Payment payment) {
         try {
-            paymentService.executePayment(paymentBean);
+            LOGGER.info("model: {}", model);
+            LOGGER.info("payment: {}", payment);
+            memberService.fillInBlanks(payment);
+            memberService.createFfcContribution(payment);
+            paymentService.executePayment(payment);
+            memberService.createForumUserIfNecessary(payment);
             return new ModelAndView("thankYou", model);
         } catch (Exception e) {
             LOGGER.error("Unable to make payment", e);
-            return new ModelAndView("home", model);
+            return new ModelAndView("redirect:/", model);
         }
     }
 }
