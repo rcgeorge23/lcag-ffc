@@ -8,24 +8,24 @@ class FormSubmissionIT extends GebSpec {
 
     static final schemes = "schemes"
 
-//    def setup() {
-//        setupDatabaseSchema()
-//    }
-//
-//    def "do you have an lcag account is initially the only question displayed"() {
-//        given:
-//            prepopulateMemberDataInDb()
-//            go "http://localhost:8484"
-//
-//        when:
-//            waitFor { at LcagFfcFormPage }
-//
-//        then:
-//            waitFor { existingLcagAccountYes.displayed == true }
-//            waitFor { existingLcagAccountNo.displayed == true }
-//            waitFor { existingLcagAccountAnonymous.displayed == true }
-//            waitFor { lcagUsernameSection.displayed == false }
-//    }
+    def setup() {
+        setupDatabaseSchema()
+    }
+
+    def "initially, only the t&c form is displayed"() {
+        given:
+            prepopulateMemberDataInDb()
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            waitFor { existingLcagAccountYes.displayed == true }
+            waitFor { existingLcagAccountNo.displayed == true }
+            waitFor { existingLcagAccountAnonymous.displayed == true }
+            waitFor { lcagUsernameSection.displayed == false }
+    }
 //
 //    def "claim participant form cannot be submitted when fields are blank"() {
 //        given:

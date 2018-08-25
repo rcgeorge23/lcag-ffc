@@ -61,10 +61,10 @@
                                         resisting attempts to enforce the Loan Charge by HMRC and any relevant appeals that may
                                         be necessary pending the resolution of the litigation.</li>
                                     <li>Contributors who do not return the Contribution Agreement or confirmation thereof, or
-                                        can not be contracted through the contact details provided will be treated as having
+                                        can not be reached using the contact details provided will be treated as having
                                         made a donation after a period of 28 days of the initial Contribution Agreement being
                                         issued.</li>
-                                    <li>Donations are made on the basis that no refunds will be given in any cirucmstances, this
+                                    <li>Donations are made on the basis that no refunds will be given in any circumstances, this
                                         includes, but is not limited to; the case being successful and there being funds remaining
                                         in the account, the case being unsuccessful and there being funds remaining in the
                                         account, insufficient funds being collected and the case not being able to proceed or
@@ -109,6 +109,35 @@
                                             <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
                                         </div>
                                     </div>
+                                    <div id="contributionTypeSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label>My contribution will be a:</label>
+                                            <div>
+                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeDonation" value="donation" required> Donation </label>
+                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeContributionAgreement" value="contributionAgreement" required> Contribution Agreement </label>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
+                                            <div class="row">
+                                                <div class="col-md-1 col-sm-2">
+                                                    <i class="fa fa-info-circle fa-2x"></i>
+                                                </div>
+                                                <div class="col-md-11 col-sm-10">
+                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outline in the terms and conditions above.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-info" id="donationInfoSection" style="display: none;">
+                                            <div class="row">
+                                                <div class="col-md-1 col-sm-2">
+                                                    <i class="fa fa-info-circle fa-2x"></i>
+                                                </div>
+                                                <div class="col-md-11 col-sm-10">
+                                                    Payments made as <strong>Donations</strong> will not be refunded under any circumstances.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div id="lcagUsernameSection" style="display: none;">
                                         <div class="form-group">
                                             <label for="username">LCAG username:</label>
@@ -125,7 +154,7 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and sumitted your payment.
+                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submitted your payment.
                                                 </div>
                                             </div>
                                         </div>
@@ -229,6 +258,7 @@
                 $("#paymentFieldsSection").show();
                 $("#username").prop('required',true);
                 $("#emailAddress").removeAttr("required");
+                $("#contributionTypeSection").show();
                 $("#submitButton").show();
                 $("#paymentType").val("EXISTING_LCAG_MEMBER");
             }
@@ -240,7 +270,8 @@
                 $("#username").removeAttr("required");
                 $("#emailAddress").removeAttr("required");
                 $("#submitButton").show();
-                $("#paymentType").val("NEW_LCAG_MEMBER");
+                $("#contributionTypeSection").show();
+                $("#paymentType").val("ANONYMOUS");
             }
 
             function showNewLcagJoinerSection() {
@@ -250,7 +281,8 @@
                 $("#username").removeAttr("required");
                 $("#emailAddress").prop("required", true);
                 $("#submitButton").show();
-                $("#paymentType").val("ANONYMOUS");
+                $("#contributionTypeSection").show();
+                $("#paymentType").val("NEW_LCAG_MEMBER");
             }
 
             $(function () {
@@ -265,10 +297,19 @@
 
                 $("input[type=radio][name=existingLcagAccount]").change(function() {
                     if (this.value == 'yes') {
+                        $("#contributionTypeDonation").prop("checked", false).change();
+                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
+                        $("#payment-form").validate().element("input[name=contributionType]");
                         showLcagUsernameSection();
                     } else if (this.value == 'anonymous') {
+                        $("#contributionTypeDonation").prop("checked", true).change();
+                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
+                        $("#payment-form").validate().element("input[name=contributionType]");
                         showPaymentFieldsSection();
                     } else {
+                        $("#contributionTypeDonation").prop("checked", false).change();
+                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
+                        $("#payment-form").validate().element("input[name=contributionType]");
                         showNewLcagJoinerSection();
                     }
                 });
