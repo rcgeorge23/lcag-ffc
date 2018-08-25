@@ -113,8 +113,8 @@
                                         <div class="form-group">
                                             <label>My contribution will be a:</label>
                                             <div>
-                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeDonation" value="donation" required> Donation </label>
-                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeContributionAgreement" value="contributionAgreement" required> Contribution Agreement </label>
+                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeDonation" value="DONATION" required> Donation </label>
+                                                <label class="radio-inline"> <input type="radio" name="contributionType" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
                                             </div>
                                         </div>
                                         <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
@@ -123,7 +123,8 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outline in the terms and conditions above.
+                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outline in the terms and conditions above.<br/><br/>
+                                                    Minimum payment for a Contribution Agreement is £1000.
                                                 </div>
                                             </div>
                                         </div>
@@ -133,7 +134,8 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Donations</strong> will not be refunded under any circumstances.
+                                                    Payments made as <strong>Donations</strong> will not be refunded under any circumstances.<br/><br/>
+                                                    There is no minimum payment for donations.
                                                 </div>
                                             </div>
                                         </div>
@@ -154,7 +156,7 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submitted your payment.
+                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submit your payment.
                                                 </div>
                                             </div>
                                         </div>
@@ -288,7 +290,25 @@
             $(function () {
                 $('#ffcToken').val(getParameterByName('token'));
 
-                $("#acceptTermsAndConditions").change(function() {
+                $("input[name=contributionType]").change(function() {
+                    $("#payment-form").validate();
+                    if ($("#existingLcagAccountAnonymous").prop("checked") || this.value == 'DONATION') {
+                        $("#amount").rules("remove");
+                        $("#amount").rules("add", {
+                            required: true,
+                            currency: true
+                        });
+                        $("#contributionAgreementInfoSection").hide();
+                        $("#donationInfoSection").show();
+                    } else {
+                        $("#amount").rules("add", { min: 1000 });
+                        $("#contributionAgreementInfoSection").show();
+                        $("#donationInfoSection").hide();
+                    }
+                    $("#payment-form").validate().element("input[name=amount]");
+                });
+
+                 $("#acceptTermsAndConditions").change(function() {
                     if (this.value == 'on') {
                         $("#paymentFormSection").show();
                         $("#acceptTermsAndConditions").attr("disabled", "disabled");
@@ -297,19 +317,18 @@
 
                 $("input[type=radio][name=existingLcagAccount]").change(function() {
                     if (this.value == 'yes') {
-                        $("#contributionTypeDonation").prop("checked", false).change();
-                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
                         $("#payment-form").validate().element("input[name=contributionType]");
+                        $("input[name=contributionType]").attr("disabled", false);
                         showLcagUsernameSection();
                     } else if (this.value == 'anonymous') {
                         $("#contributionTypeDonation").prop("checked", true).change();
                         $("#contributionTypeContributionAgreement").prop("checked", false).change();
                         $("#payment-form").validate().element("input[name=contributionType]");
+                        $("input[name=contributionType]").attr("disabled", true);
                         showPaymentFieldsSection();
                     } else {
-                        $("#contributionTypeDonation").prop("checked", false).change();
-                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
                         $("#payment-form").validate().element("input[name=contributionType]");
+                        $("input[name=contributionType]").attr("disabled", false);
                         showNewLcagJoinerSection();
                     }
                 });
