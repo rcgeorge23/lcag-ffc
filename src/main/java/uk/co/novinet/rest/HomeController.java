@@ -33,10 +33,10 @@ public class HomeController {
         try {
             LOGGER.info("model: {}", model);
             LOGGER.info("payment: {}", payment);
-            memberService.fillInBlanks(payment);
+            MemberCreationResult memberCreationResult = memberService.createForumUserIfNecessary(payment);
+            memberService.fillInBlanks(payment, memberCreationResult);
             memberService.createFfcContribution(payment);
             paymentService.executePayment(payment);
-            memberService.createForumUserIfNecessary(payment);
             return new ModelAndView("thankYou", model);
         } catch (Exception e) {
             LOGGER.error("Unable to make payment", e);

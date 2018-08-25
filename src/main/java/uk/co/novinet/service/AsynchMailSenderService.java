@@ -89,6 +89,7 @@ public class AsynchMailSenderService {
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
+        memberService.markContributionEmailSent(payment);
         LOGGER.info("Email successfully sent to new ffc contributor {}", payment);
     }
 
@@ -98,6 +99,7 @@ public class AsynchMailSenderService {
             case EXISTING_LCAG_MEMBER:
                 email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(thankYouForYourContributionEmailSourceUrl), payment));
                 email.setSubject(thankYouForYourContributionEmailSubject);
+                return;
             default:
                 email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberEmailSourceUrl), payment));
                 email.setSubject(newMemberEmailSubject);
@@ -107,7 +109,10 @@ public class AsynchMailSenderService {
     private String replaceTokens(String emailTemplate, Payment payment) {
         return emailTemplate
                 .replace("$NAME", payment.getFirstName() + " " + payment.getLastName())
+                .replace("$USERNAME", payment.getUsername())
+                .replace("$PASSWORD", PasswordSource.findByHash(payment.getHash()).getPassword())
                 .replace("$AMOUNT", DecimalFormat.getCurrencyInstance(Locale.UK).format(payment.getAmount()))
+                .replace("$TOKEN", payment.getMembershipToken())
                 .replace("$PAYMENT_REFERENCE", payment.getReference());
     }
 

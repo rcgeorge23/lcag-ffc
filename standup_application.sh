@@ -25,9 +25,9 @@ docker run -d \
 	-e "SEND_EMAILS_INTERVAL_MILLISECONDS=1000" \
 	-e "VIRTUAL_PORT=8484" \
 	-e "SERVER_PORT=8484" \
-	--name lcag-claim \
+	--name lcag-ffc \
     -p 8484:8484 \
-    -t dockernovinet/lcag-claim
+    -t dockernovinet/lcag-ffc
 
 echo "Waiting for application status url to respond with 200"
 while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8484)" != "200" ]]; do sleep 5; done

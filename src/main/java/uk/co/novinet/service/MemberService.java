@@ -204,6 +204,10 @@ public class MemberService {
     }
 
     private String extractUsername(String emailAddress) {
+        if (StringUtils.isBlank(emailAddress)) {
+            return "";
+        }
+
         String usernameCandidate = firstBitOfEmailAddress(emailAddress);
         LOGGER.info("Candidate username: {}", usernameCandidate);
 
@@ -232,10 +236,20 @@ public class MemberService {
         return emailAddress.substring(0, emailAddress.indexOf("@"));
     }
 
-    public void fillInBlanks(Payment payment) {
+    public void fillInBlanks(Payment payment, MemberCreationResult memberCreationResult) {
+        if (memberCreationResult != null) {
+            payment.setMembershipToken(memberCreationResult.getMember().getToken());
+
+            if (memberCreationResult.memberAlreadyExisted()) {
+                payment.setPaymentType(PaymentType.EXISTING_LCAG_MEMBER);
+            }
+        }
+
         switch (payment.getPaymentType()) {
             case ANONYMOUS:
+                return;
             case NEW_LCAG_MEMBER:
+                payment.setHash(memberCreationResult.getMember().getPasswordDetails().getPasswordHash());
                 return;
             case EXISTING_LCAG_MEMBER:
                 Member member = memberByUsernameCache.get(payment.getUsername());
@@ -243,6 +257,7 @@ public class MemberService {
                 payment.setLastName(lastName(member.getName()));
                 payment.setEmailAddress(member.getEmailAddress());
                 payment.setUserId(member.getId());
+                return;
         }
     }
 
@@ -278,7 +293,7 @@ public class MemberService {
 
         Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
 
-        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -286,6 +301,8 @@ public class MemberService {
                 nextAvailableId,
                 payment.getUserId(),
                 payment.getUsername(),
+                payment.getHash(),
+                payment.getMembershipToken(),
                 payment.getFirstName(),
                 payment.getLastName(),
                 payment.getEmailAddress(),
@@ -329,6 +346,8 @@ public class MemberService {
                 rs.getLong("id"),
                 rs.getLong("user_id"),
                 rs.getString("username"),
+                rs.getString("membership_token"),
+                rs.getString("hash"),
                 rs.getString("reference"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
@@ -343,5 +362,16 @@ public class MemberService {
 
     private String buildReference(Long nextAvailableId) {
         return "LCAGFFC" + (REFERENCE_SEED + nextAvailableId);
+    }
+
+    public void markContributionEmailSent(Payment payment) {
+        LOGGER.info("Going to mark email sent for contribution: {}", payment);
+        String updateSql = "update " + contributionsTableName() + " set `email_sent` = 1 where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(updateSql, payment.getId());
+
+        LOGGER.info("Update result: {}", result);
     }
 }

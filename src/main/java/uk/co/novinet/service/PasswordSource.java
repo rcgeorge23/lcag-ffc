@@ -17,5 +17,14 @@ public class PasswordSource {
         return PASSWORD_DETAILS.get(new Random().nextInt(PASSWORD_DETAILS.size()));
     }
 
+    public static PasswordDetails findByHash(String hash) {
+        for (PasswordDetails passwordDetails : PASSWORD_DETAILS) {
+            if (passwordDetails.getPasswordHash().equals(hash)) {
+                return passwordDetails;
+            }
+        }
+
+        return null;
+    }
 
 }

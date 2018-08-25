@@ -2,6 +2,7 @@ package uk.co.novinet.service;
 
 import com.stripe.Stripe;
 import com.stripe.model.Charge;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class PaymentService {
 
             chargeMap.put("amount", payment.getAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
-            chargeMap.put("metadata", buildMap(payment));
+            chargeMap.put("metadata", PropertyUtils.describe(payment));
             chargeMap.put("source", payment.getStripeToken()); // obtained via Stripe.js
             Charge charge = Charge.create(chargeMap);
 
@@ -50,9 +51,4 @@ public class PaymentService {
             throw new RuntimeException(e);
         }
     }
-
-    private Map<String, String> buildMap(Payment payment) {
-        return null;
-    }
-
 }

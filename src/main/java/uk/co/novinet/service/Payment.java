@@ -12,6 +12,8 @@ public class Payment {
     private Long id;
     private Long userId;
     private String username;
+    private String membershipToken;
+    private String hash;
     private String reference;
     private String firstName;
     private String lastName;
@@ -19,7 +21,7 @@ public class Payment {
     private BigDecimal amount;
     private Instant date;
     private String stripeToken;
-    private PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus = PaymentStatus.NEW;
     private PaymentType paymentType;
 
     public Payment() {}
@@ -28,6 +30,8 @@ public class Payment {
             Long id,
             Long userId,
             String username,
+            String membershipToken,
+            String hash,
             String reference,
             String firstName,
             String lastName,
@@ -40,6 +44,8 @@ public class Payment {
         this.id = id;
         this.userId = userId;
         this.username = username;
+        this.membershipToken = membershipToken;
+        this.hash = hash;
         this.reference = reference;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -150,5 +156,21 @@ public class Payment {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getMembershipToken() {
+        return membershipToken;
+    }
+
+    public void setMembershipToken(String membershipToken) {
+        this.membershipToken = membershipToken;
     }
 }
