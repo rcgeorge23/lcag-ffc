@@ -24,6 +24,7 @@ public class Payment {
     private PaymentStatus paymentStatus = PaymentStatus.NEW;
     private PaymentType paymentType;
     private ContributionType contributionType;
+    private String guid;
 
     public Payment() {}
 
@@ -42,7 +43,8 @@ public class Payment {
             String stripeToken,
             PaymentStatus paymentStatus,
             PaymentType paymentType,
-            ContributionType contributionType) {
+            ContributionType contributionType,
+            String guid) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -58,6 +60,7 @@ public class Payment {
         this.paymentStatus = paymentStatus;
         this.paymentType = paymentType;
         this.contributionType = contributionType;
+        this.guid = guid;
     }
 
     public Long getId() {
@@ -183,5 +186,13 @@ public class Payment {
 
     public void setContributionType(ContributionType contributionType) {
         this.contributionType = contributionType;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 }

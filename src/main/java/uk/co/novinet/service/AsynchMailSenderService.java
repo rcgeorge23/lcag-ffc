@@ -57,10 +57,13 @@ public class AsynchMailSenderService {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private PaymentService paymentService;
+
     @Scheduled(initialDelayString = "${sendEmailsInitialDelayMilliseconds}", fixedRateString = "${sendEmailsIntervalMilliseconds}")
     public void sendEmails() {
         LOGGER.info("Going to check for emails to send...");
-        for (Payment payment : memberService.getFfcContributionsAwaitingEmails()) {
+        for (Payment payment : paymentService.getFfcContributionsAwaitingEmails()) {
             try {
                 sendFollowUpEmail(payment);
                 Thread.sleep(5000);

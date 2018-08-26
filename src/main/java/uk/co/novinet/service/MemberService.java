@@ -22,7 +22,6 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
-    private static final int EMAIL_NOT_SENT = 0;
     private static final long REFERENCE_SEED = 90000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
 
@@ -246,6 +245,8 @@ public class MemberService {
             }
         }
 
+        payment.setGuid(guid());
+
         switch (payment.getPaymentType()) {
             case ANONYMOUS:
                 return;
@@ -294,7 +295,7 @@ public class MemberService {
 
         Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
 
-        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `guid`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -313,7 +314,8 @@ public class MemberService {
                 payment.getContributionType().toString(),
                 payment.getStripeToken(),
                 PaymentStatus.NEW.toString(),
-                buildReference(nextAvailableId)
+                buildReference(nextAvailableId),
+                payment.getGuid()
             );
 
         LOGGER.info("Insertion result: {}", result);
@@ -333,37 +335,6 @@ public class MemberService {
         int result = jdbcTemplate.update(updateSql, paymentStatus.toString(), payment.getId());
 
         LOGGER.info("Update result: {}", result);
-    }
-
-    public List<Payment> getFfcContributionsAwaitingEmails() {
-        LOGGER.info("Going to find contributions awaiting emails");
-
-        String sql = "select * from " + contributionsTableName() + " where `email_sent` = ? and payment_type <> ?;";
-
-        return jdbcTemplate.query(sql, new Object[] {
-                EMAIL_NOT_SENT,
-                PaymentType.ANONYMOUS.toString()
-        }, (rs, rowNum) -> buildPayment(rs));
-    }
-
-    private Payment buildPayment(ResultSet rs) throws SQLException {
-        return new Payment(
-                rs.getLong("id"),
-                rs.getLong("user_id"),
-                rs.getString("username"),
-                rs.getString("membership_token"),
-                rs.getString("hash"),
-                rs.getString("reference"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("email_address"),
-                rs.getBigDecimal("amount"),
-                dateFromMyBbRow(rs, "date"),
-                rs.getString("stripe_token"),
-                PaymentStatus.valueOf(rs.getString("status")),
-                PaymentType.valueOf(rs.getString("payment_type")),
-                ContributionType.valueOf(rs.getString("contribution_type"))
-        );
     }
 
     private String buildReference(Long nextAvailableId) {

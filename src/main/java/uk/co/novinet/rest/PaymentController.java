@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.co.novinet.service.Member;
 import uk.co.novinet.service.MemberService;
+import uk.co.novinet.service.Payment;
+import uk.co.novinet.service.PaymentService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,9 @@ public class PaymentController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private PaymentService paymentService;
+
     @Value("${publishableStripeApiKey}")
     private String publishableStripeApiKey;
 
@@ -29,6 +34,12 @@ public class PaymentController {
     @GetMapping(path = "/publicStripeKey")
     public Map<String, String> publicStripeKey() {
         return new HashMap<String, String>() {{ put("key", publishableStripeApiKey); }};
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/payment")
+    public Payment getPayment(String guid) {
+        return paymentService.findPaymentForGuid(guid);
     }
 
 }

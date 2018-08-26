@@ -39,6 +39,7 @@ public class HomeController {
             paymentService.executePayment(payment);
             return new ModelAndView("thankYou", model);
         } catch (Exception e) {
+            model.addAttribute("guid", payment.getGuid());
             LOGGER.error("Unable to make payment", e);
             return new ModelAndView("redirect:/", model);
         }

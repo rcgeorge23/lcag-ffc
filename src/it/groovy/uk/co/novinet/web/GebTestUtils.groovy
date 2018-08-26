@@ -51,4 +51,37 @@ class GebTestUtils {
     static boolean checkboxValue(Object checkboxElement) {
         return checkboxElement.value() == "on"
     }
+
+    static void verifyInitialPaymentFormQuestionsDisplayed(Browser browser) {
+        browser.waitFor { browser.page.paymentDeclinedSection.displayed == false }
+        browser.waitFor { browser.page.acceptTermsAndConditionsCheckbox.attr("disabled") == "true" }
+        browser.waitFor { checkboxValue(browser.page.acceptTermsAndConditionsCheckbox) == true }
+        browser.waitFor { browser.page.paymentFormSection.displayed == true }
+        browser.waitFor { browser.page.existingLcagAccountYes.displayed == true }
+        browser.waitFor { browser.page.existingLcagAccountNo.displayed == true }
+        browser.waitFor { browser.page.existingLcagAccountAnonymous.displayed == true }
+        browser.waitFor { browser.page.existingLcagAccountYes.value() == null }
+        browser.waitFor { browser.page.existingLcagAccountNo.value() == null }
+        browser.waitFor { browser.page.existingLcagAccountAnonymous.value() == null }
+        browser.waitFor { browser.page.payNowButton.displayed == false }
+    }
+
+    static void verifyHappyInitialPaymentFormState(Browser browser) {
+        browser.waitFor { browser.page.paymentDeclinedSection.displayed == false }
+        browser.waitFor { browser.page.termsAndConditionsSection.displayed == true }
+        browser.waitFor { browser.page.acceptTermsAndConditionsCheckbox.displayed == true }
+        browser.waitFor { checkboxValue(browser.page.acceptTermsAndConditionsCheckbox) == false }
+        browser.waitFor { browser.page.paymentFormSection.displayed == false }
+        browser.waitFor { browser.page.payNowButton.displayed == false }
+    }
+
+    static void anonymousPaymentCreditCardFormDisplayed(Browser browser) {
+        browser.waitFor { browser.page.contributionTypeDonation.displayed == true }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == true }
+        browser.waitFor { browser.page.contributionTypeDonation.value() == 'DONATION' }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.value() == null }
+        browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "true" }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "true" }
+        browser.waitFor { browser.page.payNowButton.displayed == true }
+    }
 }

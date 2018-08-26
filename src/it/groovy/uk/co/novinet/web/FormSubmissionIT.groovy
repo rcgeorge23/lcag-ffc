@@ -3,12 +3,17 @@ package uk.co.novinet.web
 import geb.spock.GebSpec
 
 import static uk.co.novinet.e2e.TestUtils.*
+import static uk.co.novinet.web.GebTestUtils.anonymousPaymentCreditCardFormDisplayed
 import static uk.co.novinet.web.GebTestUtils.checkboxValue
 import static uk.co.novinet.web.GebTestUtils.enterCardDetails
+import static uk.co.novinet.web.GebTestUtils.verifyHappyInitialPaymentFormState
+import static uk.co.novinet.web.GebTestUtils.verifyInitialPaymentFormQuestionsDisplayed
 
 class FormSubmissionIT extends GebSpec {
 
     static final schemes = "schemes"
+    public static final String AUTHORIZED_CARD = "4242424242424242"
+    public static final String DECLINED_CARD = "4000000000000002"
 
     def setup() {
         setupDatabaseSchema()
@@ -23,47 +28,62 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at LcagFfcFormPage }
 
         then:
-            waitFor { termsAndConditionsSection.displayed == true }
-            waitFor { acceptTermsAndConditionsCheckbox.displayed == true }
-            waitFor { checkboxValue(acceptTermsAndConditionsCheckbox) == false }
-            waitFor { paymentFormSection.displayed == false }
-            waitFor { payNowButton.displayed == false }
+            verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
             acceptTermsAndConditionsCheckbox.click()
 
-        then: "payment form appears and nothing is selected"
-            waitFor { acceptTermsAndConditionsCheckbox.attr("disabled") == "true" }
-            waitFor { checkboxValue(acceptTermsAndConditionsCheckbox) == true }
-            waitFor { paymentFormSection.displayed == true }
-            waitFor { existingLcagAccountYes.displayed == true }
-            waitFor { existingLcagAccountNo.displayed == true }
-            waitFor { existingLcagAccountAnonymous.displayed == true }
-            waitFor { existingLcagAccountYes.value() == null }
-            waitFor { existingLcagAccountNo.value() == null }
-            waitFor { existingLcagAccountAnonymous.value() == null }
-            waitFor { payNowButton.displayed == false }
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
             existingLcagAccountAnonymous.click()
 
         then: "credit card form is displayed"
-            waitFor { contributionTypeDonation.displayed == true }
-            waitFor { contributionTypeContributionAgreement.displayed == true }
-            waitFor { contributionTypeDonation.value() == 'DONATION' }
-            waitFor { contributionTypeContributionAgreement.value() == null }
-            waitFor { contributionTypeDonation.attr("disabled") == "true" }
-            waitFor { contributionTypeContributionAgreement.attr("disabled") == "true" }
-            waitFor { payNowButton.displayed == true }
+            anonymousPaymentCreditCardFormDisplayed(browser)
 
         when: "i enter valid values and click pay now"
             amountInput = "10.00"
-            enterCardDetails(browser, "4242424242424242", "0222", "111", "33333")
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
         then: "i land on the thank you page"
             waitFor { at ThankYouPage }
     }
+
+    def "anonymous payment, card declined"() {
+        given:
+            prepopulateMemberDataInDb()
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            verifyHappyInitialPaymentFormState(browser)
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsCheckbox.click()
+
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountAnonymous.click()
+
+        then: "credit card form is displayed"
+            anonymousPaymentCreditCardFormDisplayed(browser)
+
+        when: "i enter valid values and click pay now"
+            amountInput = "10.00"
+            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page"
+            waitFor { at LcagFfcFormPage }
+            waitFor { paymentDeclinedSection.displayed == true }
+    }
+
 //
 //    def "claim participant form cannot be submitted when fields are blank"() {
 //        given:
