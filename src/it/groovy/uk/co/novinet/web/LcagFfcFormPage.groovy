@@ -13,6 +13,7 @@ class LcagFfcFormPage extends Page {
         termsAndConditionsSection { $("#termsAndConditionsSection") }
         acceptTermsAndConditionsCheckbox { $("#acceptTermsAndConditions") }
         paymentFormSection { $("#paymentFormSection") }
+        newLcagJoinerInfoSection { $("#newLcagJoinerInfoSection") }
 
         existingLcagAccountInput { $("input[name=existingLcagAccount]") }
         existingLcagAccountYes { $("#existingLcagAccountYes") }
@@ -27,6 +28,9 @@ class LcagFfcFormPage extends Page {
         contributionAgreementInfoSection { $("#contributionAgreementInfoSection") }
 
         usernameInput { $("#username") }
+        firstNameInput { $("#firstName") }
+        lastNameInput { $("#lastName") }
+        emailAddressInput { $("#emailAddress") }
 
         amountInput { $("#amount") }
         creditCardInput { $("input[name=cardnumber]") }

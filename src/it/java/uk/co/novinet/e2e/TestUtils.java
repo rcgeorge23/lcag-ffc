@@ -61,11 +61,6 @@ public class TestUtils {
                 runSqlScript("sql/create_ffc_contributions_table.sql");
                 runSqlScript("sql/create_usergroups_table.sql");
                 runSqlScript("sql/populate_usergroups_table.sql");
-
-                for (int i = 1; i <= 200; i++) {
-                    insertUser(i, "testuser" + i, "user" + i + "@something.com", "Test Name" + i, 8, "1234_" + i, "claim_" + i);
-                }
-
                 needToRetry = false;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,7 +138,8 @@ public class TestUtils {
                         resultSet.getBoolean("member_of_big_group"),
                         resultSet.getString("big_group_username"),
                         resultSet.getBoolean("has_completed_claim_participant_form"),
-                        resultSet.getBoolean("has_been_sent_claim_confirmation_email")
+                        resultSet.getBoolean("has_been_sent_claim_confirmation_email"),
+                        resultSet.getString("token")
                     )
                 );
             }

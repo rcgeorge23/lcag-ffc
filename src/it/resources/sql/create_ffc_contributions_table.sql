@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `reference` varchar(120) NOT NULL default '',
   `status` varchar(120) NOT NULL default '',
   `payment_type` varchar(20) NOT NULL DEFAULT 0,
-  `contribution_type` varchar(20) NOT NULL DEFAULT 0,
+  `contribution_type` varchar(30) NOT NULL DEFAULT 0,
   `email_sent` tinyint(1) NOT NULL DEFAULT 0,
   `guid` varchar(120) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)

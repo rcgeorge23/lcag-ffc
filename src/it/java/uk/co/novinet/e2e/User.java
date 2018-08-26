@@ -19,6 +19,7 @@ public class User {
     private String bigGroupUsername;
     private Boolean hasCompletedClaimParticipantForm;
     private Boolean hasBeenSentClaimConfirmationEmail;
+    private String membershipToken;
 
     public User(
             int id,
@@ -36,7 +37,8 @@ public class User {
             Boolean memberOfBigGroup,
             String bigGroupUsername,
             Boolean hasCompletedClaimParticipantForm,
-            Boolean hasBeenSentClaimConfirmationEmail) {
+            Boolean hasBeenSentClaimConfirmationEmail,
+            String membershipToken) {
         this.id = id;
         this.username = username;
         this.emailAddress = emailAddress;
@@ -53,6 +55,7 @@ public class User {
         this.bigGroupUsername = bigGroupUsername;
         this.hasCompletedClaimParticipantForm = hasCompletedClaimParticipantForm;
         this.hasBeenSentClaimConfirmationEmail = hasBeenSentClaimConfirmationEmail;
+        this.membershipToken = membershipToken;
     }
 
     public int getId() {
@@ -131,5 +134,13 @@ public class User {
 
     public void setHasBeenSentClaimConfirmationEmail(Boolean hasBeenSentClaimConfirmationEmail) {
         this.hasBeenSentClaimConfirmationEmail = hasBeenSentClaimConfirmationEmail;
+    }
+
+    public String getMembershipToken() {
+        return membershipToken;
+    }
+
+    public void setMembershipToken(String membershipToken) {
+        this.membershipToken = membershipToken;
     }
 }

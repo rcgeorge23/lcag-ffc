@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -28,16 +29,34 @@ public class MemberService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
+    private static Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
 
-    private Map<String, Member> memberByEmailCache = new ConcurrentHashMap<>();
+    private static Map<String, Member> memberByEmailCache = new ConcurrentHashMap<>();
 
     @Scheduled(initialDelayString = "${refreshMemberCacheInitialDelayMilliseconds}", fixedRateString = "${refreshMemberCacheIntervalMilliseconds}")
     public void refreshMemberCache() {
         List<Member> members = jdbcTemplate.query(buildUserTableSelect() + buildUserTableGroupBy(), new Object[]{}, (rs, rowNum) -> buildMember(rs));
+
         for (Member member : members) {
             memberByUsernameCache.put(member.getUsername().toLowerCase(), member);
             memberByEmailCache.put(member.getEmailAddress().toLowerCase(), member);
+        }
+
+        List<String> usernamesInDb = members.stream().map(member -> member.getUsername().toLowerCase()).collect(Collectors.toList());
+        List<String> emailAddressesInDb = members.stream().map(member -> member.getEmailAddress().toLowerCase()).collect(Collectors.toList());
+
+        Set<String> usernamesInCache = memberByUsernameCache.keySet();
+        Set<String> emailAddressesInCache = memberByEmailCache.keySet();
+
+        usernamesInCache.removeAll(usernamesInDb);
+        emailAddressesInCache.removeAll(usernamesInDb);
+
+        for (String usernameToDelete : usernamesInCache) {
+            memberByUsernameCache.remove(usernameToDelete);
+        }
+
+        for (String emailToDelete : emailAddressesInCache) {
+            memberByEmailCache.remove(emailToDelete);
         }
     }
 
@@ -82,7 +101,7 @@ public class MemberService {
     }
 
     public List<Member> findExistingForumUsersByField(String field, String value) {
-        return jdbcTemplate.query(buildUserTableSelect() + "where lower(u." + field + ") = ?" + buildUserTableGroupBy(), new Object[] { value.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
+        return jdbcTemplate.query(buildUserTableSelect() + " where lower(u." + field + ") = ?", new Object[] { value.toLowerCase() }, (rs, rowNum) -> buildMember(rs));
     }
 
     private String buildUserTableSelect() {
@@ -236,11 +255,11 @@ public class MemberService {
         return emailAddress.substring(0, emailAddress.indexOf("@"));
     }
 
-    public void fillInBlanks(Payment payment, MemberCreationResult memberCreationResult) {
-        if (memberCreationResult != null) {
-            payment.setMembershipToken(memberCreationResult.getMember().getToken());
+    public void fillInBlanks(Payment payment, Member member, boolean memberAlreadyExisted) {
+        if (member != null) {
+            payment.setMembershipToken(member.getToken());
 
-            if (memberCreationResult.memberAlreadyExisted()) {
+            if (memberAlreadyExisted) {
                 payment.setPaymentType(PaymentType.EXISTING_LCAG_MEMBER);
             }
         }
@@ -251,10 +270,12 @@ public class MemberService {
             case ANONYMOUS:
                 return;
             case NEW_LCAG_MEMBER:
-                payment.setHash(memberCreationResult.getMember().getPasswordDetails().getPasswordHash());
+                payment.setHash(member.getPasswordDetails().getPasswordHash());
+                payment.setUsername(member.getUsername());
+                payment.setUserId(member.getId());
                 return;
             case EXISTING_LCAG_MEMBER:
-                Member member = memberByUsernameCache.get(payment.getUsername());
+                payment.setUsername(member.getUsername());
                 payment.setFirstName(firstName(member.getName()));
                 payment.setLastName(lastName(member.getName()));
                 payment.setEmailAddress(member.getEmailAddress());

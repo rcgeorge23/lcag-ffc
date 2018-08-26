@@ -100,4 +100,21 @@ class GebTestUtils {
         browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "" }
         browser.waitFor { browser.page.payNowButton.displayed == true }
     }
+
+    static void newLcagUserAccountPaymentCreditCardFormDisplayed(Browser browser) {
+        browser.waitFor { browser.page.donationInfoSection.displayed == false }
+        browser.waitFor { browser.page.usernameInput.displayed == false }
+        browser.waitFor { browser.page.firstNameInput.displayed == true }
+        browser.waitFor { browser.page.lastNameInput.displayed == true }
+        browser.waitFor { browser.page.emailAddressInput.displayed == true }
+        browser.waitFor { browser.page.newLcagJoinerInfoSection.displayed == true }
+        browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == false }
+        browser.waitFor { browser.page.contributionTypeDonation.displayed == true }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == true }
+        browser.waitFor { browser.page.contributionTypeDonation.value() == null }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.value() == null }
+        browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "" }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "" }
+        browser.waitFor { browser.page.payNowButton.displayed == true }
+    }
 }

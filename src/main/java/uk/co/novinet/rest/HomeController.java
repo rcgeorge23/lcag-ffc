@@ -33,13 +33,31 @@ public class HomeController {
         try {
             LOGGER.info("model: {}", model);
             LOGGER.info("payment: {}", payment);
-            MemberCreationResult memberCreationResult = memberService.createForumUserIfNecessary(payment);
-            memberService.fillInBlanks(payment, memberCreationResult);
+
+            Member member = null;
+            MemberCreationResult memberCreationResult = null;
+
+            switch (payment.getPaymentType()) {
+                case EXISTING_LCAG_MEMBER:
+                    member = memberService.findMemberByUsername(payment.getUsername());
+                    break;
+                case NEW_LCAG_MEMBER:
+                    memberCreationResult = memberService.createForumUserIfNecessary(payment);
+                    member = memberCreationResult.getMember();
+                    break;
+            }
+
+            if (member == null) {
+                throw new RuntimeException("Member not found");
+            }
+
+            memberService.fillInBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
             memberService.createFfcContribution(payment);
             paymentService.executePayment(payment);
+            model.addAttribute("guid", payment.getGuid());
             return new ModelAndView("thankYou", model);
         } catch (Exception e) {
-            model.addAttribute("guid", payment.getGuid());
+            model.addAttribute("guid", payment == null ? null : payment.getGuid());
             LOGGER.error("Unable to make payment", e);
             return new ModelAndView("redirect:/", model);
         }
