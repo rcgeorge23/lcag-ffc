@@ -15,6 +15,10 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.valueOf;
+import static org.apache.commons.beanutils.PropertyUtils.describe;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Service
 public class PaymentService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
@@ -39,7 +43,7 @@ public class PaymentService {
 
             chargeMap.put("amount", payment.getAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
-            chargeMap.put("metadata", PropertyUtils.describe(payment));
+            chargeMap.put("metadata", filterEmptyStringValues(describe(payment)));
             chargeMap.put("source", payment.getStripeToken()); // obtained via Stripe.js
             Charge charge = Charge.create(chargeMap);
 
@@ -50,5 +54,17 @@ public class PaymentService {
             LOGGER.error("An error occurred trying to make the payment: {}", payment);
             throw new RuntimeException(e);
         }
+    }
+
+    private Map<String, String> filterEmptyStringValues(Map<String, Object> description) {
+        Map<String, String> result = new HashMap<>();
+
+        description.keySet().stream().forEach(key -> {
+            if (description.get(key) != null && isNotBlank(valueOf(description.get(key)))) {
+                result.put(key, valueOf(description.get(key)));
+            }
+        });
+
+        return result;
     }
 }

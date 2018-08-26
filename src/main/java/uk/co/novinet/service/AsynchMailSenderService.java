@@ -110,10 +110,24 @@ public class AsynchMailSenderService {
         return emailTemplate
                 .replace("$NAME", payment.getFirstName() + " " + payment.getLastName())
                 .replace("$USERNAME", payment.getUsername())
-                .replace("$PASSWORD", PasswordSource.findByHash(payment.getHash()).getPassword())
+                .replace("$PASSWORD", passwordFromHash(payment))
                 .replace("$AMOUNT", DecimalFormat.getCurrencyInstance(Locale.UK).format(payment.getAmount()))
-                .replace("$TOKEN", payment.getMembershipToken())
+                .replace("$TOKEN", payment.getMembershipToken() == null ? "" : payment.getMembershipToken())
                 .replace("$PAYMENT_REFERENCE", payment.getReference());
+    }
+
+    private String passwordFromHash(Payment payment) {
+        if (payment.getHash() == null) {
+            return "";
+        }
+
+        PasswordDetails passwordDetails = PasswordSource.findByHash(payment.getHash());
+
+        if (passwordDetails != null) {
+            return passwordDetails.getPassword();
+        }
+
+        return "";
     }
 
     private String retrieveEmailBodyHtmlFromGoogleDocs(String emailSourceUrl) throws IOException {

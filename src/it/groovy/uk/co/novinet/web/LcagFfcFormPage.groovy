@@ -9,11 +9,29 @@ class LcagFfcFormPage extends Page {
     static at = { title == "Loan Charge Action Group | Fighting Fund Contribution Form" }
 
     static content = {
+        termsAndConditionsSection { $("#termsAndConditionsSection") }
+        acceptTermsAndConditionsCheckbox { $("#acceptTermsAndConditions") }
+        paymentFormSection { $("#paymentFormSection") }
+
         existingLcagAccountInput { $("input[name=existingLcagAccount]") }
         existingLcagAccountYes { $("#existingLcagAccountYes") }
         existingLcagAccountNo { $("#existingLcagAccountNo") }
         existingLcagAccountAnonymous { $("#existingLcagAccountAnonymous") }
-        lcagUsernameSection { $("#lcagUsernameSection") }
+
+        contributionTypeInput { $("#contributionType") }
+        contributionTypeDonation { $("#contributionTypeDonation") }
+        contributionTypeContributionAgreement { $("#contributionTypeContributionAgreement") }
+
+        donationInfoSection { $("#donationInfoSection") }
+        contributionAgreementInfoSection { $("#contributionAgreementInfoSection") }
+
+        amountInput { $("#amount") }
+        creditCardInput { $("input[name=cardnumber]") }
+        expiryDateInput { $("input[name=exp-date]") }
+        c2vInput { $("input[name=cvc]") }
+        postalCodeInput { $("input[name=postal]") }
+
+        payNowButton { $("#submitButton") }
 
         //errors
         titleError { $("#title-error") }

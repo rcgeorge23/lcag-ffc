@@ -3,6 +3,8 @@ package uk.co.novinet.web
 import geb.spock.GebSpec
 
 import static uk.co.novinet.e2e.TestUtils.*
+import static uk.co.novinet.web.GebTestUtils.checkboxValue
+import static uk.co.novinet.web.GebTestUtils.enterCardDetails
 
 class FormSubmissionIT extends GebSpec {
 
@@ -12,7 +14,7 @@ class FormSubmissionIT extends GebSpec {
         setupDatabaseSchema()
     }
 
-    def "initially, only the t&c form is displayed"() {
+    def "i can complete the payment flow as an anonymous donor"() {
         given:
             prepopulateMemberDataInDb()
             go "http://localhost:8484"
@@ -21,10 +23,46 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at LcagFfcFormPage }
 
         then:
+            waitFor { termsAndConditionsSection.displayed == true }
+            waitFor { acceptTermsAndConditionsCheckbox.displayed == true }
+            waitFor { checkboxValue(acceptTermsAndConditionsCheckbox) == false }
+            waitFor { paymentFormSection.displayed == false }
+            waitFor { payNowButton.displayed == false }
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsCheckbox.click()
+
+        then: "payment form appears and nothing is selected"
+            waitFor { acceptTermsAndConditionsCheckbox.attr("disabled") == "true" }
+            waitFor { checkboxValue(acceptTermsAndConditionsCheckbox) == true }
+            waitFor { paymentFormSection.displayed == true }
             waitFor { existingLcagAccountYes.displayed == true }
             waitFor { existingLcagAccountNo.displayed == true }
             waitFor { existingLcagAccountAnonymous.displayed == true }
-            waitFor { lcagUsernameSection.displayed == false }
+            waitFor { existingLcagAccountYes.value() == null }
+            waitFor { existingLcagAccountNo.value() == null }
+            waitFor { existingLcagAccountAnonymous.value() == null }
+            waitFor { payNowButton.displayed == false }
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountAnonymous.click()
+
+        then: "credit card form is displayed"
+            waitFor { contributionTypeDonation.displayed == true }
+            waitFor { contributionTypeContributionAgreement.displayed == true }
+            waitFor { contributionTypeDonation.value() == 'DONATION' }
+            waitFor { contributionTypeContributionAgreement.value() == null }
+            waitFor { contributionTypeDonation.attr("disabled") == "true" }
+            waitFor { contributionTypeContributionAgreement.attr("disabled") == "true" }
+            waitFor { payNowButton.displayed == true }
+
+        when: "i enter valid values and click pay now"
+            amountInput = "10.00"
+            enterCardDetails(browser, "4242424242424242", "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page"
+            waitFor { at ThankYouPage }
     }
 //
 //    def "claim participant form cannot be submitted when fields are blank"() {

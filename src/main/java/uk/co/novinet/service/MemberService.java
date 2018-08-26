@@ -22,6 +22,7 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
+    private static final int EMAIL_NOT_SENT = 0;
     private static final long REFERENCE_SEED = 90000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
 
@@ -293,7 +294,7 @@ public class MemberService {
 
         Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
 
-        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -309,6 +310,7 @@ public class MemberService {
                 payment.getAmount(),
                 unixTime(Instant.now()),
                 payment.getPaymentType().toString(),
+                payment.getContributionType().toString(),
                 payment.getStripeToken(),
                 PaymentStatus.NEW.toString(),
                 buildReference(nextAvailableId)
@@ -336,9 +338,12 @@ public class MemberService {
     public List<Payment> getFfcContributionsAwaitingEmails() {
         LOGGER.info("Going to find contributions awaiting emails");
 
-        String sql = "select * from " + contributionsTableName() + " where `email_sent` = 0;";
+        String sql = "select * from " + contributionsTableName() + " where `email_sent` = ? and payment_type <> ?;";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> buildPayment(rs));
+        return jdbcTemplate.query(sql, new Object[] {
+                EMAIL_NOT_SENT,
+                PaymentType.ANONYMOUS.toString()
+        }, (rs, rowNum) -> buildPayment(rs));
     }
 
     private Payment buildPayment(ResultSet rs) throws SQLException {

@@ -58,8 +58,10 @@ $.getJSON( "/publicStripeKey", function(result) {
           hiddenInput.setAttribute('type', 'hidden');
           hiddenInput.setAttribute('name', 'stripeToken');
           hiddenInput.setAttribute('value', result.token.id);
+
+          $("#contributionType").val($("#contributionTypeDonation").prop("checked") ? $("#contributionTypeDonation").val() : $("#contributionTypeContributionAgreement").val());
+
           form.appendChild(hiddenInput);
-            console.log("result", result);
           // Submit the form
           form.submit();
         }
