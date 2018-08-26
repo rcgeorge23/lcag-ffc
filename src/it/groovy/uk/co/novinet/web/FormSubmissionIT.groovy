@@ -4,8 +4,8 @@ import geb.spock.GebSpec
 
 import static uk.co.novinet.e2e.TestUtils.*
 import static uk.co.novinet.web.GebTestUtils.anonymousPaymentCreditCardFormDisplayed
-import static uk.co.novinet.web.GebTestUtils.checkboxValue
 import static uk.co.novinet.web.GebTestUtils.enterCardDetails
+import static uk.co.novinet.web.GebTestUtils.existingLcagUserAccountPaymentCreditCardFormDisplayed
 import static uk.co.novinet.web.GebTestUtils.verifyHappyInitialPaymentFormState
 import static uk.co.novinet.web.GebTestUtils.verifyInitialPaymentFormQuestionsDisplayed
 
@@ -17,11 +17,12 @@ class FormSubmissionIT extends GebSpec {
 
     def setup() {
         setupDatabaseSchema()
+        deleteAllMessages("user1@something.com")
+        getEmails("user1@something.com", "Inbox").size() == 0
     }
 
     def "i can complete the payment flow as an anonymous donor"() {
         given:
-            prepopulateMemberDataInDb()
             go "http://localhost:8484"
 
         when:
@@ -53,7 +54,6 @@ class FormSubmissionIT extends GebSpec {
 
     def "anonymous payment, card declined"() {
         given:
-            prepopulateMemberDataInDb()
             go "http://localhost:8484"
 
         when:
@@ -79,9 +79,80 @@ class FormSubmissionIT extends GebSpec {
             enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
-        then: "i land on the thank you page"
+        then: "i remain on the same page with a payment declined banner"
             waitFor { at LcagFfcFormPage }
             waitFor { paymentDeclinedSection.displayed == true }
+    }
+
+    def "i can complete the payment flow for donation as an existing lcag member"() {
+        given:
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            verifyHappyInitialPaymentFormState(browser)
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsCheckbox.click()
+
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountYes.click()
+
+        then: "credit card form is displayed"
+            existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            username = "testuser1"
+            contributionTypeDonation.click()
+            amountInput = "10.00"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { getEmails("user1@something.com", "Inbox").size() == 1 }
+            waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £10.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
+    }
+
+    def "payment declined for donation as an existing lcag member"() {
+        given:
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            verifyHappyInitialPaymentFormState(browser)
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsCheckbox.click()
+
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountYes.click()
+
+        then: "credit card form is displayed"
+            existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            username = "testuser1"
+            contributionTypeDonation.click()
+            amountInput = "10.00"
+            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i remain on the same page with a payment declined banner"
+            waitFor { at LcagFfcFormPage }
+            waitFor { paymentDeclinedSection.displayed == true }
+            sleep(3000)
+            waitFor { getEmails("user1@something.com", "Inbox").size() == 0 }
     }
 
 //
@@ -190,10 +261,4 @@ class FormSubmissionIT extends GebSpec {
 //            at LcagFfcFormPage
 //    }
 
-    private prepopulateMemberDataInDb() {
-        runSqlUpdate("update `i7b0_users` set " +
-                "schemes = '" + schemes + "' " +
-                "where uid = 1"
-        )
-    }
 }

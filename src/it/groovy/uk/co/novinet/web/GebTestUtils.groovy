@@ -76,12 +76,28 @@ class GebTestUtils {
     }
 
     static void anonymousPaymentCreditCardFormDisplayed(Browser browser) {
+        browser.waitFor { browser.page.donationInfoSection.displayed == true }
+        browser.waitFor { browser.page.usernameInput.displayed == false }
+        browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == false }
         browser.waitFor { browser.page.contributionTypeDonation.displayed == true }
         browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == true }
         browser.waitFor { browser.page.contributionTypeDonation.value() == 'DONATION' }
         browser.waitFor { browser.page.contributionTypeContributionAgreement.value() == null }
         browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "true" }
         browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "true" }
+        browser.waitFor { browser.page.payNowButton.displayed == true }
+    }
+
+    static void existingLcagUserAccountPaymentCreditCardFormDisplayed(Browser browser) {
+        browser.waitFor { browser.page.donationInfoSection.displayed == false }
+        browser.waitFor { browser.page.usernameInput.displayed == true }
+        browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == false }
+        browser.waitFor { browser.page.contributionTypeDonation.displayed == true }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == true }
+        browser.waitFor { browser.page.contributionTypeDonation.value() == null }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.value() == null }
+        browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "" }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "" }
         browser.waitFor { browser.page.payNowButton.displayed == true }
     }
 }

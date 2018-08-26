@@ -126,6 +126,27 @@
                                             <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
                                         </div>
                                     </div>
+                                    <div id="lcagUsernameSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="username">LCAG username:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
+                                                <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="newLcagJoinerInfoSection" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <div class="row">
+                                                <div class="col-md-1 col-sm-2">
+                                                    <i class="fa fa-info-circle fa-2x"></i>
+                                                </div>
+                                                <div class="col-md-11 col-sm-10">
+                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submit your payment.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div id="contributionTypeSection" style="display: none;">
                                         <div class="form-group">
                                             <label>My contribution will be a:</label>
@@ -157,26 +178,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="lcagUsernameSection" style="display: none;">
-                                        <div class="form-group">
-                                            <label for="username">LCAG username:</label>
-                                            <div class="input-group">
-                                                <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
-                                                <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div id="newLcagJoinerSection" style="display: none;">
-                                        <div class="alert alert-info">
-                                            <div class="row">
-                                                <div class="col-md-1 col-sm-2">
-                                                    <i class="fa fa-info-circle fa-2x"></i>
-                                                </div>
-                                                <div class="col-md-11 col-sm-10">
-                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submit your payment.
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="form-group">
                                             <label for="firstName">First name:</label>
                                             <div class="input-group">
@@ -274,6 +276,7 @@
             function showLcagUsernameSection() {
                 $("#lcagUsernameSection").show();
                 $("#newLcagJoinerSection").hide();
+                $("#newLcagJoinerInfoSection").hide();
                 $("#paymentFieldsSection").show();
                 $("#username").prop('required',true);
                 $("#emailAddress").removeAttr("required");
@@ -286,6 +289,7 @@
                 $("#lcagUsernameSection").hide();
                 $("#paymentFieldsSection").show();
                 $("#newLcagJoinerSection").hide();
+                $("#newLcagJoinerInfoSection").hide();
                 $("#username").removeAttr("required");
                 $("#emailAddress").removeAttr("required");
                 $("#submitButton").show();
@@ -296,6 +300,7 @@
             function showNewLcagJoinerSection() {
                 $("#lcagUsernameSection").hide();
                 $("#newLcagJoinerSection").show();
+                $("#newLcagJoinerInfoSection").show();
                 $("#paymentFieldsSection").show();
                 $("#username").removeAttr("required");
                 $("#emailAddress").prop("required", true);

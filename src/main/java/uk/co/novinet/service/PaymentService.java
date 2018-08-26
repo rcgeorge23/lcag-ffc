@@ -91,11 +91,12 @@ public class PaymentService {
     public List<Payment> getFfcContributionsAwaitingEmails() {
         LOGGER.info("Going to find contributions awaiting emails");
 
-        String sql = "select * from " + contributionsTableName() + " where `email_sent` = ? and payment_type <> ?;";
+        String sql = "select * from " + contributionsTableName() + " where `email_sent` = ? and payment_type <> ? and status = ?;";
 
         return jdbcTemplate.query(sql, new Object[] {
                 EMAIL_NOT_SENT,
-                PaymentType.ANONYMOUS.toString()
+                PaymentType.ANONYMOUS.toString(),
+                PaymentStatus.AUTHORIZED.toString()
         }, (rs, rowNum) -> buildPayment(rs));
     }
 

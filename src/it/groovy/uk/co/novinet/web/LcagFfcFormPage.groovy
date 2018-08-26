@@ -26,6 +26,8 @@ class LcagFfcFormPage extends Page {
         donationInfoSection { $("#donationInfoSection") }
         contributionAgreementInfoSection { $("#contributionAgreementInfoSection") }
 
+        usernameInput { $("#username") }
+
         amountInput { $("#amount") }
         creditCardInput { $("input[name=cardnumber]") }
         expiryDateInput { $("input[name=exp-date]") }
