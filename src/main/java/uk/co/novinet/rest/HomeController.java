@@ -23,8 +23,13 @@ public class HomeController {
     private PaymentService paymentService;
 
     @GetMapping("/")
-    public String get() {
+    public String getHome() {
         return "home";
+    }
+
+    @GetMapping("/thankYou")
+    public String getThankYou() {
+        return "thankYou";
     }
 
     @CrossOrigin
@@ -47,15 +52,11 @@ public class HomeController {
                     break;
             }
 
-            if (member == null) {
-                throw new RuntimeException("Member not found");
-            }
-
             memberService.fillInBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
             memberService.createFfcContribution(payment);
             paymentService.executePayment(payment);
             model.addAttribute("guid", payment.getGuid());
-            return new ModelAndView("thankYou", model);
+            return new ModelAndView("redirect:/thankYou", model);
         } catch (Exception e) {
             model.addAttribute("guid", payment == null ? null : payment.getGuid());
             LOGGER.error("Unable to make payment", e);

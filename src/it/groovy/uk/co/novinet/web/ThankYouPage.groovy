@@ -9,6 +9,7 @@ class ThankYouPage extends Page {
     static at = { title == "Loan Charge Action Group | Thank You" }
 
     static content = {
+        paymentReference { $("#paymentReference") }
 
     }
 }

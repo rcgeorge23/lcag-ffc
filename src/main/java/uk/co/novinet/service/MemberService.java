@@ -45,11 +45,11 @@ public class MemberService {
         List<String> usernamesInDb = members.stream().map(member -> member.getUsername().toLowerCase()).collect(Collectors.toList());
         List<String> emailAddressesInDb = members.stream().map(member -> member.getEmailAddress().toLowerCase()).collect(Collectors.toList());
 
-        Set<String> usernamesInCache = memberByUsernameCache.keySet();
-        Set<String> emailAddressesInCache = memberByEmailCache.keySet();
+        Set<String> usernamesInCache = new HashSet<>(memberByUsernameCache.keySet());
+        Set<String> emailAddressesInCache = new HashSet<>(memberByEmailCache.keySet());
 
         usernamesInCache.removeAll(usernamesInDb);
-        emailAddressesInCache.removeAll(usernamesInDb);
+        emailAddressesInCache.removeAll(emailAddressesInDb);
 
         for (String usernameToDelete : usernamesInCache) {
             memberByUsernameCache.remove(usernameToDelete);
