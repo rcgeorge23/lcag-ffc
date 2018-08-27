@@ -198,6 +198,7 @@ class FormSubmissionIT extends GebSpec {
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
             waitFor { at ThankYouPage }
+            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
@@ -206,9 +207,9 @@ class FormSubmissionIT extends GebSpec {
             waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
             waitFor { getUserRows().get(0).name == "Harry Generous" }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
-            waitFor { getEmails("harry@generous.com", "Inbox").get(0).content.contains("Dear Harry Generous, Thank you for your contribution of £200.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
-            waitFor { getEmails("harry@generous.com", "Inbox").get(0).content.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
-            waitFor { getEmails("harry@generous.com", "Inbox").get(0).content.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £200.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
+            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
     }
 
 //
