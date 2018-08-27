@@ -22,6 +22,7 @@ public class Payment {
     private Instant date;
     private String stripeToken;
     private PaymentStatus paymentStatus = PaymentStatus.NEW;
+    private String errorDescription;
     private PaymentType paymentType;
     private ContributionType contributionType;
     private String guid;
@@ -42,6 +43,7 @@ public class Payment {
             Instant date,
             String stripeToken,
             PaymentStatus paymentStatus,
+            String errorDescription,
             PaymentType paymentType,
             ContributionType contributionType,
             String guid) {
@@ -58,6 +60,7 @@ public class Payment {
         this.date = date;
         this.stripeToken = stripeToken;
         this.paymentStatus = paymentStatus;
+        this.errorDescription = errorDescription;
         this.paymentType = paymentType;
         this.contributionType = contributionType;
         this.guid = guid;
@@ -194,5 +197,13 @@ public class Payment {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public void setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
     }
 }

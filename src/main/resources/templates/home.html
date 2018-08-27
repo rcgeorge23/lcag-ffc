@@ -16,6 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
+    <script>
+        lcag.Common.init();
+    </script>
     <title>Loan Charge Action Group | Fighting Fund Contribution Form</title>
 </head>
     <body>
@@ -35,10 +38,27 @@
                     <div role="alert" class="alert alert-danger alert-dismissible" id="paymentDeclinedSection" style="display: none;">
                         <div class="row">
                             <div class="col-md-1 col-sm-2">
-                                <i class="fa fa-info-circle fa-2x"></i>
+                                <i class="fa fa-exclamation-triangle fa-2x"></i>
                             </div>
                             <div class="col-md-10 col-sm-9">
-                                We were unable to take your payment - please try again or use alternate card details. If the problem persists please contact litigation@hmrcloancharge.info.
+                                We were unable to take your payment. The error was: <strong><span id="paymentDeclinedErrorMessage"></span></strong>. Please try again or use alternate card details.<br/><br/>
+                                If the problem persists please contact litigation@hmrcloancharge.info.
+                            </div>
+                            <div class="col-md-1 col-sm-1 pull-right">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="alert" class="alert alert-danger alert-dismissible" id="validationErrorSection" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-1 col-sm-2">
+                                <i class="fa fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                            <div class="col-md-10 col-sm-9">
+                                We were unable to take your payment. The error was: <strong><span id="validationErrorMessage"></span></strong>.<br/><br/>
+                                If the problem persists please contact litigation@hmrcloancharge.info.
                             </div>
                             <div class="col-md-1 col-sm-1 pull-right">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -162,7 +182,7 @@
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
                                                     Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above.<br/><br/>
-                                                    Minimum payment for a Contribution Agreement is £1000.
+                                                    Minimum payment for a Contribution Agreement is £<span id="contributionAgreementMinimumAmountGbp"></span>.
                                                 </div>
                                             </div>
                                         </div>
@@ -311,6 +331,7 @@
 
             $(function () {
                 $("input[name=contributionTypeRadio]").change(function() {
+                    $("#contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
                     $("#payment-form").validate();
                     if ($("#existingLcagAccountAnonymous").prop("checked") || this.value == 'DONATION') {
                         $("#amount").rules("remove");
@@ -320,8 +341,9 @@
                         });
                         $("#contributionAgreementInfoSection").hide();
                         $("#donationInfoSection").show();
+                        $("#payment-form").validate().element("input[name=contributionTypeRadio]");
                     } else {
-                        $("#amount").rules("add", { min: 1000 });
+                        $("#amount").rules("add", { min: lcag.Common.config.contributionAgreementMinimumAmountGbp });
                         $("#contributionAgreementInfoSection").show();
                         $("#donationInfoSection").hide();
                     }
@@ -361,12 +383,19 @@
                         method: "GET",
                         dataType: "json",
                         complete: function(response, status) {
-                            console.log(response);
                             if (status == "success") {
                                 payment = response.responseJSON;
 
+                                console.log("payment", payment);
+
                                 if (payment.paymentStatus == "DECLINED" || payment.paymentStatus == "UNKNOWN_ERROR") {
                                     $("#paymentDeclinedSection").show();
+                                    $("#paymentDeclinedErrorMessage").text(payment.errorDescription);
+                                }
+
+                                if (payment.paymentStatus == "VALIDATION_ERROR") {
+                                    $("#validationErrorSection").show();
+                                    $("#validationErrorMessage").text(payment.errorDescription);
                                 }
                             }
                         }

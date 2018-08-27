@@ -3,7 +3,6 @@ package uk.co.novinet.service;
 import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import uk.co.novinet.rest.PaymentType;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +23,11 @@ import java.util.Map;
 import static java.lang.String.valueOf;
 import static org.apache.commons.beanutils.PropertyUtils.describe;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static uk.co.novinet.service.PersistenceUtils.contributionsTableName;
-import static uk.co.novinet.service.PersistenceUtils.dateFromMyBbRow;
+import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class PaymentService {
+    private static final long REFERENCE_SEED = 90000L;
     private static final int EMAIL_NOT_SENT = 0;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
@@ -58,20 +58,25 @@ public class PaymentService {
             LOGGER.info("Charge: {}", charge);
 
             if (!"authorized".equals(charge.getOutcome().getType())) {
-                memberService.updateFfcContributionStatus(payment, PaymentStatus.DECLINED);
+                updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
                 throw new CardDeclinedException();
             }
 
-            memberService.updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED);
+            updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
         } catch (Exception e) {
             if (e instanceof CardException) {
-                if ("card_declined".equals(((CardException) e).getCode())) {
-                    memberService.updateFfcContributionStatus(payment, PaymentStatus.DECLINED);
+                String errorCode = ((CardException) e).getCode();
+                if ("card_declined".equals(errorCode)) {
+                    updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
                 } else {
-                    memberService.updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR);
+                    updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
                 }
+            } else {
+                updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
             }
+
             LOGGER.error("An error occurred trying to make the payment: {}", payment);
+
             throw new RuntimeException(e);
         }
     }
@@ -86,6 +91,73 @@ public class PaymentService {
         });
 
         return result;
+    }
+
+    public Payment createFfcContribution(Payment payment) {
+        LOGGER.info("Going to create new contribution for payment: {}", payment);
+
+        Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
+
+        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `guid`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        LOGGER.info("Going to execute insert sql: {}", insertSql);
+
+        int result = jdbcTemplate.update(insertSql,
+                nextAvailableId,
+                payment.getUserId(),
+                payment.getUsername(),
+                payment.getHash(),
+                payment.getMembershipToken(),
+                payment.getFirstName(),
+                payment.getLastName(),
+                payment.getEmailAddress(),
+                payment.getAmount(),
+                unixTime(Instant.now()),
+                payment.getPaymentType().toString(),
+                payment.getContributionType().toString(),
+                payment.getStripeToken(),
+                PaymentStatus.NEW.toString(),
+                buildReference(nextAvailableId),
+                payment.getGuid()
+        );
+
+        LOGGER.info("Insertion result: {}", result);
+
+        payment.setId(nextAvailableId);
+
+        return payment;
+    }
+
+    public void updateFfcContributionStatus(Payment payment, PaymentStatus paymentStatus, String errorDescription) {
+        LOGGER.info("Going to update contribution: {} payment status to : {}", payment, paymentStatus);
+
+        String updateSql = "update " + contributionsTableName() + " set `status` = ?, `error_description` = ? where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+                updateSql,
+                paymentStatus.toString(),
+                errorDescription,
+                payment.getId()
+        );
+
+        LOGGER.info("Update result: {}", result);
+    }
+
+    private String buildReference(Long nextAvailableId) {
+        return "LCAGFFC" + (REFERENCE_SEED + nextAvailableId);
+    }
+
+    public void markContributionEmailSent(Payment payment) {
+        LOGGER.info("Going to mark email sent for contribution: {}", payment);
+        String updateSql = "update " + contributionsTableName() + " set `email_sent` = 1 where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(updateSql, payment.getId());
+
+        LOGGER.info("Update result: {}", result);
     }
 
     public List<Payment> getFfcContributionsAwaitingEmails() {
@@ -115,6 +187,7 @@ public class PaymentService {
                 dateFromMyBbRow(rs, "date"),
                 rs.getString("stripe_token"),
                 PaymentStatus.valueOf(rs.getString("status")),
+                rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
                 ContributionType.valueOf(rs.getString("contribution_type")),
                 rs.getString("guid")

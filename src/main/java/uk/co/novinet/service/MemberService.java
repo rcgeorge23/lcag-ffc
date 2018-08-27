@@ -23,7 +23,6 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
-    private static final long REFERENCE_SEED = 90000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
 
     @Autowired
@@ -311,65 +310,5 @@ public class MemberService {
         return nameParts.stream().collect(joining(" "));
     }
 
-    public Payment createFfcContribution(Payment payment) {
-        LOGGER.info("Going to create new contribution for payment: {}", payment);
 
-        Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
-
-        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `guid`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
-        LOGGER.info("Going to execute insert sql: {}", insertSql);
-
-        int result = jdbcTemplate.update(insertSql,
-                nextAvailableId,
-                payment.getUserId(),
-                payment.getUsername(),
-                payment.getHash(),
-                payment.getMembershipToken(),
-                payment.getFirstName(),
-                payment.getLastName(),
-                payment.getEmailAddress(),
-                payment.getAmount(),
-                unixTime(Instant.now()),
-                payment.getPaymentType().toString(),
-                payment.getContributionType().toString(),
-                payment.getStripeToken(),
-                PaymentStatus.NEW.toString(),
-                buildReference(nextAvailableId),
-                payment.getGuid()
-            );
-
-        LOGGER.info("Insertion result: {}", result);
-
-        payment.setId(nextAvailableId);
-
-        return payment;
-    }
-
-    public void updateFfcContributionStatus(Payment payment, PaymentStatus paymentStatus) {
-        LOGGER.info("Going to update contribution: {} payment status to : {}", payment, paymentStatus);
-
-        String updateSql = "update " + contributionsTableName() + " set `status` = ? where id = ?;";
-
-        LOGGER.info("Going to execute update sql: {}", updateSql);
-
-        int result = jdbcTemplate.update(updateSql, paymentStatus.toString(), payment.getId());
-
-        LOGGER.info("Update result: {}", result);
-    }
-
-    private String buildReference(Long nextAvailableId) {
-        return "LCAGFFC" + (REFERENCE_SEED + nextAvailableId);
-    }
-
-    public void markContributionEmailSent(Payment payment) {
-        LOGGER.info("Going to mark email sent for contribution: {}", payment);
-        String updateSql = "update " + contributionsTableName() + " set `email_sent` = 1 where id = ?;";
-
-        LOGGER.info("Going to execute update sql: {}", updateSql);
-
-        int result = jdbcTemplate.update(updateSql, payment.getId());
-
-        LOGGER.info("Update result: {}", result);
-    }
 }

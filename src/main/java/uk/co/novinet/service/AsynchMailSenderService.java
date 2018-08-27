@@ -92,7 +92,7 @@ public class AsynchMailSenderService {
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
-        memberService.markContributionEmailSent(payment);
+        paymentService.markContributionEmailSent(payment);
         LOGGER.info("Email successfully sent to new ffc contributor {}", payment);
     }
 

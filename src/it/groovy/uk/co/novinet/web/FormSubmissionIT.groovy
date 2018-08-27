@@ -198,6 +198,7 @@ class FormSubmissionIT extends GebSpec {
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
             waitFor { at ThankYouPage }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
         then: "i land on the thank you page and i receive a confirmation email"
@@ -211,111 +212,5 @@ class FormSubmissionIT extends GebSpec {
             waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
     }
-
-//
-//    def "claim participant form cannot be submitted when fields are blank"() {
-//        given:
-//            go "http://localhost:8484?token=claim_1"
-//            waitFor { at LcagFfcFormPage }
-//            firstNameInput.value("")
-//            lastNameInput.value("")
-//            emailAddressInput.value("")
-//
-//        when:
-//            submitButton.click()
-//
-//        then:
-//            waitFor { at LcagFfcFormPage }
-//            waitFor { titleError.displayed }
-//            assert titleError.displayed == true
-//            assert firstNameError.displayed == true
-//            assert lastNameError.displayed == true
-//            assert emailAddressError.displayed == true
-//            assert addressLine1Error.displayed == true
-//            assert addressLine2Error.present == false
-//            assert cityError.displayed == true
-//            assert postcodeError.displayed == true
-//            assert phoneNumberError.displayed == true
-//            assert countryError.displayed == true
-//            assert canShowWrittenEvidenceError.displayed == true
-//            assert schemeDetailsError.displayed == true
-//            assert schemeAdvisorDetailsError.displayed == true
-//            assert additionalInformationError.present == false
-//    }
-//
-//    def "claim participant form can be submitted when all mandatory fields are supplied"() {
-//        given:
-//            assert getClaimRows().size() == 0
-//            go "http://localhost:8484?token=claim_1"
-//            waitFor { at LcagFfcFormPage }
-//            titleInput.value("title")
-//            firstNameInput.value("firstName")
-//            lastNameInput.value("lastName")
-//            emailAddressInput.value("email@address.com")
-//            addressLine1Input.value("addressLine1")
-//            addressLine2Input.value("addressLine2")
-//            cityInput.value("city")
-//            postcodeInput.value("postcode")
-//            countryInput.value("country")
-//            phoneNumberInput.value("phoneNumber")
-//            canShowWrittenEvidenceYes.click()
-//            schemeDetailsInput.value("schemeDetails")
-//            schemeAdvisorDetailsInput.value("schemeAdvisorDetails")
-//            additionalInformationInput.value("additionalInformation")
-//
-//        when:
-//            submitButton.click()
-//
-//        then:
-//            waitFor { at ThankYouPage }
-//            assert getClaimRows().get(0).title == "title"
-//            assert getClaimRows().get(0).firstName == "firstName"
-//            assert getClaimRows().get(0).lastName == "lastName"
-//            assert getClaimRows().get(0).emailAddress == "email@address.com"
-//            assert getClaimRows().get(0).addressLine1 == "addressLine1"
-//            assert getClaimRows().get(0).addressLine2 == "addressLine2"
-//            assert getClaimRows().get(0).city == "city"
-//            assert getClaimRows().get(0).postcode == "postcode"
-//            assert getClaimRows().get(0).country == "country"
-//            assert getClaimRows().get(0).phoneNumber == "phoneNumber"
-//            assert getClaimRows().get(0).canShowWrittenEvidence == "yes"
-//            assert getClaimRows().get(0).schemeDetails == "schemeDetails"
-//            assert getClaimRows().get(0).schemeAdvisorDetails == "schemeAdvisorDetails"
-//            assert getClaimRows().get(0).additionalInformation == "additionalInformation"
-//            assert getUserRows().get(0).hasCompletedClaimParticipantForm == true
-//            assert getUserRows().get(0).hasBeenSentClaimConfirmationEmail == true
-//    }
-//
-//    def "landing page is thank you page when already submitted"() {
-//        given:
-//            assert getClaimRows().size() == 0
-//            runSqlUpdate("update `i7b0_users` set " +
-//                    "has_completed_claim_participant_form = '" + 1 + "' " +
-//                    "where uid = 1"
-//            )
-//
-//        when:
-//            go "http://localhost:8484?token=claim_1"
-//            waitFor { at ThankYouPage }
-//
-//        then:
-//            at ThankYouPage
-//    }
-//
-//    def "landing page is claim participant form page when has submitted membership form"() {
-//        given:
-//            assert getClaimRows().size() == 0
-//            runSqlUpdate("update `i7b0_users` set " +
-//                    "has_completed_membership_form = '" + 1 + "' " +
-//                    "where uid = 1"
-//            )
-//
-//        when:
-//            go "http://localhost:8484?token=claim_1"
-//            waitFor { at LcagFfcFormPage }
-//
-//        then:
-//            at LcagFfcFormPage
-//    }
 
 }

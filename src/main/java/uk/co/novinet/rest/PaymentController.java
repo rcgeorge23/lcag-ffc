@@ -30,10 +30,16 @@ public class PaymentController {
     @Value("${publishableStripeApiKey}")
     private String publishableStripeApiKey;
 
+    @Value("${contributionAgreementMinimumAmountGbp}")
+    private String contributionAgreementMinimumAmountGbp;
+
     @CrossOrigin
-    @GetMapping(path = "/publicStripeKey")
-    public Map<String, String> publicStripeKey() {
-        return new HashMap<String, String>() {{ put("key", publishableStripeApiKey); }};
+    @GetMapping(path = "/config")
+    public Map<String, String> config() {
+        return new HashMap<String, String>() {{
+            put("key", publishableStripeApiKey);
+            put("contributionAgreementMinimumAmountGbp", contributionAgreementMinimumAmountGbp);
+        }};
     }
 
     @CrossOrigin
