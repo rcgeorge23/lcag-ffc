@@ -18,6 +18,13 @@ class FormSubmissionIT extends GebSpec {
     public static final String AUTHORIZED_CARD = "4242424242424242"
     public static final String DECLINED_CARD = "4000000000000002"
 
+    //TESTS TO ADD:
+    //Check that lcag ffc contributor group is added to profile of existing member
+    //Check that lcag ffc contributor group is added to profile of newly created member
+    //Server side validation
+    //Client side validation combinations
+    //Re-populating form after submission when error occurs
+
     def setup() {
         TestUtils.setupDatabaseSchema()
 
