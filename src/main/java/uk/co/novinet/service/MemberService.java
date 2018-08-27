@@ -24,6 +24,7 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 @Service
 public class MemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
+    private static final String LCAG_FFC_CONTRIBUTOR_GROUP = "9";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -174,7 +175,7 @@ public class MemberService {
                     "`referrer`, `referrals`, `reputation`, `regip`, `lastip`, `language`, `timeonline`, `showcodebuttons`, `totalpms`, `unreadpms`, `warningpoints`, `moderateposts`, `moderationtime`, " +
                     "`suspendposting`, `suspensiontime`, `suspendsignature`, `suspendsigtime`, `coppauser`, `classicpostbit`, `loginattempts`, `usernotes`, `sourceeditor`, `name`, `token`, `has_completed_membership_form`, `claim_token`, " +
                     "`mp_name`, `mp_constituency`, `mp_party`, `mp_engaged`, `mp_sympathetic`, `schemes`, `industry`, `how_did_you_hear_about_lcag`, `member_of_big_group`, `big_group_username`) " +
-                    "VALUES (?, ?, ?, ?, 'lvhLksjhHGcZIWgtlwNTJNr3bjxzCE2qgZNX6SBTBPbuSLx21u', ?, 0, 0, '', '', '', 8, '', 0, '', ?, ?, ?, 0, '', '0', '', '', '', '', '', " +
+                    "VALUES (?, ?, ?, ?, 'lvhLksjhHGcZIWgtlwNTJNr3bjxzCE2qgZNX6SBTBPbuSLx21u', ?, 0, 0, '', '', '', 8, ?, 0, '', ?, ?, ?, 0, '', '0', '', '', '', '', '', " +
                     "'all', '', 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 'linear', 1, 1, 1, 1, 1, 1, 0, 0, 0, '', '', '', 0, 0, '', '', 0, 0, 0, '0', '', '', '', 0, 0, 0, '', '', '', 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
                     "0, 0, 1, '', 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -186,6 +187,7 @@ public class MemberService {
                     member.getPasswordDetails().getPasswordHash(),
                     member.getPasswordDetails().getSalt(),
                     member.getEmailAddress(),
+                    LCAG_FFC_CONTRIBUTOR_GROUP,
                     unixTime(member.getRegistrationDate()),
                     0L,
                     0L,

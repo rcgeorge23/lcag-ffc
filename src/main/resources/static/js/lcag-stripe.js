@@ -52,7 +52,7 @@
               // Inform the user if there was an error.
               var errorElement = document.getElementById('card-errors');
               errorElement.textContent = result.error.message;
-            } else {
+            } else if ($("#payment-form").valid()) {
               // Send the token to your server.
               // Insert the token ID into the form so it gets submitted to the server
               var form = document.getElementById('payment-form');
