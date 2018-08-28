@@ -11,7 +11,7 @@ class LcagFfcFormPage extends Page {
     static content = {
         paymentDeclinedSection { $("#paymentDeclinedSection") }
         termsAndConditionsSection { $("#termsAndConditionsSection") }
-        acceptTermsAndConditionsCheckbox { $("#acceptTermsAndConditions") }
+        acceptTermsAndConditionsButton { $("#acceptTermsAndConditions") }
         paymentFormSection { $("#paymentFormSection") }
         newLcagJoinerInfoSection { $("#newLcagJoinerInfoSection") }
 

@@ -45,7 +45,7 @@ class FormSubmissionIT extends GebSpec {
             verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsCheckbox.click()
+            acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
             verifyInitialPaymentFormQuestionsDisplayed(browser)
@@ -77,7 +77,7 @@ class FormSubmissionIT extends GebSpec {
             verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsCheckbox.click()
+            acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
             verifyInitialPaymentFormQuestionsDisplayed(browser)
@@ -110,7 +110,7 @@ class FormSubmissionIT extends GebSpec {
             verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsCheckbox.click()
+            acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
             verifyInitialPaymentFormQuestionsDisplayed(browser)
@@ -147,7 +147,7 @@ class FormSubmissionIT extends GebSpec {
             verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsCheckbox.click()
+            acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
             verifyInitialPaymentFormQuestionsDisplayed(browser)
@@ -185,7 +185,7 @@ class FormSubmissionIT extends GebSpec {
             verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsCheckbox.click()
+            acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
             verifyInitialPaymentFormQuestionsDisplayed(browser)
