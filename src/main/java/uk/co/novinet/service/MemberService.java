@@ -313,4 +313,19 @@ public class MemberService {
     }
 
 
+    public void assignLcagFfcAdditionalGroup(Member member) {
+        LOGGER.info("Going to assign member to LCAG FFC forum group: {}", member);
+
+        String updateSql = "update " + usersTableName() + " set `additionalgroups` = ? where uid = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+                updateSql,
+                LCAG_FFC_CONTRIBUTOR_GROUP,
+                member.getId()
+        );
+
+        LOGGER.info("Update result: {}", result);
+    }
 }

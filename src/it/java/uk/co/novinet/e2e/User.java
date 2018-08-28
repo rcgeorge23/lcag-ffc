@@ -20,6 +20,8 @@ public class User {
     private Boolean hasCompletedClaimParticipantForm;
     private Boolean hasBeenSentClaimConfirmationEmail;
     private String membershipToken;
+    private String group;
+    private String additionalGroups;
 
     public User(
             int id,
@@ -38,7 +40,9 @@ public class User {
             String bigGroupUsername,
             Boolean hasCompletedClaimParticipantForm,
             Boolean hasBeenSentClaimConfirmationEmail,
-            String membershipToken) {
+            String membershipToken,
+            String group,
+            String additionalGroups) {
         this.id = id;
         this.username = username;
         this.emailAddress = emailAddress;
@@ -56,6 +60,8 @@ public class User {
         this.hasCompletedClaimParticipantForm = hasCompletedClaimParticipantForm;
         this.hasBeenSentClaimConfirmationEmail = hasBeenSentClaimConfirmationEmail;
         this.membershipToken = membershipToken;
+        this.group = group;
+        this.additionalGroups = additionalGroups;
     }
 
     public int getId() {
@@ -142,5 +148,21 @@ public class User {
 
     public void setMembershipToken(String membershipToken) {
         this.membershipToken = membershipToken;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getAdditionalGroups() {
+        return additionalGroups;
+    }
+
+    public void setAdditionalGroups(String additionalGroups) {
+        this.additionalGroups = additionalGroups;
     }
 }

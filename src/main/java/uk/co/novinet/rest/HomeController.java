@@ -47,31 +47,48 @@ public class HomeController {
             LOGGER.info("model: {}", model);
             LOGGER.info("payment: {}", payment);
 
-            Member member = null;
-            MemberCreationResult memberCreationResult = null;
-
-            switch (payment.getPaymentType()) {
-                case EXISTING_LCAG_MEMBER:
-                    member = memberService.findMemberByUsername(payment.getUsername());
-                    break;
-                case NEW_LCAG_MEMBER:
-                    memberCreationResult = memberService.createForumUserIfNecessary(payment);
-                    member = memberCreationResult.getMember();
-                    break;
-            }
-
-            memberService.fillInBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
-            paymentService.createFfcContribution(payment);
-
-            validatePayment(payment);
+            Member member = prePaymentActions(payment);
 
             paymentService.executePayment(payment);
+
+            postPaymentActions(payment, member);
+
             model.addAttribute("guid", payment.getGuid());
             return new ModelAndView("redirect:/thankYou", model);
         } catch (Exception e) {
             model.addAttribute("guid", payment == null ? null : payment.getGuid());
             LOGGER.error("Unable to make payment", e);
             return new ModelAndView("redirect:/", model);
+        }
+    }
+
+    private Member prePaymentActions(Payment payment) throws LcagValidationException {
+        Member member = null;
+        MemberCreationResult memberCreationResult = null;
+
+        switch (payment.getPaymentType()) {
+            case EXISTING_LCAG_MEMBER:
+                member = memberService.findMemberByUsername(payment.getUsername());
+                break;
+            case NEW_LCAG_MEMBER:
+                memberCreationResult = memberService.createForumUserIfNecessary(payment);
+                member = memberCreationResult.getMember();
+                break;
+        }
+
+        memberService.fillInBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
+        paymentService.createFfcContribution(payment);
+
+        validatePayment(payment);
+
+        return member;
+    }
+
+    private void postPaymentActions(Payment payment, Member member) {
+        switch (payment.getPaymentType()) {
+            case EXISTING_LCAG_MEMBER:
+                memberService.assignLcagFfcAdditionalGroup(member);
+                break;
         }
     }
 

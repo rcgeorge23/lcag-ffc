@@ -139,8 +139,9 @@ public class TestUtils {
                         resultSet.getString("big_group_username"),
                         resultSet.getBoolean("has_completed_claim_participant_form"),
                         resultSet.getBoolean("has_been_sent_claim_confirmation_email"),
-                        resultSet.getString("token")
-                    )
+                        resultSet.getString("token"),
+                        resultSet.getString("usergroup"),
+                        resultSet.getString("additionalgroups"))
                 );
             }
 
