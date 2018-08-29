@@ -40,6 +40,11 @@ public class HomeController {
         return "thankYou";
     }
 
+    @GetMapping("/invoice")
+    public String getInvoice() {
+        return "invoice";
+    }
+
     @CrossOrigin
     @PostMapping(path = "/submit")
     public ModelAndView submit(ModelMap model, Payment payment) {

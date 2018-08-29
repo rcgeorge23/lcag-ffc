@@ -15,6 +15,8 @@
     <!--docker login &#45;&#45;username=dockernovinet-->
     <!-- mvn clean package install dockerfile:build-->
 
+    <packaging>war</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -47,7 +49,7 @@
                 <configuration>
                     <repository>${docker.image.prefix}/${project.artifactId}</repository>
                     <buildArgs>
-                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                        <WAR_FILE>target/${project.build.finalName}.war</WAR_FILE>
                     </buildArgs>
                 </configuration>
             </plugin>
@@ -201,9 +203,24 @@
             <version>2.0.1.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>2.0.1.RELEASE</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>8.5.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>4.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>3.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
