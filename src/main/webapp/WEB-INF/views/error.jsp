@@ -1,5 +1,6 @@
-<!DOCTYPE HTML>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -10,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
-    <title>Loan Charge Action Group | Token Not Found</title>
+    <title>Loan Charge Action Group | An Error Occurred</title>
 </head>
     <body>
         <nav class="navbar navbar-default">
@@ -28,10 +29,13 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
 
-                        <div class="panel-heading">Member not found<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                        <div class="panel-heading">Error<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
 
                         <div class="panel-body">
-                            <p>Sorry, we couldn't find this member account.</p>
+                            <p>
+                                Sorry, an error occurred while trying to save your claim details - probably because we have exceeded our hourly quota.
+                                Please retry in an hour. If the problem persists then please contact <a href="mailto:claim@hmrcloancharge.info">claim@hmrcloancharge.info</a>.
+                            </p>
                         </div>
                     </div>
                 </div>
