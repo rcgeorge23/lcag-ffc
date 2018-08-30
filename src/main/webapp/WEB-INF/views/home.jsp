@@ -219,11 +219,11 @@
                                         </div>
                                     </div>
                                     <div id="paymentFieldsSection" class="form-group" style="display: none;">
-                                        <label for="amount">Amount:</label>
+                                        <label for="grossAmount">Amount:</label>
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <div class="input-group-addon">£</div>
-                                                <input type="text" name="amount" class="form-control" id="amount" placeholder="Please enter the amount you wish to donate" required />
+                                                <input type="text" name="grossAmount" class="form-control" id="grossAmount" placeholder="Please enter the amount you wish to donate" required />
                                             </div>
                                         </div>
 
@@ -329,8 +329,8 @@
                     $("#contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
                     $("#payment-form").validate();
                     if ($("#existingLcagAccountAnonymous").prop("checked") || this.value == 'DONATION') {
-                        $("#amount").rules("remove");
-                        $("#amount").rules("add", {
+                        $("#grossAmount").rules("remove");
+                        $("#grossAmount").rules("add", {
                             required: true,
                             currency: true
                         });
@@ -338,13 +338,13 @@
                         $("#donationInfoSection").show();
                         $("#payment-form").validate().element("input[name=contributionTypeRadio]");
                     } else {
-                        $("#amount").rules("add", { min: lcag.Common.config.contributionAgreementMinimumAmountGbp });
+                        $("#grossAmount").rules("add", { min: lcag.Common.config.contributionAgreementMinimumAmountGbp });
                         $("#contributionAgreementInfoSection").show();
                         $("#donationInfoSection").hide();
                     }
 
-                    if ($("input[name=amount]").val() != null && $("input[name=amount]").val() != "") {
-                        $("#payment-form").validate().element("input[name=amount]");
+                    if ($("input[name=grossAmount]").val() != null && $("input[name=grossAmount]").val() != "") {
+                        $("#payment-form").validate().element("input[name=grossAmount]");
                     }
                 });
 
@@ -404,7 +404,7 @@
 
                 $("#payment-form").validate({
                     rules: {
-                        amount: {
+                        grossAmount: {
                             required: true,
                             currency: true
                         },

@@ -50,7 +50,7 @@ public class PaymentService {
 
             Map<String, Object> chargeMap = new HashMap<>();
 
-            chargeMap.put("amount", payment.getAmount().multiply(BigDecimal.valueOf(100)).longValue());
+            chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
             chargeMap.put("metadata", filterEmptyStringValues(describe(payment)));
             chargeMap.put("source", payment.getStripeToken()); // obtained via Stripe.js
@@ -98,7 +98,10 @@ public class PaymentService {
 
         Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
 
-        String insertSql = "insert into " + contributionsTableName() + " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `amount`, `date`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `guid`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String insertSql = "insert into " + contributionsTableName() +
+                " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, `net_amount`, `vat_rate`, `vat_amount`, " +
+                "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -111,13 +114,18 @@ public class PaymentService {
                 payment.getFirstName(),
                 payment.getLastName(),
                 payment.getEmailAddress(),
-                payment.getAmount(),
+                payment.getGrossAmount(),
+                payment.getNetAmount(),
+                payment.getVatRate(),
+                payment.getVatAmount(),
+                unixTime(Instant.now()),
                 unixTime(Instant.now()),
                 payment.getPaymentType().toString(),
                 payment.getContributionType().toString(),
                 payment.getStripeToken(),
                 PaymentStatus.NEW.toString(),
                 buildReference(nextAvailableId),
+                "Card",
                 payment.getGuid()
         );
 
@@ -183,12 +191,17 @@ public class PaymentService {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email_address"),
-                rs.getBigDecimal("amount"),
-                dateFromMyBbRow(rs, "date"),
+                rs.getBigDecimal("gross_amount"),
+                rs.getBigDecimal("net_amount"),
+                rs.getBigDecimal("vat_rate"),
+                rs.getBigDecimal("vat_amount"),
+                dateFromMyBbRow(rs, "invoice_created"),
+                dateFromMyBbRow(rs, "payment_received"),
                 rs.getString("stripe_token"),
                 PaymentStatus.valueOf(rs.getString("status")),
                 rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
+                rs.getString("payment_method"),
                 ContributionType.valueOf(rs.getString("contribution_type")),
                 rs.getString("guid")
         );

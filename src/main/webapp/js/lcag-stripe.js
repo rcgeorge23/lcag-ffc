@@ -66,6 +66,8 @@
               form.appendChild(hiddenInput);
               // Submit the form
               form.submit();
+
+              $("#submitButton").attr("disabled", "disabled");
             }
           });
         });

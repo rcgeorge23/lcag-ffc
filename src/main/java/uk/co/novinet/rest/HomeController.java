@@ -9,9 +9,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.novinet.service.*;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -27,6 +29,9 @@ public class HomeController {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private InvoicePdfRendererService invoicePdfRendererService;
+
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
 
@@ -41,8 +46,24 @@ public class HomeController {
     }
 
     @GetMapping("/invoice")
-    public String getInvoice() {
+    public String getInvoice(ModelMap model, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return "invoice";
+        }
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+
         return "invoice";
+    }
+
+    @GetMapping("/invoiceExport")
+    public byte[] exportInvoice(ModelMap model, @RequestParam("guid") String guid) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        invoicePdfRendererService.renderPdf("/invoice?guid=" + guid, out);
+        return out.toByteArray();
     }
 
     @CrossOrigin
@@ -81,7 +102,7 @@ public class HomeController {
                 break;
         }
 
-        memberService.fillInBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
+        memberService.fillInPaymentBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
         paymentService.createFfcContribution(payment);
 
         validatePayment(payment);
@@ -98,14 +119,14 @@ public class HomeController {
     }
 
     void validatePayment(Payment payment) throws LcagValidationException {
-        if (payment.getAmount() == null) {
+        if (payment.getGrossAmount() == null) {
             String message = "Amount is mandatory";
             paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
             throw new LcagValidationException(message);
         }
 
         if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
-            if (payment.getAmount() == null || payment.getAmount().compareTo(new BigDecimal(contributionAgreementMinimumAmountGbp)) < 0) {
+            if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(contributionAgreementMinimumAmountGbp)) < 0) {
                 String message = "Contribution Agreement amount must be at least £" + contributionAgreementMinimumAmountGbp;
                 paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
                 throw new LcagValidationException(message);

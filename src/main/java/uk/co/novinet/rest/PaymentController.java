@@ -33,12 +33,16 @@ public class PaymentController {
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
 
+    @Value("${vatRate}")
+    private String vatRate;
+
     @CrossOrigin
     @GetMapping(path = "/config")
     public Map<String, String> config() {
         return new HashMap<String, String>() {{
             put("key", publishableStripeApiKey);
             put("contributionAgreementMinimumAmountGbp", contributionAgreementMinimumAmountGbp);
+            put("vatRate", vatRate);
         }};
     }
 

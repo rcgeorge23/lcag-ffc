@@ -32,7 +32,7 @@ class LcagFfcFormPage extends Page {
         lastNameInput { $("#lastName") }
         emailAddressInput { $("#emailAddress") }
 
-        amountInput { $("#amount") }
+        amountInput { $("#grossAmount") }
         creditCardInput { $("input[name=cardnumber]") }
         expiryDateInput { $("input[name=exp-date]") }
         c2vInput { $("input[name=cvc]") }

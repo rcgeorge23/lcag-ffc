@@ -114,7 +114,7 @@ public class AsynchMailSenderService {
                 .replace("$NAME", payment.getFirstName() + " " + payment.getLastName())
                 .replace("$USERNAME", payment.getUsername())
                 .replace("$PASSWORD", passwordFromHash(payment))
-                .replace("$AMOUNT", DecimalFormat.getCurrencyInstance(Locale.UK).format(payment.getAmount()))
+                .replace("$AMOUNT", DecimalFormat.getCurrencyInstance(Locale.UK).format(payment.getGrossAmount()))
                 .replace("$TOKEN", payment.getMembershipToken() == null ? "" : payment.getMembershipToken())
                 .replace("$PAYMENT_REFERENCE", payment.getReference());
     }

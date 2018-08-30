@@ -1,11 +1,16 @@
 package uk.co.novinet.service;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.format.number.CurrencyStyleFormatter;
 import uk.co.novinet.rest.PaymentStatus;
 import uk.co.novinet.rest.PaymentType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Payment {
 
@@ -18,12 +23,17 @@ public class Payment {
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private BigDecimal amount;
-    private Instant date;
+    private BigDecimal grossAmount;
+    private BigDecimal netAmount;
+    private BigDecimal vatRate;
+    private BigDecimal vatAmount;
+    private Instant invoiceCreated;
+    private Instant paymentReceived;
     private String stripeToken;
     private PaymentStatus paymentStatus = PaymentStatus.NEW;
     private String errorDescription;
     private PaymentType paymentType;
+    private String paymentMethod;
     private ContributionType contributionType;
     private String guid;
 
@@ -39,12 +49,17 @@ public class Payment {
             String firstName,
             String lastName,
             String emailAddress,
-            BigDecimal amount,
-            Instant date,
+            BigDecimal grossAmount,
+            BigDecimal netAmount,
+            BigDecimal vatRate,
+            BigDecimal vatAmount,
+            Instant invoiceCreated,
+            Instant paymentReceived,
             String stripeToken,
             PaymentStatus paymentStatus,
             String errorDescription,
             PaymentType paymentType,
+            String paymentMethod,
             ContributionType contributionType,
             String guid) {
         this.id = id;
@@ -56,12 +71,17 @@ public class Payment {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
-        this.amount = amount;
-        this.date = date;
+        this.grossAmount = grossAmount;
+        this.netAmount = netAmount;
+        this.vatRate = vatRate;
+        this.vatAmount = vatAmount;
+        this.invoiceCreated = invoiceCreated;
+        this.paymentReceived = paymentReceived;
         this.stripeToken = stripeToken;
         this.paymentStatus = paymentStatus;
         this.errorDescription = errorDescription;
         this.paymentType = paymentType;
+        this.paymentMethod = paymentMethod;
         this.contributionType = contributionType;
         this.guid = guid;
     }
@@ -106,20 +126,20 @@ public class Payment {
         this.emailAddress = emailAddress;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getGrossAmount() {
+        return grossAmount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setGrossAmount(BigDecimal grossAmount) {
+        this.grossAmount = grossAmount;
     }
 
-    public Instant getDate() {
-        return date;
+    public Instant getInvoiceCreated() {
+        return invoiceCreated;
     }
 
-    public void setDate(Instant date) {
-        this.date = date;
+    public void setInvoiceCreated(Instant invoiceCreated) {
+        this.invoiceCreated = invoiceCreated;
     }
 
     public String getStripeToken() {
@@ -205,5 +225,81 @@ public class Payment {
 
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
+    }
+
+    public String getUiFriendlyInvoiceCreatedDate() {
+        return uiFriendlyDate(invoiceCreated);
+    }
+
+    public String getUiFriendlyPaymentReceivedDate() {
+        return uiFriendlyDate(invoiceCreated);
+    }
+
+    private String uiFriendlyDate(Instant date) {
+        if (date == null) {
+            return "";
+        }
+
+        return DateTimeFormatter.ofPattern("dd MMM yyyy").format(ZonedDateTime.ofInstant(date, ZoneId.of("GMT")));
+    }
+
+    public String getUiFriendlyGrossAmount() {
+        return uiFriendlyMoneyString(grossAmount);
+    }
+
+    public String getUiFriendlyNetAmount() {
+        return uiFriendlyMoneyString(netAmount);
+    }
+
+    public String getUiFriendlyVarAmount() {
+        return uiFriendlyMoneyString(vatAmount);
+    }
+
+    private String uiFriendlyMoneyString(BigDecimal moneyAmount) {
+        if (moneyAmount == null) {
+            return "";
+        }
+
+        return new CurrencyStyleFormatter().print(moneyAmount, Locale.UK);
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public BigDecimal getNetAmount() {
+        return netAmount;
+    }
+
+    public void setNetAmount(BigDecimal netAmount) {
+        this.netAmount = netAmount;
+    }
+
+    public BigDecimal getVatRate() {
+        return vatRate;
+    }
+
+    public void setVatRate(BigDecimal vatRate) {
+        this.vatRate = vatRate;
+    }
+
+    public BigDecimal getVatAmount() {
+        return vatAmount;
+    }
+
+    public void setVatAmount(BigDecimal vatAmount) {
+        this.vatAmount = vatAmount;
+    }
+
+    public Instant getPaymentReceived() {
+        return paymentReceived;
+    }
+
+    public void setPaymentReceived(Instant paymentReceived) {
+        this.paymentReceived = paymentReceived;
     }
 }

@@ -4,12 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.co.novinet.rest.PaymentStatus;
 import uk.co.novinet.rest.PaymentType;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -29,9 +31,14 @@ public class MemberService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Value("${vatRate}")
+    private String vatRate;
+
     private static Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
 
     private static Map<String, Member> memberByEmailCache = new ConcurrentHashMap<>();
+
+    private static Map<Long, Member> memberByIdCache = new ConcurrentHashMap<>();
 
     @Scheduled(initialDelayString = "${refreshMemberCacheInitialDelayMilliseconds}", fixedRateString = "${refreshMemberCacheIntervalMilliseconds}")
     public void refreshMemberCache() {
@@ -40,16 +47,20 @@ public class MemberService {
         for (Member member : members) {
             memberByUsernameCache.put(member.getUsername().toLowerCase(), member);
             memberByEmailCache.put(member.getEmailAddress().toLowerCase(), member);
+            memberByIdCache.put(member.getId(), member);
         }
 
         List<String> usernamesInDb = members.stream().map(member -> member.getUsername().toLowerCase()).collect(Collectors.toList());
         List<String> emailAddressesInDb = members.stream().map(member -> member.getEmailAddress().toLowerCase()).collect(Collectors.toList());
+        List<Long> idsInDb = members.stream().map(Member::getId).collect(Collectors.toList());
 
         Set<String> usernamesInCache = new HashSet<>(memberByUsernameCache.keySet());
         Set<String> emailAddressesInCache = new HashSet<>(memberByEmailCache.keySet());
+        Set<Long> idsInCache = new HashSet<>(memberByIdCache.keySet());
 
         usernamesInCache.removeAll(usernamesInDb);
         emailAddressesInCache.removeAll(emailAddressesInDb);
+        idsInCache.removeAll(idsInDb);
 
         for (String usernameToDelete : usernamesInCache) {
             memberByUsernameCache.remove(usernameToDelete);
@@ -58,10 +69,18 @@ public class MemberService {
         for (String emailToDelete : emailAddressesInCache) {
             memberByEmailCache.remove(emailToDelete);
         }
+
+        for (Long idToDelete : idsInCache) {
+            memberByIdCache.remove(idToDelete);
+        }
     }
 
     public Member findMemberByUsername(String username) {
         return memberByUsernameCache.get(username.toLowerCase());
+    }
+
+    public Member findMemberById(Long id) {
+        return memberByIdCache.get(id);
     }
 
     private Member buildMember(ResultSet rs) throws SQLException {
@@ -256,7 +275,7 @@ public class MemberService {
         return emailAddress.substring(0, emailAddress.indexOf("@"));
     }
 
-    public void fillInBlanks(Payment payment, Member member, boolean memberAlreadyExisted) {
+    public void fillInPaymentBlanks(Payment payment, Member member, boolean memberAlreadyExisted) {
         if (member != null) {
             payment.setMembershipToken(member.getToken());
 
@@ -266,6 +285,10 @@ public class MemberService {
         }
 
         payment.setGuid(guid());
+        BigDecimal vatRate = new BigDecimal(this.vatRate);
+        payment.setVatRate(vatRate);
+        payment.setNetAmount(calculateNetAmount(payment.getGrossAmount(), vatRate));
+        payment.setVatAmount(payment.getGrossAmount().subtract(payment.getNetAmount()));
 
         switch (payment.getPaymentType()) {
             case ANONYMOUS:
@@ -283,6 +306,11 @@ public class MemberService {
                 payment.setUserId(member.getId());
                 return;
         }
+    }
+
+    private BigDecimal calculateNetAmount(BigDecimal grossAmount, BigDecimal vatRate) {
+        BigDecimal vatAsFraction = vatRate.divide(new BigDecimal(100));
+        return grossAmount.divide(new BigDecimal(1).add(vatAsFraction), BigDecimal.ROUND_HALF_EVEN);
     }
 
     private String lastName(String name) {
