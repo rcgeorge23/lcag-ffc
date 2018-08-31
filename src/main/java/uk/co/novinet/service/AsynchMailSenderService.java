@@ -9,15 +9,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeType;
 
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+
+import static java.time.Instant.now;
 
 @Service
 public class AsynchMailSenderService {
@@ -58,6 +66,9 @@ public class AsynchMailSenderService {
     private MemberService memberService;
 
     @Autowired
+    private InvoicePdfRendererService invoicePdfRendererService;
+
+    @Autowired
     private PaymentService paymentService;
 
     @Scheduled(initialDelayString = "${sendEmailsInitialDelayMilliseconds}", fixedRateString = "${sendEmailsIntervalMilliseconds}")
@@ -65,7 +76,7 @@ public class AsynchMailSenderService {
         LOGGER.info("Going to check for emails to send...");
         for (Payment payment : paymentService.getFfcContributionsAwaitingEmails()) {
             try {
-                sendFollowUpEmail(payment);
+                sendPaymentReceiptEmail(payment);
                 Thread.sleep(5000);
             } catch (Exception e) {
                 LOGGER.error("Unable to send email for payment: {}", payment, e);
@@ -74,7 +85,7 @@ public class AsynchMailSenderService {
         LOGGER.info("Going back to sleep.");
     }
 
-    public void sendFollowUpEmail(Payment payment) throws Exception {
+    public void sendPaymentReceiptEmail(Payment payment) throws Exception {
         Email email = new Email();
 
         email.setFromAddress(emailFromName, smtpUsername);
@@ -90,10 +101,18 @@ public class AsynchMailSenderService {
         email.addRecipient(payment.getEmailAddress(), payment.getEmailAddress(), MimeMessage.RecipientType.TO);
         applySubjectAndText(payment, email);
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        invoicePdfRendererService.renderPdf(payment.getGuid(), out);
+        email.addAttachment("lcag-ffc-payment-invoice-" + formattedDate() + ".pdf", out.toByteArray(), "application/pdf");
+
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
         paymentService.markContributionEmailSent(payment);
         LOGGER.info("Email successfully sent to new ffc contributor {}", payment);
+    }
+
+    private String formattedDate() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("UTC")).format(now());
     }
 
     private void applySubjectAndText(Payment payment, Email email) throws IOException {

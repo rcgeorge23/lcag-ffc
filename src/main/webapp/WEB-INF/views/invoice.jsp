@@ -3,7 +3,7 @@
 <html>
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
-        <link rel="stylesheet" href="/css/lcag-invoice.css">
+        <link rel="stylesheet" href="/css/lcag-invoice.css" />
     </head>
     <body>
         <div class="invoice-box">
@@ -13,7 +13,7 @@
                         <table>
                             <tr>
                                 <td class="title">
-                                    <img src="/images/lcag_logo.jpg" style="width:40%; max-width:150px;">
+                                    <img src="/images/lcag_logo_small.jpg" style="max-width:150px;" width="150px;" />
                                 </td>
 
                                 <td>

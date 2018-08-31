@@ -4,15 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.novinet.service.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 
@@ -36,7 +35,7 @@ public class HomeController {
     private String contributionAgreementMinimumAmountGbp;
 
     @GetMapping("/")
-    public String getHome() {
+    public String getHome(HttpServletRequest request) {
         return "home";
     }
 
@@ -59,10 +58,11 @@ public class HomeController {
         return "invoice";
     }
 
-    @GetMapping("/invoiceExport")
-    public byte[] exportInvoice(ModelMap model, @RequestParam("guid") String guid) {
+    @ResponseBody
+    @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
+    public byte[] exportInvoice(ModelMap model, @RequestParam("guid") String guid, HttpServletRequest request) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderPdf("/invoice?guid=" + guid, out);
+        invoicePdfRendererService.renderPdf(guid, out);
         return out.toByteArray();
     }
 

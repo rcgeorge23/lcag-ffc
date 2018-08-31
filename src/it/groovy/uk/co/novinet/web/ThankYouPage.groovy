@@ -10,6 +10,5 @@ class ThankYouPage extends Page {
 
     static content = {
         paymentReference { $("#paymentReference") }
-
     }
 }

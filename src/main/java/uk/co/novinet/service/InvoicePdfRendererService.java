@@ -7,10 +7,20 @@ import java.io.OutputStream;
 
 @Service
 public class InvoicePdfRendererService {
-    public void renderPdf(String url, OutputStream outputStream) {
+    private static String baseUrl;
+
+    public String getBaseUrl() {
+        return InvoicePdfRendererService.baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        InvoicePdfRendererService.baseUrl = baseUrl;
+    }
+
+    public void renderPdf(String guid, OutputStream outputStream) {
         try {
             ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocument(url);
+            renderer.setDocument(baseUrl + "/invoice?guid=" + guid);
             renderer.layout();
             renderer.createPDF(outputStream);
             outputStream.close();

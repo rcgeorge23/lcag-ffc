@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.valueOf;
+import static java.util.Arrays.asList;
 import static org.apache.commons.beanutils.PropertyUtils.describe;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.co.novinet.service.PersistenceUtils.*;
@@ -52,9 +53,11 @@ public class PaymentService {
 
             chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
-            chargeMap.put("metadata", filterEmptyStringValues(describe(payment)));
-            chargeMap.put("source", payment.getStripeToken()); // obtained via Stripe.js
+            chargeMap.put("metadata", filterEmptyStringValues(describe(payment), asList("class")));
+            chargeMap.put("source", payment.getStripeToken());
+
             Charge charge = Charge.create(chargeMap);
+
             LOGGER.info("Charge: {}", charge);
 
             if (!"authorized".equals(charge.getOutcome().getType())) {
@@ -81,11 +84,11 @@ public class PaymentService {
         }
     }
 
-    private Map<String, String> filterEmptyStringValues(Map<String, Object> description) {
+    private Map<String, String> filterEmptyStringValues(Map<String, Object> description, List<String> excludeProperties) {
         Map<String, String> result = new HashMap<>();
 
         description.keySet().stream().forEach(key -> {
-            if (description.get(key) != null && isNotBlank(valueOf(description.get(key)))) {
+            if (!excludeProperties.contains(key) && description.get(key) != null && isNotBlank(valueOf(description.get(key)))) {
                 result.put(key, valueOf(description.get(key)));
             }
         });
