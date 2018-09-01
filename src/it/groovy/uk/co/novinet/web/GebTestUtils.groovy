@@ -180,4 +180,16 @@ class GebTestUtils {
     static boolean verifyNoAttachments(String emailAddress) {
         return getEmails(emailAddress, "Inbox").get(0).getAttachments().size() == 0
     }
+
+    static boolean verifyContributionAgreement(Browser browser, Date date, String name, String addressLine1, String addressLine2, String city, String postalCode, String country, String contributionAmount) {
+        assert browser.page.contributionAgreementDate == new SimpleDateFormat("dd MMM yyyy").format(date)
+        assert browser.page.contributorName == name
+        assert browser.page.addressLine1 == addressLine1
+        assert browser.page.addressLine2 == addressLine2
+        assert browser.page.city == city
+        assert browser.page.postalCode == postalCode
+        assert browser.page.country == country
+        assert browser.page.grossAmount == contributionAmount
+        return true
+    }
 }

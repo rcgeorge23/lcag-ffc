@@ -18,7 +18,7 @@
 
                 <tr class="information">
                     <td colspan="2">
-                        Date: <span id="paymentReceivedDate">${payment.uiFriendlyPaymentReceivedDate}</span><br/><br/>
+                        Date: <span id="contributionAgreementDate">${payment.uiFriendlyPaymentReceivedDate}</span><br/><br/>
 
                         The following agreement is made between<br/><br/>
 
@@ -33,17 +33,17 @@
 
                         And<br/><br/>
 
-                        <strong>${payment.firstName} ${payment.lastName}</strong> (the contributor)<br/><br/>
+                        <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> (the contributor)<br/><br/>
 
-                        ${payment.addressLine1}<br/>
+                        <span id="addressLine1">${payment.addressLine1}</span><br/>
                         <c:if test="${payment.addressLine2 != null && payment.addressLine2 != ''}">
-                            ${payment.addressLine2}<br/>
+                            <span id="addressLine2">${payment.addressLine2}</span><br/>
                         </c:if>
-                        ${payment.city}<br/>
-                        ${payment.postalCode}<br/>
-                        ${payment.country}<br/><br/>
+                        <span id="city">${payment.city}</span><br/>
+                        <span id="postalCode">${payment.postalCode}</span><br/>
+                        <span id="country">${payment.country}</span><br/><br/>
 
-                        LCAG FFC hereby confirms that it has received the following ‘contribution’  from the contributor listed above in the amount of : <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> (including VAT).<br/><br/>
+                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> (including VAT).<br/><br/>
 
                         LCAG FFC agrees to return to the contributor such amounts as may be due under the terms and conditions agreed to at the point of application.<br/><br/>
 

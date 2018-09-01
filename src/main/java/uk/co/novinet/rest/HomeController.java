@@ -74,9 +74,17 @@ public class HomeController {
 
     @ResponseBody
     @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
-    public byte[] exportInvoice(ModelMap model, @RequestParam("guid") String guid, HttpServletRequest request) {
+    public byte[] exportInvoice(@RequestParam("guid") String guid) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderPdf(guid, out);
+        invoicePdfRendererService.renderInvoicePdf(guid, out);
+        return out.toByteArray();
+    }
+
+    @ResponseBody
+    @GetMapping(path = "/contributionAgreementExport", produces = MediaType.APPLICATION_PDF_VALUE)
+    public byte[] exportContributionAgreement(@RequestParam("guid") String guid) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        invoicePdfRendererService.renderContributionAgreementPdf(guid, out);
         return out.toByteArray();
     }
 

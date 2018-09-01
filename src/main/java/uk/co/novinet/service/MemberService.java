@@ -306,10 +306,13 @@ public class MemberService {
                 payment.setUserId(member.getId());
                 return;
             case EXISTING_LCAG_MEMBER:
-                payment.setUsername(member.getUsername());
-                payment.setFirstName(firstName(member.getName()));
-                payment.setLastName(lastName(member.getName()));
-                payment.setEmailAddress(member.getEmailAddress());
+                if (payment.getContributionType() == ContributionType.DONATION) {
+                    // if it's a donation, we won't have this stuff in the payment so get it from the member
+                    payment.setUsername(member.getUsername());
+                    payment.setFirstName(firstName(member.getName()));
+                    payment.setLastName(lastName(member.getName()));
+                    payment.setEmailAddress(member.getEmailAddress());
+                }
                 payment.setUserId(member.getId());
                 return;
         }
