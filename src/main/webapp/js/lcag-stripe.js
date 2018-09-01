@@ -1,7 +1,7 @@
-//var lcag = lcag || {};
-//
-//lcag.Stripe = lcag.Stripe || {
-//    init: function() {
+var lcag = lcag || {};
+
+lcag.Stripe = lcag.Stripe || {
+    init: function() {
         // Create a Stripe client.
         // Custom styling can be passed to options when creating an Element.
         // (Note that this demo uses a wider set of styles than the guide below.)
@@ -71,7 +71,7 @@
                     }
                 });
             });
-//      }
-//}
+      }
+}
 
 

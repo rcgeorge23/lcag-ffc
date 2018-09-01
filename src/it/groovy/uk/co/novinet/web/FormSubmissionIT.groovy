@@ -7,24 +7,21 @@ import uk.co.novinet.service.ContributionType
 import java.text.SimpleDateFormat
 
 import static org.apache.commons.lang3.StringUtils.isBlank
-import static uk.co.novinet.e2e.TestUtils.*
-import static uk.co.novinet.web.GebTestUtils.*
-
 class FormSubmissionIT extends GebSpec {
 
     public static final String AUTHORIZED_CARD = "4242424242424242"
     public static final String DECLINED_CARD = "4000000000000002"
 
     //TESTS TO ADD:
-    //Check that lcag ffc contributor group is added to profile of existing member - DONE
-    //Check that lcag ffc contributor group is added to profile of newly created member - DONE
     //Server side validation
     //Client side validation combinations
     //Re-populating form after submission when error occurs
-    //Donation confirmation email DOES NOT have an invoice attachment
-    //Contribution agreement email DOES have an invoice attachment
     //Add a message to the front end form saying that amount is inclusive of VAT for contribution agreements
     //Add the contribution agreement attachment (with RH's signature)
+    //Check that lcag ffc contributor group is added to profile of existing member - DONE
+    //Check that lcag ffc contributor group is added to profile of newly created member - DONE
+    //Donation confirmation email DOES NOT have an invoice attachment - DONE
+    //Contribution agreement email DOES have an invoice attachment - DONE
 
     def setup() {
         TestUtils.setupDatabaseSchema()
@@ -37,79 +34,79 @@ class FormSubmissionIT extends GebSpec {
 
     def "i can complete the payment flow as an anonymous donor"() {
         given:
-            go "http://localhost:8484"
+        go "http://localhost:8484"
 
         when:
-            waitFor { at LcagFfcFormPage }
+        waitFor { at LcagFfcFormPage }
 
         then:
-            verifyHappyInitialPaymentFormState(browser)
+        verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsButton.click()
+        acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
-            verifyInitialPaymentFormQuestionsDisplayed(browser)
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
-            existingLcagAccountAnonymous.click()
+        existingLcagAccountAnonymous.click()
 
         then: "credit card form is displayed"
-            anonymousPaymentCreditCardFormDisplayed(browser)
+        anonymousPaymentCreditCardFormDisplayed(browser)
 
         and: "contribution agreement fields are not displayed"
-            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+        contributionAgreementAddressFieldsAreDisplayed(browser, false)
 
         when: "i enter valid values and click pay now"
-            amountInput = "10.00"
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
-            payNowButton.click()
+        amountInput = "10.00"
+        enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+        payNowButton.click()
 
         then: "i land on the thank you page"
-            waitFor { at ThankYouPage }
-            waitFor { paymentReference.text() == "LCAGFFC90001" }
+        waitFor { at ThankYouPage }
+        waitFor { paymentReference.text() == "LCAGFFC90001" }
 
         when: "i navigate to the invoice page"
-            go driver.currentUrl.replace("thankYou", "invoice")
-            waitFor { at InvoicePage }
+        go driver.currentUrl.replace("thankYou", "invoice")
+        waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00", "0%", "£0.00", "£10.00")
+        verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00", "0%", "£0.00", "£10.00")
     }
 
     def "anonymous payment, card declined"() {
         given:
-            go "http://localhost:8484"
+        go "http://localhost:8484"
 
         when:
-            waitFor { at LcagFfcFormPage }
+        waitFor { at LcagFfcFormPage }
 
         then:
-            verifyHappyInitialPaymentFormState(browser)
+        verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsButton.click()
+        acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
-            verifyInitialPaymentFormQuestionsDisplayed(browser)
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
-            existingLcagAccountAnonymous.click()
+        existingLcagAccountAnonymous.click()
 
         then: "credit card form is displayed"
-            anonymousPaymentCreditCardFormDisplayed(browser)
+        anonymousPaymentCreditCardFormDisplayed(browser)
 
         and: "contribution agreement fields are not displayed"
-            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+        contributionAgreementAddressFieldsAreDisplayed(browser, false)
 
         when: "i enter valid values and click pay now"
-            amountInput = "10.00"
-            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
-            payNowButton.click()
+        amountInput = "10.00"
+        enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
+        payNowButton.click()
 
         then: "i remain on the same page with a payment declined banner"
-            waitFor { at LcagFfcFormPage }
-            waitFor { paymentDeclinedSection.displayed == true }
+        waitFor { at LcagFfcFormPage }
+        waitFor { paymentDeclinedSection.displayed == true }
     }
 
     def "i can complete the payment flow for donation as an existing lcag member"() {
@@ -215,174 +212,177 @@ class FormSubmissionIT extends GebSpec {
 
     def "payment declined for donation as an existing lcag member"() {
         given:
-            insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
-            go "http://localhost:8484"
+        insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
+        go "http://localhost:8484"
 
         when:
-            waitFor { at LcagFfcFormPage }
+        waitFor { at LcagFfcFormPage }
 
         then:
-            verifyHappyInitialPaymentFormState(browser)
+        verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsButton.click()
+        acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
-            verifyInitialPaymentFormQuestionsDisplayed(browser)
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
-            existingLcagAccountYes.click()
+        existingLcagAccountYes.click()
 
         then: "credit card form is displayed"
-            existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+        existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
 
         when: "i enter valid lcag username value and payment details and click pay now"
-            username = "testuser1"
-            contributionTypeDonation.click()
-            contributionAgreementAddressFieldsAreDisplayed(browser, false)
-            amountInput = "10.00"
-            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
-            payNowButton.click()
+        username = "testuser1"
+        contributionTypeDonation.click()
+        contributionAgreementAddressFieldsAreDisplayed(browser, false)
+        amountInput = "10.00"
+        enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
+        payNowButton.click()
 
         then: "i remain on the same page with a payment declined banner"
-            waitFor { at LcagFfcFormPage }
-            waitFor { paymentDeclinedSection.displayed == true }
-            sleep(3000)
-            waitFor { getEmails("user1@something.com", "Inbox").size() == 0 }
-            waitFor { getUserRows().get(0).getGroup() == "8" }
-            waitFor { isBlank(getUserRows().get(0).getAdditionalGroups()) }
+        waitFor { at LcagFfcFormPage }
+        waitFor { paymentDeclinedSection.displayed == true }
+        sleep(3000)
+        waitFor { getEmails("user1@something.com", "Inbox").size() == 0 }
+        waitFor { getUserRows().get(0).getGroup() == "8" }
+        waitFor { isBlank(getUserRows().get(0).getAdditionalGroups()) }
     }
 
     def "i can complete the payment flow for donation for a new lcag applicant"() {
         given:
-            sleep(3000) //wait for member cache to be refreshed
-            getUserRows().size() == 0
-            go "http://localhost:8484"
+        sleep(3000) //wait for member cache to be refreshed
+        getUserRows().size() == 0
+        go "http://localhost:8484"
 
         when:
-            waitFor { at LcagFfcFormPage }
+        waitFor { at LcagFfcFormPage }
 
         then:
-            verifyHappyInitialPaymentFormState(browser)
+        verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsButton.click()
+        acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
-            verifyInitialPaymentFormQuestionsDisplayed(browser)
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
-            existingLcagAccountNo.click()
+        existingLcagAccountNo.click()
 
         then: "credit card form is displayed"
-            newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+        newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
 
         when: "i enter valid lcag username value and payment details and click pay now"
-            contributionTypeDonation.click()
-            contributionAgreementAddressFieldsAreDisplayed(browser, false)
-            firstNameInput = "Harry"
-            lastNameInput = "Generous"
-            emailAddressInput = "harry@generous.com"
-            amountInput = "200.00"
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
-            payNowButton.click()
-            waitFor { at ThankYouPage }
-            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
-            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
+        contributionTypeDonation.click()
+        contributionAgreementAddressFieldsAreDisplayed(browser, false)
+        firstNameInput = "Harry"
+        lastNameInput = "Generous"
+        emailAddressInput = "harry@generous.com"
+        amountInput = "200.00"
+        enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+        payNowButton.click()
+        waitFor { at ThankYouPage }
+        waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+        String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
         then: "i land on the thank you page and i receive a confirmation email"
-            waitFor { at ThankYouPage }
-            waitFor { paymentReference.text() == "LCAGFFC90001" }
-            waitFor { getUserRows().size() == 1 }
-            waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
-            waitFor { getUserRows().get(0).name == "Harry Generous" }
-            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
-            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £200.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
-            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
-            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
-            waitFor { getUserRows().get(0).getGroup() == "8" }
-            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
-            GebTestUtils.verifyNoAttachments("harry@generous.com")
+        waitFor { at ThankYouPage }
+        waitFor { paymentReference.text() == "LCAGFFC90001" }
+        waitFor { getUserRows().size() == 1 }
+        waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
+        waitFor { getUserRows().get(0).name == "Harry Generous" }
+        waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+        waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £200.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
+        waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+        waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+        waitFor { getUserRows().get(0).getGroup() == "8" }
+        waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+        GebTestUtils.verifyNoAttachments("harry@generous.com")
 
         when: "i navigate to the invoice page"
-            go driver.currentUrl.replace("thankYou", "invoice")
-            waitFor { at InvoicePage }
+        go driver.currentUrl.replace("thankYou", "invoice")
+        waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00")
+        verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00")
     }
 
     def "i can complete the payment flow for contribution agreement for a new lcag applicant"() {
         given:
-            sleep(3000) //wait for member cache to be refreshed
-            getUserRows().size() == 0
-            go "http://localhost:8484"
+        sleep(3000) //wait for member cache to be refreshed
+        getUserRows().size() == 0
+        go "http://localhost:8484"
 
         when:
-            waitFor { at LcagFfcFormPage }
+        waitFor { at LcagFfcFormPage }
 
         then:
-            verifyHappyInitialPaymentFormState(browser)
+        verifyHappyInitialPaymentFormState(browser)
 
         when: "i agree to the t&cs"
-            acceptTermsAndConditionsButton.click()
+        acceptTermsAndConditionsButton.click()
 
         then: "initial payment form questions appear and nothing is selected"
-            verifyInitialPaymentFormQuestionsDisplayed(browser)
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
 
         when: "i click on the anonymous donation radio"
-            existingLcagAccountNo.click()
+        existingLcagAccountNo.click()
 
         then: "credit card form is displayed"
-            newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+        newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
 
         and: "contribution agreement fields are displayed"
 
         when: "i enter valid lcag username value and payment details and click pay now"
-            contributionTypeContributionAgreement.click()
-            contributionAgreementAddressFieldsAreDisplayed(browser, true)
-            enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            amountInput = "2000.00"
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
-            payNowButton.click()
-            waitFor { at ThankYouPage }
-            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
-            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
+        contributionTypeContributionAgreement.click()
+        contributionAgreementAddressFieldsAreDisplayed(browser, true)
+        enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
+        amountInput = "2000.00"
+        enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+        payNowButton.click()
+        waitFor { at ThankYouPage }
+        waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+        String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
         then: "i land on the thank you page and i receive a confirmation email"
-            waitFor { at ThankYouPage }
-            waitFor { paymentReference.text() == "LCAGFFC90001" }
-            waitFor { getUserRows().size() == 1 }
-            waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
-            waitFor { getUserRows().get(0).name == "Harry Generous" }
-            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
-            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
-            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
-            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
-            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
-            waitFor { getUserRows().get(0).getGroup() == "8" }
-            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
-            waitFor { getPaymentRows().size() == 1 }
-            waitFor { getPaymentRows().get(0).id == 1L }
-            waitFor { getPaymentRows().get(0).userId == 1L }
-            waitFor { getPaymentRows().get(0).firstName == "Harry" }
-            waitFor { getPaymentRows().get(0).lastName == "Generous" }
-            waitFor { getPaymentRows().get(0).emailAddress == "harry@generous.com" }
-            waitFor { getPaymentRows().get(0).addressLine1 == "10 Some Street" }
-            waitFor { getPaymentRows().get(0).addressLine2 == "Some Village" }
-            waitFor { getPaymentRows().get(0).city == "Some City" }
-            waitFor { getPaymentRows().get(0).postalCode == "Some Postcode" }
-            waitFor { getPaymentRows().get(0).country == "Some Country" }
-            waitFor { getPaymentRows().get(0).reference == "LCAGFFC90001" }
-            waitFor { getPaymentRows().get(0).contributionType == ContributionType.CONTRIBUTION_AGREEMENT }
-            waitFor { getPaymentRows().get(0).paymentMethod == "Card" }
+        waitFor { at ThankYouPage }
+        waitFor { paymentReference.text() == "LCAGFFC90001" }
+        waitFor { getUserRows().size() == 1 }
+        waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
+        waitFor { getUserRows().get(0).name == "Harry Generous" }
+        waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+        waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
+        waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+        waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+        verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+        waitFor { getUserRows().get(0).getGroup() == "8" }
+        waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+        waitFor { getPaymentRows().size() == 1 }
+        waitFor { getPaymentRows().get(0).id == 1L }
+        waitFor { getPaymentRows().get(0).userId == 1L }
+        waitFor { getPaymentRows().get(0).firstName == "Harry" }
+        waitFor { getPaymentRows().get(0).lastName == "Generous" }
+        waitFor { getPaymentRows().get(0).emailAddress == "harry@generous.com" }
+        waitFor { getPaymentRows().get(0).addressLine1 == "10 Some Street" }
+        waitFor { getPaymentRows().get(0).addressLine2 == "Some Village" }
+        waitFor { getPaymentRows().get(0).city == "Some City" }
+        waitFor { getPaymentRows().get(0).postalCode == "Some Postcode" }
+        waitFor { getPaymentRows().get(0).country == "Some Country" }
+        waitFor { getPaymentRows().get(0).reference == "LCAGFFC90001" }
+        waitFor { getPaymentRows().get(0).contributionType == ContributionType.CONTRIBUTION_AGREEMENT }
+        waitFor { getPaymentRows().get(0).paymentMethod == "Card" }
 
         when: "i navigate to the invoice page"
-            go driver.currentUrl.replace("thankYou", "invoice")
-            waitFor { at InvoicePage }
+        go driver.currentUrl.replace("thankYou", "invoice")
+        waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£1,666.67", "20%", "£333.33", "£2,000.00")
+        verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£1,666.67", "20%", "£333.33", "£2,000.00")
     }
 
 }
+import static uk.co.novinet.e2e.TestUtils.*
+
+import static uk.co.novinet.web.GebTestUtils.*

@@ -17,6 +17,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/js/lcag-stripe.js"></script>
     <script>
         lcag.Common.init();
     </script>
@@ -256,10 +258,9 @@
             </div>
         </div>
 
-        <script src="https://js.stripe.com/v3/"></script>
-        <script src="/js/lcag-stripe.js"></script>
-
         <script type="text/javascript">
+            lcag.Stripe.init();
+
             jQuery.validator.addMethod('currency',
                 function(value, element) {
                     var result = value.match(/^\d{1,3}?([,]\d{3}|\d)*?([.]\d{1,2})?$/);
@@ -345,12 +346,7 @@
 
             function setupFieldValidationForAnonymousDonation() {
                 console.log("setting up setupFieldValidationForAnonymousDonation validation rules");
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: 1
-                });
+                addDonationGrossAmountValidation();
 
                 $("#username").removeAttr("required");
                 $("#firstName").removeAttr("required");
@@ -362,12 +358,7 @@
 
             function setupFieldValidationForNewJoinerDonation() {
                 console.log("setting up setupFieldValidationForNewJoinerDonation validation rules");
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: 1
-                });
+                addDonationGrossAmountValidation();
 
                 $("#firstName").prop('required', true);
                 $("#lastName").prop('required', true);
@@ -381,12 +372,7 @@
 
             function setupFieldValidationForNewJoinerContributionAgreement() {
                 console.log("setting up setupFieldValidationForNewJoinerContributionAgreement validation rules");
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: lcag.Common.config.contributionAgreementMinimumAmountGbp
-                });
+                addContributionAgreementGrossAmountValidation();
 
                 $("#firstName").prop('required', true);
                 $("#lastName").prop('required', true);
@@ -399,12 +385,7 @@
 
             function setupFieldValidationForExistingLcagMemberDonation() {
                 console.log("setting up setupFieldValidationForExistingLcagMemberDonation validation rules");
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: 1
-                });
+                addDonationGrossAmountValidation();
 
                 $("#username").prop('required', true);
 
@@ -417,12 +398,7 @@
 
             function setupFieldValidationForExistingLcagMemberContributionAgreement() {
                 console.log("setting up setupFieldValidationForExistingLcagMemberContributionAgreement validation rules");
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: 1
-                });
+                addContributionAgreementGrossAmountValidation();
 
                 $("#username").prop('required', true);
 
@@ -445,6 +421,24 @@
                 $("#city").prop('required', true);
                 $("#postalCode").prop('required', true);
                 $("#country").prop('required', true);
+            }
+
+            function addContributionAgreementGrossAmountValidation() {
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: lcag.Common.config.contributionAgreementMinimumAmountGbp
+                });
+            }
+
+            function addDonationGrossAmountValidation() {
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: 1
+                });
             }
 
             function setupValidationRules() {
