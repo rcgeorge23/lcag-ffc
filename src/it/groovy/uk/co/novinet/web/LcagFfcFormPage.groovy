@@ -32,11 +32,17 @@ class LcagFfcFormPage extends Page {
         lastNameInput { $("#lastName") }
         emailAddressInput { $("#emailAddress") }
 
+        addressLine1Input { $("#addressLine1") }
+        addressLine2Input { $("#addressLine2") }
+        cityInput { $("#city") }
+        postalCodeInput { $("#postalCode") }
+        countryInput { $("#country") }
+
         amountInput { $("#grossAmount") }
         creditCardInput { $("input[name=cardnumber]") }
         expiryDateInput { $("input[name=exp-date]") }
         c2vInput { $("input[name=cvc]") }
-        postalCodeInput { $("input[name=postal]") }
+        paymentFormPostalCodeInput { $("input[name=postal]") }
 
         payNowButton { $("#submitButton") }
 

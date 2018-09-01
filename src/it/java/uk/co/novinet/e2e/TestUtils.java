@@ -14,6 +14,10 @@ import org.codemonkey.simplejavamail.Mailer;
 import org.codemonkey.simplejavamail.TransportStrategy;
 import org.codemonkey.simplejavamail.email.Email;
 import org.jsoup.Jsoup;
+import uk.co.novinet.rest.PaymentStatus;
+import uk.co.novinet.rest.PaymentType;
+import uk.co.novinet.service.ContributionType;
+import uk.co.novinet.service.Payment;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static uk.co.novinet.service.PersistenceUtils.dateFromMyBbRow;
 
 public class TestUtils {
 
@@ -156,6 +161,65 @@ public class TestUtils {
                 if (connection != null) connection.close();
             } catch (SQLException ignored) { }
         }
+    }
+
+    static List<Payment> getPaymentRows() {
+        Connection connection = null;
+        Statement statement = null;
+
+        try {
+            connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from i7b0_ffc_contributions");
+            List<Payment> payments = new ArrayList<>();
+
+            while (resultSet.next()) {
+                payments.add(buildPayment(resultSet));
+            }
+
+            return payments;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (statement != null) connection.close();
+            } catch (SQLException ignored) { }
+            try {
+                if (connection != null) connection.close();
+            } catch (SQLException ignored) { }
+        }
+    }
+
+    private static Payment buildPayment(ResultSet rs) throws SQLException {
+        return new Payment(
+                rs.getLong("id"),
+                rs.getLong("user_id"),
+                rs.getString("username"),
+                rs.getString("membership_token"),
+                rs.getString("hash"),
+                rs.getString("reference"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("email_address"),
+                rs.getString("address_line_1"),
+                rs.getString("address_line_2"),
+                rs.getString("city"),
+                rs.getString("postal_code"),
+                rs.getString("country"),
+                rs.getBigDecimal("gross_amount"),
+                rs.getBigDecimal("net_amount"),
+                rs.getBigDecimal("vat_rate"),
+                rs.getBigDecimal("vat_amount"),
+                dateFromMyBbRow(rs, "invoice_created"),
+                dateFromMyBbRow(rs, "payment_received"),
+                rs.getString("stripe_token"),
+                PaymentStatus.valueOf(rs.getString("status")),
+                rs.getString("error_description"),
+                PaymentType.valueOf(rs.getString("payment_type")),
+                rs.getString("payment_method"),
+                ContributionType.valueOf(rs.getString("contribution_type")),
+                rs.getString("guid")
+        );
     }
 
     static List<StaticMessage> getEmails(String emailAddress, String folderName) {

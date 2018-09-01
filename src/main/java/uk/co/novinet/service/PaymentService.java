@@ -53,7 +53,9 @@ public class PaymentService {
 
             chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
-            chargeMap.put("metadata", filterEmptyStringValues(describe(payment), asList("class")));
+            chargeMap.put("metadata", filterEmptyStringValues(describe(payment),
+                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount", "uiFriendlyNetAmount",
+                            "uiFriendlyVatAmount", "hash", "membershipToken")));
             chargeMap.put("source", payment.getStripeToken());
 
             Charge charge = Charge.create(chargeMap);
@@ -103,8 +105,9 @@ public class PaymentService {
 
         String insertSql = "insert into " + contributionsTableName() +
                 " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, `net_amount`, `vat_rate`, `vat_amount`, " +
-                "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`, `address_line_1`, " +
+                "`address_line_2`, `city`, `postal_code`, `country`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -129,7 +132,12 @@ public class PaymentService {
                 PaymentStatus.NEW.toString(),
                 buildReference(nextAvailableId),
                 "Card",
-                payment.getGuid()
+                payment.getGuid(),
+                payment.getAddressLine1(),
+                payment.getAddressLine2(),
+                payment.getCity(),
+                payment.getPostalCode(),
+                payment.getCountry()
         );
 
         LOGGER.info("Insertion result: {}", result);
@@ -194,6 +202,11 @@ public class PaymentService {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email_address"),
+                rs.getString("address_line_1"),
+                rs.getString("address_line_2"),
+                rs.getString("city"),
+                rs.getString("postal_code"),
+                rs.getString("country"),
                 rs.getBigDecimal("gross_amount"),
                 rs.getBigDecimal("net_amount"),
                 rs.getBigDecimal("vat_rate"),

@@ -150,10 +150,10 @@
                                         </div>
                                         <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
                                             <div class="row">
-                                                <div class="col-md-1 col-sm-2">
+                                                <div class="col-md-1 col-sm-3">
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
-                                                <div class="col-md-11 col-sm-10">
+                                                <div class="col-md-11 col-sm-9">
                                                     Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
                                                     Minimum payment for a Contribution Agreement is £<span class="contributionAgreementMinimumAmountGbp"></span>.
                                                 </div>
@@ -161,17 +161,17 @@
                                         </div>
                                         <div class="alert alert-info" id="donationInfoSection" style="display: none;">
                                             <div class="row">
-                                                <div class="col-md-1 col-sm-2">
+                                                <div class="col-md-1 col-sm-3">
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
-                                                <div class="col-md-11 col-sm-10">
+                                                <div class="col-md-11 col-sm-9">
                                                     Payments made as <strong>Donations</strong> will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed.<br/><br/>
                                                     The minimum payment for donations is £1.
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="newLcagJoinerSection" style="display: none;">
+                                    <div id="nameSection" style="display: none;">
                                         <div class="form-group">
                                             <label for="firstName">First name:</label>
                                             <div class="input-group">
@@ -194,12 +194,49 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="addressSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="addressLine1">Address line 1:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="addressLine1" class="form-control" id="addressLine1" placeholder="Please enter the first line of your address" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addressLine1">Address line 2:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="addressLine2" class="form-control" id="addressLine2" placeholder="Please enter the second line of your address" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="city" class="form-control" id="city" placeholder="Please enter your city" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">Postal code:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="postalCode" class="form-control" id="postalCode" placeholder="Please enter your postal code" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">Country:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="country" class="form-control" id="country" placeholder="Please enter your country" required />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div id="paymentFieldsSection" class="form-group" style="display: none;">
                                         <label for="grossAmount">Amount:</label>
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <div class="input-group-addon">£</div>
-                                                <input type="text" name="grossAmount" class="form-control" id="grossAmount" placeholder="Please enter the amount you wish to donate" required />
+                                                <input type="text" name="grossAmount" class="form-control" id="grossAmount" placeholder="Please enter the amount you wish to contribute" required />
                                             </div>
                                         </div>
 
@@ -266,11 +303,9 @@
 
             function showLcagUsernameSection() {
                 $("#lcagUsernameSection").show();
-                $("#newLcagJoinerSection").hide();
+                $("#nameSection").hide();
                 $("#newLcagJoinerInfoSection").hide();
                 $("#paymentFieldsSection").show();
-                $("#username").prop('required',true);
-                $("#emailAddress").removeAttr("required");
                 $("#contributionTypeSection").show();
                 $("#submitButton").show();
                 $("#paymentType").val("EXISTING_LCAG_MEMBER");
@@ -279,10 +314,8 @@
             function showPaymentFieldsSection() {
                 $("#lcagUsernameSection").hide();
                 $("#paymentFieldsSection").show();
-                $("#newLcagJoinerSection").hide();
+                $("#nameSection").hide();
                 $("#newLcagJoinerInfoSection").hide();
-                $("#username").removeAttr("required");
-                $("#emailAddress").removeAttr("required");
                 $("#submitButton").show();
                 $("#contributionTypeSection").show();
                 $("#paymentType").val("ANONYMOUS");
@@ -290,40 +323,174 @@
 
             function showNewLcagJoinerSection() {
                 $("#lcagUsernameSection").hide();
-                $("#newLcagJoinerSection").show();
+                $("#nameSection").show();
                 $("#newLcagJoinerInfoSection").show();
                 $("#paymentFieldsSection").show();
-                $("#username").removeAttr("required");
-                $("#emailAddress").prop("required", true);
                 $("#submitButton").show();
                 $("#contributionTypeSection").show();
                 $("#paymentType").val("NEW_LCAG_MEMBER");
+            }
+
+            function hideContributionAgreementSections() {
+                console.log("hideContributionAgreementSections");
+                $("#nameSection").hide();
+                $("#addressSection").hide();
+            }
+
+            function showContributionAgreementSections() {
+                console.log("showContributionAgreementSections");
+                $("#nameSection").show();
+                $("#addressSection").show();
+            }
+
+            function setupFieldValidationForAnonymousDonation() {
+                console.log("setting up setupFieldValidationForAnonymousDonation validation rules");
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: 1
+                });
+
+                $("#username").removeAttr("required");
+                $("#firstName").removeAttr("required");
+                $("#lastName").removeAttr("required");
+                $("#emailAddress").removeAttr("required");
+                removeAddressMandatoryValidation();
+                hideContributionAgreementSections();
+            }
+
+            function setupFieldValidationForNewJoinerDonation() {
+                console.log("setting up setupFieldValidationForNewJoinerDonation validation rules");
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: 1
+                });
+
+                $("#firstName").prop('required', true);
+                $("#lastName").prop('required', true);
+                $("#emailAddress").prop('required', true);
+
+                $("#username").removeAttr("required");
+                removeAddressMandatoryValidation();
+                $("#nameSection").show();
+                $("#addressSection").hide();
+            }
+
+            function setupFieldValidationForNewJoinerContributionAgreement() {
+                console.log("setting up setupFieldValidationForNewJoinerContributionAgreement validation rules");
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: lcag.Common.config.contributionAgreementMinimumAmountGbp
+                });
+
+                $("#firstName").prop('required', true);
+                $("#lastName").prop('required', true);
+                $("#emailAddress").prop('required', true);
+
+                $("#username").removeAttr("required");
+                addAddressMandatoryValidation();
+                showContributionAgreementSections()
+            }
+
+            function setupFieldValidationForExistingLcagMemberDonation() {
+                console.log("setting up setupFieldValidationForExistingLcagMemberDonation validation rules");
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: 1
+                });
+
+                $("#username").prop('required', true);
+
+                $("#firstName").removeAttr("required");
+                $("#lastName").removeAttr("required");
+                $("#emailAddress").removeAttr("required");
+                removeAddressMandatoryValidation();
+                hideContributionAgreementSections()
+            }
+
+            function setupFieldValidationForExistingLcagMemberContributionAgreement() {
+                console.log("setting up setupFieldValidationForExistingLcagMemberContributionAgreement validation rules");
+                $("#grossAmount").rules("remove");
+                $("#grossAmount").rules("add", {
+                    required: true,
+                    currency: true,
+                    min: 1
+                });
+
+                $("#username").prop('required', true);
+
+                $("#firstName").prop('required', true);
+                $("#lastName").prop('required', true);
+                $("#emailAddress").prop('required', true);
+                addAddressMandatoryValidation();
+                showContributionAgreementSections()
+            }
+
+            function removeAddressMandatoryValidation() {
+                $("#addressLine1").removeAttr("required");
+                $("#city").removeAttr("required");
+                $("#postalCode").removeAttr("required");
+                $("#country").removeAttr("required");
+            }
+
+            function addAddressMandatoryValidation() {
+                $("#addressLine1").prop('required', true);
+                $("#city").prop('required', true);
+                $("#postalCode").prop('required', true);
+                $("#country").prop('required', true);
+            }
+
+            function setupValidationRules() {
+                if ($("#existingLcagAccountAnonymous").prop("checked")) {
+                    setupFieldValidationForAnonymousDonation();
+                } else if ($("#existingLcagAccountYes").prop("checked") && contributionType() == "DONATION") {
+                    setupFieldValidationForExistingLcagMemberDonation();
+                } else if ($("#existingLcagAccountYes").prop("checked") && contributionType() == "CONTRIBUTION_AGREEMENT") {
+                    setupFieldValidationForExistingLcagMemberContributionAgreement();
+                } else if ($("#existingLcagAccountNo").prop("checked") && contributionType() == "DONATION") {
+                    setupFieldValidationForNewJoinerDonation();
+                } else if ($("#existingLcagAccountNo").prop("checked") && contributionType() == "CONTRIBUTION_AGREEMENT") {
+                    setupFieldValidationForNewJoinerContributionAgreement();
+                }
+            }
+
+            function contributionType() {
+                if ($("#contributionTypeDonation").prop("checked")) {
+                    return "DONATION";
+                } else if ($("#contributionTypeContributionAgreement").prop("checked")) {
+                    return "CONTRIBUTION_AGREEMENT";
+                }
+
+                return null;
             }
 
             $(function () {
                 $(".contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
 
                 $("input[name=contributionTypeRadio]").change(function() {
+                    setupValidationRules();
                     $("#payment-form").validate();
-                    if ($("#existingLcagAccountAnonymous").prop("checked") || this.value == 'DONATION') {
-                        $("#grossAmount").rules("remove");
-                        $("#grossAmount").rules("add", {
-                            required: true,
-                            currency: true,
-                            min: 1
-                        });
+
+                    if (contributionType() == "DONATION") {
                         $("#contributionAgreementInfoSection").hide();
                         $("#donationInfoSection").show();
-                        $("#payment-form").validate().element("input[name=contributionTypeRadio]");
-                    } else {
-                        $("#grossAmount").rules("remove");
-                        $("#grossAmount").rules("add", {
-                            required: true,
-                            currency: true,
-                            min: lcag.Common.config.contributionAgreementMinimumAmountGbp
-                        });
+                    } else if (contributionType() == "CONTRIBUTION_AGREEMENT") {
                         $("#contributionAgreementInfoSection").show();
                         $("#donationInfoSection").hide();
+                    } else {
+                        $("#contributionAgreementInfoSection").hide();
+                        $("#donationInfoSection").hide();
+                    }
+
+                    if ($("#existingLcagAccountAnonymous").prop("checked")) {
+                        $("#payment-form").validate().element("input[name=contributionTypeRadio]");
                     }
 
                     if ($("input[name=grossAmount]").val() != null && $("input[name=grossAmount]").val() != "") {
@@ -340,8 +507,8 @@
                 });
 
                 $("input[type=radio][name=existingLcagAccount]").change(function() {
+                    setupValidationRules();
                     $("#payment-form").validate().element("input[name=contributionTypeRadio]");
-
                     if (this.value == 'yes') {
                         $("input[name=contributionTypeRadio]").attr("disabled", false);
                         showLcagUsernameSection();

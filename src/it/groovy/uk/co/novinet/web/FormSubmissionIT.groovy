@@ -2,8 +2,7 @@ package uk.co.novinet.web
 
 import geb.spock.GebSpec
 import uk.co.novinet.e2e.TestUtils
-
-import java.text.SimpleDateFormat
+import uk.co.novinet.service.ContributionType
 
 import static org.apache.commons.lang3.StringUtils.isBlank
 import static uk.co.novinet.e2e.TestUtils.*
@@ -52,6 +51,9 @@ class FormSubmissionIT extends GebSpec {
         then: "credit card form is displayed"
             anonymousPaymentCreditCardFormDisplayed(browser)
 
+        and: "contribution agreement fields are not displayed"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+
         when: "i enter valid values and click pay now"
             amountInput = "10.00"
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
@@ -91,6 +93,9 @@ class FormSubmissionIT extends GebSpec {
         then: "credit card form is displayed"
             anonymousPaymentCreditCardFormDisplayed(browser)
 
+        and: "contribution agreement fields are not displayed"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+
         when: "i enter valid values and click pay now"
             amountInput = "10.00"
             enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
@@ -128,6 +133,7 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeDonation.click()
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
             donationInfoSection.displayed == true
             contributionAgreementInfoSection.displayed == false
             amountInput = "10.00"
@@ -177,8 +183,8 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeContributionAgreement.click()
-            donationInfoSection.displayed == false
-            contributionAgreementInfoSection.displayed == true
+            contributionAgreementAddressFieldsAreDisplayed(browser, true)
+            enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
             amountInput = "1000.00"
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
@@ -225,8 +231,7 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeDonation.click()
-            donationInfoSection.displayed == true
-            contributionAgreementInfoSection.displayed == false
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
             amountInput = "10.00"
             enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
             payNowButton.click()
@@ -262,12 +267,11 @@ class FormSubmissionIT extends GebSpec {
             existingLcagAccountNo.click()
 
         then: "credit card form is displayed"
-            GebTestUtils.newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+            newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeDonation.click()
-            donationInfoSection.displayed == true
-            contributionAgreementInfoSection.displayed == false
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
             firstNameInput = "Harry"
             lastNameInput = "Generous"
             emailAddressInput = "harry@generous.com"
@@ -321,15 +325,14 @@ class FormSubmissionIT extends GebSpec {
             existingLcagAccountNo.click()
 
         then: "credit card form is displayed"
-            GebTestUtils.newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+            newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+
+        and: "contribution agreement fields are displayed"
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeContributionAgreement.click()
-            donationInfoSection.displayed == false
-            contributionAgreementInfoSection.displayed == true
-            firstNameInput = "Harry"
-            lastNameInput = "Generous"
-            emailAddressInput = "harry@generous.com"
+            contributionAgreementAddressFieldsAreDisplayed(browser, true)
+            enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             amountInput = "2000.00"
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
@@ -349,6 +352,20 @@ class FormSubmissionIT extends GebSpec {
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            waitFor { getPaymentRows().size() == 1 }
+            waitFor { getPaymentRows().get(0).id == 1L }
+            waitFor { getPaymentRows().get(0).userId == 1L }
+            waitFor { getPaymentRows().get(0).firstName == "Harry" }
+            waitFor { getPaymentRows().get(0).lastName == "Generous" }
+            waitFor { getPaymentRows().get(0).emailAddress == "harry@generous.com" }
+            waitFor { getPaymentRows().get(0).addressLine1 == "10 Some Street" }
+            waitFor { getPaymentRows().get(0).addressLine2 == "Some Village" }
+            waitFor { getPaymentRows().get(0).city == "Some City" }
+            waitFor { getPaymentRows().get(0).postalCode == "Some Postcode" }
+            waitFor { getPaymentRows().get(0).country == "Some Country" }
+            waitFor { getPaymentRows().get(0).reference == "LCAGFFC90001" }
+            waitFor { getPaymentRows().get(0).contributionType == ContributionType.CONTRIBUTION_AGREEMENT }
+            waitFor { getPaymentRows().get(0).paymentMethod == "Card" }
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")

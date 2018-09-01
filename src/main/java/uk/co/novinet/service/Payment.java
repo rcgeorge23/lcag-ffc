@@ -23,6 +23,11 @@ public class Payment {
     private String firstName;
     private String lastName;
     private String emailAddress;
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String postalCode;
+    private String country;
     private BigDecimal grossAmount;
     private BigDecimal netAmount;
     private BigDecimal vatRate;
@@ -49,6 +54,11 @@ public class Payment {
             String firstName,
             String lastName,
             String emailAddress,
+            String addressLine1,
+            String addressLine2,
+            String city,
+            String postalCode,
+            String country,
             BigDecimal grossAmount,
             BigDecimal netAmount,
             BigDecimal vatRate,
@@ -71,6 +81,11 @@ public class Payment {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.country = country;
         this.grossAmount = grossAmount;
         this.netAmount = netAmount;
         this.vatRate = vatRate;
@@ -251,7 +266,7 @@ public class Payment {
         return uiFriendlyMoneyString(netAmount);
     }
 
-    public String getUiFriendlyVarAmount() {
+    public String getUiFriendlyVatAmount() {
         return uiFriendlyMoneyString(vatAmount);
     }
 
@@ -301,5 +316,45 @@ public class Payment {
 
     public void setPaymentReceived(Instant paymentReceived) {
         this.paymentReceived = paymentReceived;
+    }
+
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

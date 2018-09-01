@@ -58,6 +58,20 @@ public class HomeController {
         return "invoice";
     }
 
+    @GetMapping("/contributionAgreement")
+    public String getContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return "contributionAgreement";
+        }
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+
+        return "contributionAgreement";
+    }
+
     @ResponseBody
     @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportInvoice(ModelMap model, @RequestParam("guid") String guid, HttpServletRequest request) {
@@ -119,46 +133,55 @@ public class HomeController {
     }
 
     void validatePayment(Payment payment) throws LcagValidationException {
-        if (payment.getGrossAmount() == null) {
-            String message = "Amount is mandatory";
-            paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-            throw new LcagValidationException(message);
+        if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(1)) < 0) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "Amount must be at least £1.00");
         }
 
         if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
             if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(contributionAgreementMinimumAmountGbp)) < 0) {
-                String message = "Contribution Agreement amount must be at least £" + contributionAgreementMinimumAmountGbp;
-                paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-                throw new LcagValidationException(message);
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Contribution Agreement amount must be at least £" + contributionAgreementMinimumAmountGbp);
+            }
+
+            if (isBlank(payment.getAddressLine1())) {
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Address line 1 is mandatory");
+            }
+
+            if (isBlank(payment.getCity())) {
+                throw updatePaymentForValidationErrorAndThrowException(payment, "City is mandatory");
+            }
+
+            if (isBlank(payment.getPostalCode())) {
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Postal code is mandatory");
+            }
+
+            if (isBlank(payment.getCountry())) {
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Country is mandatory");
             }
         }
 
         if (payment.getPaymentType() == PaymentType.NEW_LCAG_MEMBER) {
             if (isBlank(payment.getFirstName())) {
-                String message = "First Name is mandatory";
-                paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-                throw new LcagValidationException(message);
+                throw updatePaymentForValidationErrorAndThrowException(payment, "First Name is mandatory");
             }
 
             if (isBlank(payment.getLastName())) {
-                String message = "Last Name is mandatory";
-                paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-                throw new LcagValidationException(message);
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Last Name is mandatory");
             }
 
             if (isBlank(payment.getEmailAddress())) {
-                String message = "Email Address is mandatory";
-                paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-                throw new LcagValidationException(message);
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Email Address is mandatory");
             }
         }
 
         if (payment.getPaymentType() == PaymentType.EXISTING_LCAG_MEMBER) {
             if (isBlank(payment.getUsername()) || memberService.findMemberByUsername(payment.getUsername()) == null) {
-                String message = "A valid LCAG username must be provided";
-                paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-                throw new LcagValidationException(message);
+                throw updatePaymentForValidationErrorAndThrowException(payment, "A valid LCAG username must be provided");
             }
         }
+    }
+
+    private LcagValidationException updatePaymentForValidationErrorAndThrowException(Payment payment, String message) throws LcagValidationException {
+        paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
+        return new LcagValidationException(message);
     }
 }

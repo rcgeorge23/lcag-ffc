@@ -47,7 +47,7 @@ class GebTestUtils {
             browser.page.creditCardInput = creditCardNumber
             browser.page.expiryDateInput = expiryMMYY
             browser.page.c2vInput = cv2
-            browser.page.postalCodeInput = postalCode
+            browser.page.paymentFormPostalCodeInput = postalCode
         }
     }
 
@@ -119,6 +119,16 @@ class GebTestUtils {
         browser.waitFor { browser.page.payNowButton.displayed == true }
     }
 
+    static void contributionAgreementAddressFieldsAreDisplayed(Browser browser, boolean displayed) {
+        browser.waitFor { browser.page.addressLine1Input.displayed == displayed }
+        browser.waitFor { browser.page.addressLine2Input.displayed == displayed }
+        browser.waitFor { browser.page.cityInput.displayed == displayed }
+        browser.waitFor { browser.page.postalCodeInput.displayed == displayed }
+        browser.waitFor { browser.page.countryInput.displayed == displayed }
+        browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == displayed }
+        browser.waitFor { browser.page.donationInfoSection.displayed == !displayed }
+    }
+
     static boolean verifyInvoice(
             Browser browser,
             String reference,
@@ -143,5 +153,16 @@ class GebTestUtils {
         assert browser.page.vatAmount.text() == vatAmount
         assert browser.page.grossAmount.text() == grossAmount
         return true
+    }
+
+    static void enterContributionAgreementAddressDetails(Browser browser, String firstName, String lastName, String emailAddress) {
+        browser.page.firstNameInput = firstName
+        browser.page.lastNameInput = lastName
+        browser.page.emailAddressInput = emailAddress
+        browser.page.addressLine1Input = "10 Some Street"
+        browser.page.addressLine2Input = "Some Village"
+        browser.page.cityInput = "Some City"
+        browser.page.postalCodeInput = "Some Postcode"
+        browser.page.countryInput = "Some Country"
     }
 }
