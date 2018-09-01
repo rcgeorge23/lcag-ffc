@@ -1,6 +1,9 @@
 package uk.co.novinet.web
 
 import geb.Browser
+import org.springframework.format.number.CurrencyStyleFormatter
+
+import java.text.SimpleDateFormat
 
 class GebTestUtils {
     static boolean switchToGuestVerificationTabIfNecessaryAndAssertGridHasNRows(Browser browser, int expectedNumberOfRows) {
@@ -114,5 +117,31 @@ class GebTestUtils {
         browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "" }
         browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "" }
         browser.waitFor { browser.page.payNowButton.displayed == true }
+    }
+
+    static boolean verifyInvoice(
+            Browser browser,
+            String reference,
+            Date date,
+            String paymentMethod,
+            String recipientName,
+            String recipientEmail,
+            String contributionType,
+            String netAmount,
+            String vatPercentage,
+            String vatAmount,
+            String grossAmount) {
+        assert browser.page.reference.text() == reference
+        assert browser.page.invoiceCreatedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
+        assert browser.page.paymentReceivedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
+        assert browser.page.paymentMethod.text() == paymentMethod
+        assert browser.page.invoiceRecipientName.text() == recipientName
+        assert browser.page.invoiceRecipientEmailAddress.text() == recipientEmail
+        assert browser.page.contributionType.text() == contributionType
+        assert browser.page.netAmount.text() == netAmount
+        assert browser.page.vatPercentage.text() == vatPercentage
+        assert browser.page.vatAmount.text() == vatAmount
+        assert browser.page.grossAmount.text() == grossAmount
+        return true
     }
 }

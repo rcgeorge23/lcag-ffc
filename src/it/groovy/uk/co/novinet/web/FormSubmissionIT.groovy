@@ -3,6 +3,8 @@ package uk.co.novinet.web
 import geb.spock.GebSpec
 import uk.co.novinet.e2e.TestUtils
 
+import java.text.SimpleDateFormat
+
 import static org.apache.commons.lang3.StringUtils.isBlank
 import static uk.co.novinet.e2e.TestUtils.*
 import static uk.co.novinet.web.GebTestUtils.*
@@ -13,8 +15,8 @@ class FormSubmissionIT extends GebSpec {
     public static final String DECLINED_CARD = "4000000000000002"
 
     //TESTS TO ADD:
-    //Check that lcag ffc contributor group is added to profile of existing member
-    //Check that lcag ffc contributor group is added to profile of newly created member
+    //Check that lcag ffc contributor group is added to profile of existing member - DONE
+    //Check that lcag ffc contributor group is added to profile of newly created member - DONE
     //Server side validation
     //Client side validation combinations
     //Re-populating form after submission when error occurs
@@ -58,6 +60,13 @@ class FormSubmissionIT extends GebSpec {
         then: "i land on the thank you page"
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
+
+        when: "i navigate to the invoice page"
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£8.33", "20%", "£1.67", "£10.00")
     }
 
     def "anonymous payment, card declined"() {
@@ -119,6 +128,8 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeDonation.click()
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
             amountInput = "10.00"
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
@@ -130,6 +141,62 @@ class FormSubmissionIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £10.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+
+        when: "i navigate to the invoice page"
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£8.33", "20%", "£1.67", "£10.00")
+    }
+
+    def "i can complete the payment flow for contribution agreement as an existing lcag member"() {
+        given:
+            insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
+            isBlank(getUserRows().get(0).getAdditionalGroups())
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            verifyHappyInitialPaymentFormState(browser)
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsButton.click()
+
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountYes.click()
+
+        then: "credit card form is displayed"
+            existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            username = "testuser1"
+            contributionTypeContributionAgreement.click()
+            donationInfoSection.displayed == false
+            contributionAgreementInfoSection.displayed == true
+            amountInput = "1000.00"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90001" }
+            waitFor { getEmails("user1@something.com", "Inbox").size() == 1 }
+            waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £1,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+
+        when: "i navigate to the invoice page"
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Contribution Agreement", "£833.33", "20%", "£166.67", "£1,000.00")
     }
 
     def "payment declined for donation as an existing lcag member"() {
@@ -158,6 +225,8 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeDonation.click()
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
             amountInput = "10.00"
             enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
             payNowButton.click()
@@ -197,6 +266,8 @@ class FormSubmissionIT extends GebSpec {
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeDonation.click()
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
             firstNameInput = "Harry"
             lastNameInput = "Generous"
             emailAddressInput = "harry@generous.com"
@@ -219,6 +290,72 @@ class FormSubmissionIT extends GebSpec {
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+
+        when: "i navigate to the invoice page"
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£166.67", "20%", "£33.33", "£200.00")
+    }
+
+    def "i can complete the payment flow for contribution agreement for a new lcag applicant"() {
+        given:
+            sleep(3000) //wait for member cache to be refreshed
+            getUserRows().size() == 0
+            go "http://localhost:8484"
+
+        when:
+            waitFor { at LcagFfcFormPage }
+
+        then:
+            verifyHappyInitialPaymentFormState(browser)
+
+        when: "i agree to the t&cs"
+            acceptTermsAndConditionsButton.click()
+
+        then: "initial payment form questions appear and nothing is selected"
+            verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        when: "i click on the anonymous donation radio"
+            existingLcagAccountNo.click()
+
+        then: "credit card form is displayed"
+            GebTestUtils.newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            contributionTypeContributionAgreement.click()
+            donationInfoSection.displayed == false
+            contributionAgreementInfoSection.displayed == true
+            firstNameInput = "Harry"
+            lastNameInput = "Generous"
+            emailAddressInput = "harry@generous.com"
+            amountInput = "2000.00"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+            waitFor { at ThankYouPage }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90001" }
+            waitFor { getUserRows().size() == 1 }
+            waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
+            waitFor { getUserRows().get(0).name == "Harry Generous" }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
+            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+
+        when: "i navigate to the invoice page"
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£1,666.67", "20%", "£333.33", "£2,000.00")
     }
 
 }

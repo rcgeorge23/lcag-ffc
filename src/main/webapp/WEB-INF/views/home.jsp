@@ -35,7 +35,7 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-10 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                     <div role="alert" class="alert alert-danger alert-dismissible" id="paymentDeclinedSection" style="display: none;">
                         <div class="row">
                             <div class="col-md-1 col-sm-2">
@@ -71,52 +71,28 @@
 
                     <div id="termsAndConditionsSection">
                         <div class="panel panel-default">
-                            <div class="panel-heading">LCAG fighting fund contributor terms and conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel-heading">LCAG FFC contributor terms and conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
                                 <h4>Glossary of terms</h4>
                                 <ul>
-                                    <li>Contributor – any person who makes a financial contribution to the legal proceedings whether that is a donation or a contribution with a Contribution Agreement</li>
-                                    <li>Contribution Agreement –</li>
-                                    <li>Donation –</li>
-                                    <li>LCAG FFC –</li>
+                                    <li>Contributor – any person who makes a financial contribution to the legal proceedings, whether that is a donation or a contribution with a Contribution Agreement</li>
+                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of £<span class="contributionAgreementMinimumAmountGbp"></span> or more.</li>
+                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than £<span class="contributionAgreementMinimumAmountGbp"></span>. Those who donate more than £500 will be entitled to an enhanced level of information to help them manage the loan charge.</li>
+                                    <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
                                 </ul>
                                 <h4>Terms and conditions</h4>
                                 <ol>
                                     <li>Contributions can be made in the form of a Contribution Agreement or by a Donation.</li>
-                                    <li>Contribution Agreements will be drawn up to reflect the amount of money contributed,
-                                        the details of the contributor and the arrangements for any refunds of payments which
-                                        may be due.</li>
-                                    <li>Refunds will be made to Contributors making an Contribution Agreement on a pro rata
-                                        basis and after administration costs have been deducted.</li>
-                                    <li>Refunds to contributors making a Contribution Agreement will be subject to repayment
-                                        only of the funds which are available following any payments received from the other
-                                        party in the proceedings. These are likely to be in the region of between 60% and 70%
-                                        of the amount contributed originally in the event of a success.</li>
-                                    <li>Full details of the Contribution Agreement will be sent to the contributor as soon as
-                                        possible after the contribution is made, and in any even within 14 days.</li>
-                                    <li>As a contributor, advice will be provided in relation to declaration of loans,
-                                        resisting attempts to enforce the Loan Charge by HMRC and any relevant appeals that may
-                                        be necessary pending the resolution of the litigation.</li>
-                                    <li>Contributors who do not return the Contribution Agreement or confirmation thereof, or
-                                        can not be reached using the contact details provided will be treated as having
-                                        made a donation after a period of 28 days of the initial Contribution Agreement being
-                                        issued.</li>
-                                    <li>Donations are made on the basis that no refunds will be given in any circumstances, this
-                                        includes, but is not limited to; the case being successful and there being funds remaining
-                                        in the account, the case being unsuccessful and there being funds remaining in the
-                                        account, insufficient funds being collected and the case not being able to proceed or
-                                        being withdrawn at any stage in the proceedings.</li>
-                                    <li>Contributors who make a Donation are asked to provide contact details so that they can
-                                        be given access to the LCAG FCC Forum where progress reports and pertinent
-                                        information regarding activities which may assist those contributors will be posted.</li>
-                                    <li>Any person making a donation does not have to provide contact details and can remain
-                                        fully anonymous if they wish, however, they will not be privy to the additional
-                                        information which is available on the LCAG FCC Forum in this event.</li>
-                                    <li>It is anticipated that larger or corporate/organisation contributors will provide
-                                        funding via a Contribution Agreement, however, Contribution Agreements are not
-                                        limited to these contributors.</li>
-                                    <li>It is anticipated that smaller donations or funding provided by individuals will be
-                                        made by way of a Donation, however, Donations are not limited to these contributors.</li>
+                                    <li>Contribution Agreements will be drawn up to reflect the amount of money contributed, the details of the contributor and the arrangements for any refunds of payments which may be due.</li>
+                                    <li>Refunds will be made to Contributors making a Contribution Agreement on a pro rata basis and after administration costs have been deducted.</li>
+                                    <li>Refunds to contributors making a Contribution Agreement will be subject to repayment only of the funds which are available following any payments received from the other party in the proceedings.  These are likely to be in the region of between 60% and 70% of the amount contributed originally in the event of a success.</li>
+                                    <li>Full details of the Contribution Agreement will be sent to the contributor as soon as possible after the contribution is made, and in any even within 14 days.</li>
+                                    <li>Contributors who do not return the Contribution Agreement or confirmation thereof, or can not be contracted through the contact details provided will be treated as having made a donation after a period of 28 days of the initial Contribution Agreement being issued.</li>
+                                    <li>Donations are made on the basis that no refunds will be given in any circumstances, this includes, but is not limited to; the case being successful and there being funds remaining in the account, the case being unsuccessful and there being funds remaining in the account, insufficient funds being collected and the case not being able to proceed or being withdrawn at any stage in the proceedings.</li>
+                                    <li>Contributors who make a Donation are asked to provide contact details so that they can be given access to the LCAG FCC Forum where progress reports and pertinent information regarding activities which may assist those contributors will be posted.</li>
+                                    <li>Any person making a donation does not have to provide contact details and can remain fully anonymous if they wish, however, they will not be privy to the additional information which is available on the LCAG FCC Forum in this event.</li>
+                                    <li>It is anticipated that larger or corporate/organisation contributors will provide funding via a Contribution Agreement, however, Contribution Agreements are not limited to these contributors.</li>
+                                    <li>It is anticipated that smaller donations or funding provided by individuals will be made by way of a Donation, however, Donations are not limited to these contributors.</li>
                                 </ol>
 
                                 <br />
@@ -178,8 +154,8 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above.<br/><br/>
-                                                    Minimum payment for a Contribution Agreement is £<span id="contributionAgreementMinimumAmountGbp"></span>.
+                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
+                                                    Minimum payment for a Contribution Agreement is £<span class="contributionAgreementMinimumAmountGbp"></span>.
                                                 </div>
                                             </div>
                                         </div>
@@ -189,8 +165,8 @@
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Donations</strong> will not be refunded under any circumstances.<br/><br/>
-                                                    There is no minimum payment for donations.
+                                                    Payments made as <strong>Donations</strong> will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed.<br/><br/>
+                                                    The minimum payment for donations is £1.
                                                 </div>
                                             </div>
                                         </div>
@@ -325,20 +301,27 @@
             }
 
             $(function () {
+                $(".contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
+
                 $("input[name=contributionTypeRadio]").change(function() {
-                    $("#contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
                     $("#payment-form").validate();
                     if ($("#existingLcagAccountAnonymous").prop("checked") || this.value == 'DONATION') {
                         $("#grossAmount").rules("remove");
                         $("#grossAmount").rules("add", {
                             required: true,
-                            currency: true
+                            currency: true,
+                            min: 1
                         });
                         $("#contributionAgreementInfoSection").hide();
                         $("#donationInfoSection").show();
                         $("#payment-form").validate().element("input[name=contributionTypeRadio]");
                     } else {
-                        $("#grossAmount").rules("add", { min: lcag.Common.config.contributionAgreementMinimumAmountGbp });
+                        $("#grossAmount").rules("remove");
+                        $("#grossAmount").rules("add", {
+                            required: true,
+                            currency: true,
+                            min: lcag.Common.config.contributionAgreementMinimumAmountGbp
+                        });
                         $("#contributionAgreementInfoSection").show();
                         $("#donationInfoSection").hide();
                     }

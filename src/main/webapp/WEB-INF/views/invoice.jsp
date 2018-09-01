@@ -4,6 +4,7 @@
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <link rel="stylesheet" href="/css/lcag-invoice.css" />
+        <title>Loan Charge Action Group | Fighting Fund Contribution Invoice</title>
     </head>
     <body>
         <div class="invoice-box">
@@ -17,10 +18,10 @@
                                 </td>
 
                                 <td>
-                                    Reference: ${payment.reference}<br/>
-                                    Invoice created: ${payment.uiFriendlyInvoiceCreatedDate}<br/>
-                                    Payment received: ${payment.uiFriendlyPaymentReceivedDate}<br/>
-                                    Payment method: ${payment.paymentMethod}<br/>
+                                    Reference: <span id="reference">${payment.reference}</span><br/>
+                                    Invoice created: <span id="invoiceCreatedDate">${payment.uiFriendlyInvoiceCreatedDate}</span><br/>
+                                    Payment received: <span id="paymentReceivedDate">${payment.uiFriendlyPaymentReceivedDate}</span><br/>
+                                    Payment method: <span id="paymentMethod">${payment.paymentMethod}</span><br/>
                                 </td>
                             </tr>
                         </table>
@@ -41,8 +42,8 @@
                                 </td>
 
                                 <td>
-                                    ${payment.firstName} ${payment.lastName}<br/>
-                                    ${payment.emailAddress}
+                                    <span id="invoiceRecipientName">${payment.firstName} ${payment.lastName}</span><br/>
+                                    <span id="invoiceRecipientEmailAddress">${payment.emailAddress}</span>
                                 </td>
                             </tr>
                         </table>
@@ -61,21 +62,21 @@
 
                 <tr class="item">
                     <td>
-                        ${payment.contributionType.friendlyName}
+                        <span id="contributionType">${payment.contributionType.friendlyName}</span>
                     </td>
 
                     <td>
-                        ${payment.uiFriendlyNetAmount}
+                        <span id="netAmount">${payment.uiFriendlyNetAmount}</span>
                     </td>
                 </tr>
 
                 <tr class="item last">
                     <td>
-                        VAT @ <fmt:formatNumber type="percent" maxFractionDigits="1" groupingUsed="false" value="${payment.vatRate / 100}" />
+                        VAT @ <span id="vatPercentage"><fmt:formatNumber type="percent" maxFractionDigits="1" groupingUsed="false" value="${payment.vatRate / 100}" /></span>
                     </td>
 
                     <td>
-                        ${payment.uiFriendlyVarAmount}
+                        <span id="vatAmount">${payment.uiFriendlyVarAmount}</span>
                     </td>
                 </tr>
 
@@ -83,7 +84,7 @@
                     <td></td>
 
                     <td>
-                       Total: ${payment.uiFriendlyGrossAmount}
+                       Total: <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span>
                     </td>
                 </tr>
             </table>
