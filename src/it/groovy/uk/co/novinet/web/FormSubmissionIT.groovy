@@ -4,6 +4,8 @@ import geb.spock.GebSpec
 import uk.co.novinet.e2e.TestUtils
 import uk.co.novinet.service.ContributionType
 
+import java.text.SimpleDateFormat
+
 import static org.apache.commons.lang3.StringUtils.isBlank
 import static uk.co.novinet.e2e.TestUtils.*
 import static uk.co.novinet.web.GebTestUtils.*
@@ -19,6 +21,10 @@ class FormSubmissionIT extends GebSpec {
     //Server side validation
     //Client side validation combinations
     //Re-populating form after submission when error occurs
+    //Donation confirmation email DOES NOT have an invoice attachment
+    //Contribution agreement email DOES have an invoice attachment
+    //Add a message to the front end form saying that amount is inclusive of VAT for contribution agreements
+    //Add the contribution agreement attachment (with RH's signature)
 
     def setup() {
         TestUtils.setupDatabaseSchema()
@@ -68,7 +74,7 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£8.33", "20%", "£1.67", "£10.00")
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00", "0%", "£0.00", "£10.00")
     }
 
     def "anonymous payment, card declined"() {
@@ -147,13 +153,14 @@ class FormSubmissionIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £10.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            GebTestUtils.verifyNoAttachments("user1@something.com")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£8.33", "20%", "£1.67", "£10.00")
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£10.00", "0%", "£0.00", "£10.00")
     }
 
     def "i can complete the payment flow for contribution agreement as an existing lcag member"() {
@@ -196,6 +203,7 @@ class FormSubmissionIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £1,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
@@ -294,13 +302,14 @@ class FormSubmissionIT extends GebSpec {
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            GebTestUtils.verifyNoAttachments("harry@generous.com")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£166.67", "20%", "£33.33", "£200.00")
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00")
     }
 
     def "i can complete the payment flow for contribution agreement for a new lcag applicant"() {
@@ -350,6 +359,7 @@ class FormSubmissionIT extends GebSpec {
             waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
             waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
             waitFor { getPaymentRows().size() == 1 }

@@ -285,10 +285,17 @@ public class MemberService {
         }
 
         payment.setGuid(guid());
-        BigDecimal vatRate = new BigDecimal(this.vatRate);
-        payment.setVatRate(vatRate);
-        payment.setNetAmount(calculateNetAmount(payment.getGrossAmount(), vatRate));
-        payment.setVatAmount(payment.getGrossAmount().subtract(payment.getNetAmount()));
+
+        if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
+            BigDecimal vatRate = new BigDecimal(this.vatRate);
+            payment.setVatRate(vatRate);
+            payment.setNetAmount(calculateNetAmount(payment.getGrossAmount(), vatRate));
+            payment.setVatAmount(payment.getGrossAmount().subtract(payment.getNetAmount()));
+        } else {
+            payment.setVatRate(BigDecimal.ZERO);
+            payment.setNetAmount(payment.getGrossAmount());
+            payment.setVatAmount(BigDecimal.ZERO);
+        }
 
         switch (payment.getPaymentType()) {
             case ANONYMOUS:

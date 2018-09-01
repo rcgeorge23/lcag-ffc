@@ -101,9 +101,11 @@ public class AsynchMailSenderService {
         email.addRecipient(payment.getEmailAddress(), payment.getEmailAddress(), MimeMessage.RecipientType.TO);
         applySubjectAndText(payment, email);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderPdf(payment.getGuid(), out);
-        email.addAttachment("lcag-ffc-payment-invoice-" + formattedDate() + ".pdf", out.toByteArray(), "application/pdf");
+        if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            invoicePdfRendererService.renderPdf(payment.getGuid(), out);
+            email.addAttachment("lcag-ffc-payment-invoice-" + formattedDate() + ".pdf", out.toByteArray(), "application/pdf");
+        }
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);

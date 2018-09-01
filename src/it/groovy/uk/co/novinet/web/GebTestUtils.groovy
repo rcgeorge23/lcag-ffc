@@ -5,6 +5,10 @@ import org.springframework.format.number.CurrencyStyleFormatter
 
 import java.text.SimpleDateFormat
 
+import static uk.co.novinet.e2e.TestUtils.getEmails
+import static uk.co.novinet.e2e.TestUtils.getEmails
+import static uk.co.novinet.e2e.TestUtils.getEmails
+
 class GebTestUtils {
     static boolean switchToGuestVerificationTabIfNecessaryAndAssertGridHasNRows(Browser browser, int expectedNumberOfRows) {
         if (expectedNumberOfRows == 0) {
@@ -164,5 +168,16 @@ class GebTestUtils {
         browser.page.cityInput = "Some City"
         browser.page.postalCodeInput = "Some Postcode"
         browser.page.countryInput = "Some Country"
+    }
+
+    static boolean verifyAttachment(String emailAddress, int index, int expectedNumberOfAttachments, String expectedFileName) {
+        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().size() == expectedNumberOfAttachments
+        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().get(index).getFilename().equals(expectedFileName)
+        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().get(index).getBytes().length > 0
+        return true
+    }
+
+    static boolean verifyNoAttachments(String emailAddress) {
+        return getEmails(emailAddress, "Inbox").get(0).getAttachments().size() == 0
     }
 }
