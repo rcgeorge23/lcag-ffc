@@ -428,7 +428,7 @@
                 $("#grossAmount").rules("add", {
                     required: true,
                     currency: true,
-                    min: lcag.Common.config.contributionAgreementMinimumAmountGbp
+                    min: parseInt(lcag.Common.config.contributionAgreementMinimumAmountGbp)
                 });
             }
 
