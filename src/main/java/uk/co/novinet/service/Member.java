@@ -1,6 +1,5 @@
 package uk.co.novinet.service;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +18,7 @@ public class Member {
     private String username;
     private String name;
     private String group;
+    private String additionalGroups;
     private Instant registrationDate;
     private Boolean hmrcLetterChecked;
     private Boolean identificationChecked;
@@ -54,6 +54,7 @@ public class Member {
             String username,
             String name,
             String group,
+            String additionalGroups,
             Instant registrationDate,
             Boolean hmrcLetterChecked,
             Boolean identificationChecked,
@@ -84,6 +85,7 @@ public class Member {
         this.emailAddress = emailAddress;
         this.username = username;
         this.group = group;
+        this.additionalGroups = additionalGroups;
         this.registrationDate = registrationDate;
         this.hmrcLetterChecked = hmrcLetterChecked;
         this.identificationChecked = identificationChecked;
@@ -361,5 +363,13 @@ public class Member {
 
     public void setHasOptedOutOfClaim(Boolean hasOptedOutOfClaim) {
         this.hasOptedOutOfClaim = hasOptedOutOfClaim;
+    }
+
+    public String getAdditionalGroups() {
+        return additionalGroups;
+    }
+
+    public void setAdditionalGroups(String additionalGroups) {
+        this.additionalGroups = additionalGroups;
     }
 }

@@ -135,7 +135,7 @@ public class HomeController {
     private void postPaymentActions(Payment payment, Member member) {
         switch (payment.getPaymentType()) {
             case EXISTING_LCAG_MEMBER:
-                memberService.assignLcagFfcAdditionalGroup(member);
+                memberService.assignLcagFfcAdditionalGroup(member, payment);
                 break;
         }
     }

@@ -33,11 +33,11 @@
                         <table>
                             <tr>
                                 <td>
-                                    LC Action Group LBG<br/>
-                                    Sidwell<br/>
-                                    Potmans Lane<br/>
-                                    Bexhill-On-Sea<br/>
-                                    East Sussex<br/>
+                                    The Loan Charge Action Group fighting Fund Company<br/>
+                                    11 Rothersthorpe<br/>
+                                    Giffard Park<br/>
+                                    Milton Keynes<br/>
+                                    MK14 5JL<br/>
                                     United Kingdom<br/>
                                 </td>
 

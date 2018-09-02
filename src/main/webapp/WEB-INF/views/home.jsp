@@ -79,7 +79,7 @@
                                 <ul>
                                     <li>Contributor – any person who makes a financial contribution to the legal proceedings, whether that is a donation or a contribution with a Contribution Agreement</li>
                                     <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of £<span class="contributionAgreementMinimumAmountGbp"></span> or more.</li>
-                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than £<span class="contributionAgreementMinimumAmountGbp"></span>. Those who donate more than £500 will be entitled to an enhanced level of information to help them manage the loan charge.</li>
+                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than £<span class="contributionAgreementMinimumAmountGbp"></span>. Those who donate more than £250 will be entitled to an enhanced level of information to help them manage the loan charge.</li>
                                     <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
                                 </ul>
                                 <h4>Terms and conditions</h4>

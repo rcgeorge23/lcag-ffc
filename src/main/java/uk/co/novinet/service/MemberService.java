@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import uk.co.novinet.rest.PaymentStatus;
 import uk.co.novinet.rest.PaymentType;
 
 import java.math.BigDecimal;
@@ -27,12 +26,16 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 public class MemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
     private static final String LCAG_FFC_CONTRIBUTOR_GROUP = "9";
+    private static final String LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP = "9,10";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Value("${vatRate}")
     private String vatRate;
+
+    @Value("${minimumContributionAmountForEnhancedSupport}")
+    private BigDecimal minimumContributionAmountForEnhancedSupport;
 
     private static Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
 
@@ -90,6 +93,7 @@ public class MemberService {
                 rs.getString("username"),
                 rs.getString("name"),
                 rs.getString("group"),
+                rs.getString("additionalgroups"),
                 dateFromMyBbRow(rs, "regdate"),
                 rs.getBoolean("hmrc_letter_checked"),
                 rs.getBoolean("identification_checked"),
@@ -127,7 +131,7 @@ public class MemberService {
         return "select u.uid, u.username, u.name, u.email, u.regdate, u.hmrc_letter_checked, u.identification_checked, u.agreed_to_contribute_but_not_paid, " +
                 "u.mp_name, u.mp_engaged, u.mp_sympathetic, u.mp_constituency, u.mp_party, u.schemes, u.notes, u.industry, u.token, u.has_completed_membership_form, " +
                 "u.how_did_you_hear_about_lcag, u.member_of_big_group, u.big_group_username, u.verified_on, u.verified_by, u.already_have_an_lcag_account_email_sent, " +
-                "u.registered_for_claim, u.has_completed_claim_participant_form, u.has_been_sent_claim_confirmation_email, u.opted_out_of_claim, u.claim_token, ug.title as `group` " +
+                "u.registered_for_claim, u.has_completed_claim_participant_form, u.has_been_sent_claim_confirmation_email, u.opted_out_of_claim, u.claim_token, ug.title as `group`, u.additionalgroups " +
                 "from " + usersTableName() + " u inner join " + userGroupsTableName() + " ug on u.usergroup = ug.gid";
     }
 
@@ -156,6 +160,7 @@ public class MemberService {
                     extractUsername(payment.getEmailAddress()),
                     payment.getFirstName() + " " + payment.getLastName(),
                     null,
+                    forumGroupForContributionAmount(payment),
                     Instant.now(),
                     false,
                     false,
@@ -206,7 +211,7 @@ public class MemberService {
                     member.getPasswordDetails().getPasswordHash(),
                     member.getPasswordDetails().getSalt(),
                     member.getEmailAddress(),
-                    LCAG_FFC_CONTRIBUTOR_GROUP,
+                    member.getAdditionalGroups(),
                     unixTime(member.getRegistrationDate()),
                     0L,
                     0L,
@@ -351,8 +356,8 @@ public class MemberService {
     }
 
 
-    public void assignLcagFfcAdditionalGroup(Member member) {
-        LOGGER.info("Going to assign member to LCAG FFC forum group: {}", member);
+    public void assignLcagFfcAdditionalGroup(Member member, Payment payment) {
+        LOGGER.info("Going to assign member: {} - to LCAG FFC forum group for payment: {}", member, payment);
 
         String updateSql = "update " + usersTableName() + " set `additionalgroups` = ? where uid = ?;";
 
@@ -360,10 +365,14 @@ public class MemberService {
 
         int result = jdbcTemplate.update(
                 updateSql,
-                LCAG_FFC_CONTRIBUTOR_GROUP,
+                forumGroupForContributionAmount(payment),
                 member.getId()
         );
 
         LOGGER.info("Update result: {}", result);
+    }
+
+    String forumGroupForContributionAmount(Payment payment) {
+        return payment.getGrossAmount().compareTo(minimumContributionAmountForEnhancedSupport) < 0 ? LCAG_FFC_CONTRIBUTOR_GROUP : LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP;
     }
 }
