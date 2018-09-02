@@ -34,6 +34,9 @@ public class HomeController {
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
 
+    @Value("${vatNumber}")
+    private String vatNumber;
+
     @GetMapping("/")
     public String getHome(HttpServletRequest request) {
         return "home";
@@ -53,6 +56,7 @@ public class HomeController {
         }
 
         model.addAttribute("payment", payment);
+        model.addAttribute("vatNumber", vatNumber);
         model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
 
         return "invoice";

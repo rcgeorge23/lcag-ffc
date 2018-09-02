@@ -34,6 +34,9 @@ public class MemberService {
     @Value("${vatRate}")
     private String vatRate;
 
+    @Value("${vatNumber}")
+    private String vatNumber;
+
     @Value("${minimumContributionAmountForEnhancedSupport}")
     private BigDecimal minimumContributionAmountForEnhancedSupport;
 
@@ -290,6 +293,7 @@ public class MemberService {
         }
 
         payment.setGuid(guid());
+        payment.setVatNumber(vatNumber);
 
         if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
             BigDecimal vatRate = new BigDecimal(this.vatRate);

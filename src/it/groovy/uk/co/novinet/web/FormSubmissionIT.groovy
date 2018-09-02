@@ -72,8 +72,16 @@ class FormSubmissionIT extends GebSpec {
             go driver.currentUrl.replace("thankYou", "invoice")
             waitFor { at InvoicePage }
 
+        then: "i navigate to the invoice page"
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00", "0%", "£0.00", "£10.00")
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "", "", "Donation", "£10.00", "0%", "£0.00", "£10.00", "1234567890")
     }
 
     def "anonymous payment, card declined"() {
@@ -159,7 +167,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£10.00", "0%", "£0.00", "£10.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£10.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£10.00", "0%", "£0.00", "£10.00", "1234567890")
     }
 
     def "i can complete the payment flow for donation of £250 as an existing lcag member"() {
@@ -210,7 +226,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£250.00", "0%", "£0.00", "£250.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£250.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£250.00", "0%", "£0.00", "£250.00", "1234567890")
     }
 
     def "i can complete the payment flow for contribution agreement as an existing lcag member"() {
@@ -261,7 +285,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "John Smith", "user1@something.com", "Contribution Agreement", "£833.33", "20%", "£166.67", "£1,000.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "John Smith", "user1@something.com", "Contribution Agreement", "£1,000.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "John Smith", "user1@something.com", "Contribution Agreement", "£833.33", "20%", "£166.67", "£1,000.00", "1234567890")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("invoice", "contributionAgreement")
@@ -367,7 +399,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00", "1234567890")
     }
 
     def "i can complete the payment flow for donation for a new lcag applicant for £250"() {
@@ -426,7 +466,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£250.00", "0%", "£0.00", "£250.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£250.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£250.00", "0%", "£0.00", "£250.00", "1234567890")
     }
 
     def "i can complete the payment flow for contribution agreement for a new lcag applicant"() {
@@ -498,7 +546,15 @@ class FormSubmissionIT extends GebSpec {
             waitFor { at InvoicePage }
 
         then:
-            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£1,666.67", "20%", "£333.33", "£2,000.00")
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£2,000.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90001'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Contribution Agreement", "£1,666.67", "20%", "£333.33", "£2,000.00", "1234567890")
     }
 
 }

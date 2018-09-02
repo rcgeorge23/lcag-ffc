@@ -1,5 +1,7 @@
 package uk.co.novinet.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -7,6 +9,8 @@ import java.io.OutputStream;
 
 @Service
 public class InvoicePdfRendererService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvoicePdfRendererService.class);
+
     private static String baseUrl;
 
     public String getBaseUrl() {
@@ -18,11 +22,14 @@ public class InvoicePdfRendererService {
     }
 
     public void render(DocumentType documentType, String guid, OutputStream outputStream) {
+        LOGGER.info("Going to try and render documentType: {}, guid: {}, baseUrl: {} ", documentType, guid, baseUrl);
         switch (documentType) {
             case CONTRIBUTION_AGREEMENT:
                 renderContributionAgreementPdf(guid, outputStream);
+                break;
             case INVOICE:
                 renderInvoicePdf(guid, outputStream);
+                break;
         }
     }
 

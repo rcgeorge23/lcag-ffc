@@ -152,10 +152,10 @@
                                         </div>
                                         <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
                                             <div class="row">
-                                                <div class="col-md-1 col-sm-3">
+                                                <div class="col-md-1 col-sm-2">
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
-                                                <div class="col-md-11 col-sm-9">
+                                                <div class="col-md-11 col-sm-10">
                                                     Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
                                                     Minimum payment for a Contribution Agreement is £<span class="contributionAgreementMinimumAmountGbp"></span>.
                                                 </div>
@@ -163,10 +163,10 @@
                                         </div>
                                         <div class="alert alert-info" id="donationInfoSection" style="display: none;">
                                             <div class="row">
-                                                <div class="col-md-1 col-sm-3">
+                                                <div class="col-md-1 col-sm-2">
                                                     <i class="fa fa-info-circle fa-2x"></i>
                                                 </div>
-                                                <div class="col-md-11 col-sm-9">
+                                                <div class="col-md-11 col-sm-10">
                                                     Payments made as <strong>Donations</strong> will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed.<br/><br/>
                                                     The minimum payment for donations is £1.
                                                 </div>

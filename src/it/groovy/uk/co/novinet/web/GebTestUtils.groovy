@@ -144,7 +144,8 @@ class GebTestUtils {
             String netAmount,
             String vatPercentage,
             String vatAmount,
-            String grossAmount) {
+            String grossAmount,
+            String vatNumber) {
         assert browser.page.reference.text() == reference
         assert browser.page.invoiceCreatedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
         assert browser.page.paymentReceivedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
@@ -156,6 +157,31 @@ class GebTestUtils {
         assert browser.page.vatPercentage.text() == vatPercentage
         assert browser.page.vatAmount.text() == vatAmount
         assert browser.page.grossAmount.text() == grossAmount
+        assert browser.page.vatNumber.text() == "VAT number: " + vatNumber
+        return true
+    }
+
+    static boolean verifyNoVatNumberInvoice(
+            Browser browser,
+            String reference,
+            Date date,
+            String paymentMethod,
+            String recipientName,
+            String recipientEmail,
+            String contributionType,
+            String grossAmount) {
+        assert browser.page.reference.text() == reference
+        assert browser.page.invoiceCreatedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
+        assert browser.page.paymentReceivedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
+        assert browser.page.paymentMethod.text() == paymentMethod
+        assert browser.page.invoiceRecipientName.text() == recipientName
+        assert browser.page.invoiceRecipientEmailAddress.text() == recipientEmail
+        assert browser.page.contributionType.text() == contributionType
+        assert browser.page.netAmount.text() == grossAmount
+        assert browser.page.vatPercentage.empty == true
+        assert browser.page.vatAmount.empty == true
+        assert browser.page.grossAmount.text() == grossAmount
+        assert browser.page.vatNumber.text() == "A VAT invoice will be issued once LCAG FFC has finalised VAT registration."
         return true
     }
 

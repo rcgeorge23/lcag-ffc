@@ -16,9 +16,10 @@ class InvoicePage extends Page {
         invoiceRecipientName { $("#invoiceRecipientName") }
         invoiceRecipientEmailAddress { $("#invoiceRecipientEmailAddress") }
         contributionType { $("#contributionType") }
-        netAmount { $("#netAmount") }
-        vatPercentage { $("#vatPercentage") }
-        vatAmount { $("#vatAmount") }
+        netAmount(required: false, wait: 2) { $("#netAmount") }
+        vatPercentage(required: false, wait: 2) { $("#vatPercentage") }
+        vatAmount(required: false, wait: 2) { $("#vatAmount") }
+        vatNumber { $("#vatNumber") }
         grossAmount { $("#grossAmount") }
     }
 }

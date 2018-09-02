@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `contribution_type` varchar(30) NOT NULL,
   `email_sent` tinyint(1) NOT NULL DEFAULT 0,
   `guid` varchar(120) NOT NULL DEFAULT 0,
+  `vat_number` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

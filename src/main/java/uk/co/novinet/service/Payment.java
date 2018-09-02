@@ -41,6 +41,7 @@ public class Payment {
     private String paymentMethod;
     private ContributionType contributionType;
     private String guid;
+    private String vatNumber;
 
     public Payment() {}
 
@@ -71,7 +72,8 @@ public class Payment {
             PaymentType paymentType,
             String paymentMethod,
             ContributionType contributionType,
-            String guid) {
+            String guid,
+            String vatNumber) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -99,6 +101,7 @@ public class Payment {
         this.paymentMethod = paymentMethod;
         this.contributionType = contributionType;
         this.guid = guid;
+        this.vatNumber = vatNumber;
     }
 
     public Long getId() {
@@ -356,5 +359,13 @@ public class Payment {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getVatNumber() {
+        return vatNumber;
+    }
+
+    public void setVatNumber(String vatNumber) {
+        this.vatNumber = vatNumber;
     }
 }
