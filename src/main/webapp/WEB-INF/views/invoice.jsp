@@ -34,12 +34,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    The Loan Charge Action Group Fighting Fund Company<br/>
-                                    11 Rothersthorpe<br/>
-                                    Giffard Park<br/>
-                                    Milton Keynes<br/>
-                                    MK14 5JL<br/>
-                                    United Kingdom<br/>
+
                                 </td>
 
                                 <td>
@@ -101,9 +96,13 @@
                                 <small><span id="vatNumber">VAT number: ${payment.vatNumber}</span></small>
                             </c:otherwise>
                         </c:choose>
-                    </td>
-                </tr>
+                     </td>
+                 </tr>
             </table>
+        </div>
+        <div class="footer">
+            <small>LOAN CHARGE ACTION GROUP FFC | Company number 11528979</small><br/>
+            <small>11 Rothersthorpe, Giffard Park, Milton Keynes, MK14 5JL, United Kingdom</small><br/>
         </div>
     </body>
 </html>

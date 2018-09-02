@@ -76,6 +76,20 @@
     }
 }
 
+.footer {
+    max-width: 800px;
+    margin: auto;
+    padding-top: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    color: #555;
+    text-align: right;
+}
+
 /** RTL **/
 .rtl {
     direction: rtl;
@@ -89,3 +103,4 @@
 .rtl table tr td:nth-child(2) {
     text-align: left;
 }
+

@@ -107,6 +107,16 @@
                     </div>
 
                     <div id="paymentFormSection" style="display:none;">
+                        <div class="alert alert-info">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2">
+                                    <i class="fa fa-info-circle fa-2x"></i>
+                                </div>
+                                <div class="col-md-11 col-sm-10">
+                                    <strong>GDPR information</strong>: The details that you provide will not be shared with third parties.</p>
+                                </div>
+                            </div>
+                        </div>
                         <form action="/submit" method="post" id="payment-form">
                             <input type="hidden" id="paymentType" name="paymentType" value="" />
                             <input type="hidden" id="contributionType" name="contributionType" value="" />

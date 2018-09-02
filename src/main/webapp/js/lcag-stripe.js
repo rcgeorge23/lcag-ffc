@@ -68,6 +68,8 @@ lcag.Stripe = lcag.Stripe || {
                         form.appendChild(hiddenInput);
                         // Submit the form
                         form.submit();
+                    } else {
+                        $("#submitButton").prop("disabled", false);
                     }
                 });
             });
