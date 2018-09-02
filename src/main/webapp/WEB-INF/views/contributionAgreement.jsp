@@ -4,11 +4,11 @@
 <html>
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
-        <link rel="stylesheet" href="/css/lcag-invoice.css" />
+        <link rel="stylesheet" href="/css/lcag-contribution-agreement.css" />
         <title>Loan Charge Action Group | Contribution Agreement </title>
     </head>
     <body>
-        <div class="invoice-box">
+        <div class="contribution-agreement-box">
             <table cellpadding="0" cellspacing="0">
                 <tr class="top">
                     <td colspan="2" align="center">
@@ -50,7 +50,6 @@
                         Signed on behalf of LCAG FFC<br/><br/>
 
                         <img src="/images/richard_horsley_signature.png" style="max-width:150px;" width="150px;" /><br/><br/>
-
                         Richard Horsley CFO
                     </td>
                 </tr>
