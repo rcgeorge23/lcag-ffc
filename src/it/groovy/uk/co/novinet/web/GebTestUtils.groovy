@@ -230,12 +230,15 @@ class GebTestUtils {
         switch (paymentType) {
             case (PaymentType.NEW_LCAG_MEMBER):
                 browser.page.existingLcagAccountNo.click()
+                newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
                 break
             case (PaymentType.EXISTING_LCAG_MEMBER):
                 browser.page.existingLcagAccountYes.click()
+                existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
                 break
             case (PaymentType.ANONYMOUS):
                 browser.page.existingLcagAccountAnonymous.click()
+                anonymousPaymentCreditCardFormDisplayed(browser)
                 break
         }
     }
