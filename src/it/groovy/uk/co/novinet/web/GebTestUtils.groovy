@@ -2,6 +2,7 @@ package uk.co.novinet.web
 
 import geb.Browser
 import org.springframework.format.number.CurrencyStyleFormatter
+import uk.co.novinet.rest.PaymentType
 
 import java.text.SimpleDateFormat
 
@@ -217,5 +218,25 @@ class GebTestUtils {
         assert browser.page.country == country
         assert browser.page.grossAmount == contributionAmount
         return true
+    }
+
+    static void driveToPaymentType(Browser browser, PaymentType paymentType) {
+        browser.go("http://localhost:8484")
+        browser.waitFor { browser.at LcagFfcFormPage }
+        verifyHappyInitialPaymentFormState(browser)
+        browser.page.acceptTermsAndConditionsButton.click()
+        verifyInitialPaymentFormQuestionsDisplayed(browser)
+
+        switch (paymentType) {
+            case (PaymentType.NEW_LCAG_MEMBER):
+                browser.page.existingLcagAccountNo.click()
+                break
+            case (PaymentType.EXISTING_LCAG_MEMBER):
+                browser.page.existingLcagAccountYes.click()
+                break
+            case (PaymentType.ANONYMOUS):
+                browser.page.existingLcagAccountAnonymous.click()
+                break
+        }
     }
 }

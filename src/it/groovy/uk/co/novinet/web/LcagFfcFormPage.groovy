@@ -47,8 +47,8 @@ class LcagFfcFormPage extends Page {
         payNowButton { $("#submitButton") }
 
         //errors
-        titleError { $("#title-error") }
-        firstNameError { $("#firstName-error") }
+        grossAmountError { $("#grossAmount-error").text() }
+        cardError(required: false, wait: 2) { $("#card-errors").text() }
         lastNameError { $("#lastName-error") }
         emailAddressError { $("#emailAddress-error") }
         addressLine1Error { $("#addressLine1-error") }
