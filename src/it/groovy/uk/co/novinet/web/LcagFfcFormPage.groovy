@@ -20,6 +20,10 @@ class LcagFfcFormPage extends Page {
         existingLcagAccountNo { $("#existingLcagAccountNo") }
         existingLcagAccountAnonymous { $("#existingLcagAccountAnonymous") }
 
+        contributorIsVatRegisteredInput { $("input[name=contributorIsVatRegistered]") }
+        contributorIsVatRegisteredYes { $("#contributorIsVatRegisteredYes") }
+        contributorIsVatRegisteredNo { $("#contributorIsVatRegisteredNo") }
+
         contributionTypeInput { $("#contributionType") }
         contributionTypeDonation { $("#contributionTypeDonation") }
         contributionTypeContributionAgreement { $("#contributionTypeContributionAgreement") }
@@ -29,6 +33,7 @@ class LcagFfcFormPage extends Page {
 
         usernameInput { $("#username") }
         firstNameInput { $("#firstName") }
+        companyNameInput { $("#companyName") }
         lastNameInput { $("#lastName") }
         emailAddressInput { $("#emailAddress") }
 

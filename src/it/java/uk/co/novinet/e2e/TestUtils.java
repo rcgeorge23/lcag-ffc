@@ -219,7 +219,10 @@ public class TestUtils {
                 rs.getString("payment_method"),
                 ContributionType.valueOf(rs.getString("contribution_type")),
                 rs.getString("guid"),
-                rs.getString("vat_number"));
+                rs.getString("vat_number"),
+                rs.getBoolean("contributor_is_vat_registered"),
+                rs.getString("company_name")
+        );
     }
 
     static List<StaticMessage> getEmails(String emailAddress, String folderName) {

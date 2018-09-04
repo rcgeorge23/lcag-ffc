@@ -182,6 +182,27 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="vatSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label>I am making this contribution on behalf of a VAT registered company:</label>
+                                            <a class='form-tooltip' data-toggle="tooltip" data-placement="right" title="You must only answer yes to this question if you are making a contribution on behalf of a VAT registered company.">
+                                                <i class='glyphicon glyphicon-info-sign'></i>
+                                            </a>
+                                            <div>
+                                                <label class="radio-inline"> <input type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredYes" value="yes" required> Yes </label>
+                                                <label class="radio-inline"> <input type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredNo" value="no" required> No </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="companyNameSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="companyName">Company name:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
+                                                <input type="text" name="companyName" class="form-control" id="companyName" placeholder="Please enter your company name" required />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div id="nameSection" style="display: none;">
                                         <div class="form-group">
                                             <label for="firstName">First name:</label>
@@ -345,12 +366,14 @@
                 console.log("hideContributionAgreementSections");
                 $("#nameSection").hide();
                 $("#addressSection").hide();
+                $("#vatSection").hide();
             }
 
             function showContributionAgreementSections() {
                 console.log("showContributionAgreementSections");
                 $("#nameSection").show();
                 $("#addressSection").show();
+                $("#vatSection").show();
             }
 
             function setupFieldValidationForAnonymousDonation() {
@@ -361,6 +384,7 @@
                 $("#firstName").removeAttr("required");
                 $("#lastName").removeAttr("required");
                 $("#emailAddress").removeAttr("required");
+                $("#contributorIsVatRegistered").removeAttr("required");
                 removeAddressMandatoryValidation();
                 hideContributionAgreementSections();
             }
@@ -373,6 +397,8 @@
                 $("#lastName").prop('required', true);
                 $("#emailAddress").prop('required', true);
 
+                $("#contributorIsVatRegistered").removeAttr("required");
+
                 $("#username").removeAttr("required");
                 removeAddressMandatoryValidation();
                 $("#nameSection").show();
@@ -382,11 +408,10 @@
             function setupFieldValidationForNewJoinerContributionAgreement() {
                 console.log("setting up setupFieldValidationForNewJoinerContributionAgreement validation rules");
                 addContributionAgreementGrossAmountValidation();
-
                 $("#firstName").prop('required', true);
                 $("#lastName").prop('required', true);
                 $("#emailAddress").prop('required', true);
-
+                $("#contributorIsVatRegistered").prop('required', true);
                 $("#username").removeAttr("required");
                 addAddressMandatoryValidation();
                 showContributionAgreementSections()
@@ -395,12 +420,11 @@
             function setupFieldValidationForExistingLcagMemberDonation() {
                 console.log("setting up setupFieldValidationForExistingLcagMemberDonation validation rules");
                 addDonationGrossAmountValidation();
-
                 $("#username").prop('required', true);
-
                 $("#firstName").removeAttr("required");
                 $("#lastName").removeAttr("required");
                 $("#emailAddress").removeAttr("required");
+                $("#contributorIsVatRegistered").removeAttr("required");
                 removeAddressMandatoryValidation();
                 hideContributionAgreementSections()
             }
@@ -408,12 +432,11 @@
             function setupFieldValidationForExistingLcagMemberContributionAgreement() {
                 console.log("setting up setupFieldValidationForExistingLcagMemberContributionAgreement validation rules");
                 addContributionAgreementGrossAmountValidation();
-
                 $("#username").prop('required', true);
-
                 $("#firstName").prop('required', true);
                 $("#lastName").prop('required', true);
                 $("#emailAddress").prop('required', true);
+                $("#contributorIsVatRegistered").prop('required', true);
                 addAddressMandatoryValidation();
                 showContributionAgreementSections()
             }
@@ -475,6 +498,8 @@
             }
 
             $(function () {
+                $("a.form-tooltip").tooltip();
+
                 $(".contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
 
                 $("input[name=contributionTypeRadio]").change(function() {
@@ -528,6 +553,16 @@
                     document.querySelector('#contributionTypeSection').scrollIntoView({
                         behavior: 'smooth'
                     });
+                });
+
+                $("input[type=radio][name=contributorIsVatRegistered]").change(function() {
+                    if (this.value == 'yes') {
+                        $("#companyNameSection").show();
+                        $("#companyName").prop('required', true);
+                    } else {
+                        $("#companyNameSection").hide();
+                        $("#companyName").removeAttr("required");
+                    }
                 });
 
                 if (getParameterByName('guid') != null) {

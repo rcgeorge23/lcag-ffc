@@ -170,6 +170,7 @@ class FormSubmissionIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
             contributionTypeContributionAgreement.click()
+            contributorIsVatRegisteredNo.click()
             contributionAgreementAddressFieldsAreDisplayed(browser, true)
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
             amountInput = "1000.00"
@@ -337,6 +338,7 @@ class FormSubmissionIT extends GebSpec {
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeContributionAgreement.click()
+            contributorIsVatRegisteredNo.click()
             contributionAgreementAddressFieldsAreDisplayed(browser, true)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             amountInput = "2000.00"

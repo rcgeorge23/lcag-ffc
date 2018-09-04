@@ -55,7 +55,8 @@ public class PaymentService {
             chargeMap.put("currency", "gbp");
             chargeMap.put("metadata", filterEmptyStringValues(describe(payment),
                     asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount", "uiFriendlyNetAmount",
-                            "uiFriendlyVatAmount", "hash", "membershipToken", "errorDescription", "paymentStatus")));
+                            "uiFriendlyVatAmount", "hash", "membershipToken", "errorDescription", "paymentStatus", "membershipToken", "addressLine2",
+                            "invoiceCreated", "id")));
             chargeMap.put("source", payment.getStripeToken());
 
             Charge charge = Charge.create(chargeMap);
@@ -106,8 +107,8 @@ public class PaymentService {
         String insertSql = "insert into " + contributionsTableName() +
                 " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, `net_amount`, `vat_rate`, `vat_amount`, " +
                 "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`, `address_line_1`, " +
-                "`address_line_2`, `city`, `postal_code`, `country`, `vat_number`) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                "`address_line_2`, `city`, `postal_code`, `country`, `vat_number`, `contributor_is_vat_registered`, `company_name`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -138,7 +139,9 @@ public class PaymentService {
                 payment.getCity(),
                 payment.getPostalCode(),
                 payment.getCountry(),
-                payment.getVatNumber()
+                payment.getVatNumber(),
+                payment.getContributorIsVatRegistered(),
+                payment.getCompanyName()
         );
 
         LOGGER.info("Insertion result: {}", result);
@@ -221,7 +224,10 @@ public class PaymentService {
                 rs.getString("payment_method"),
                 ContributionType.valueOf(rs.getString("contribution_type")),
                 rs.getString("guid"),
-                rs.getString("vat_number"));
+                rs.getString("vat_number"),
+                rs.getBoolean("contributor_is_vat_registered"),
+                rs.getString("company_name")
+        );
     }
 
     public Payment findPaymentForGuid(String guid) {
