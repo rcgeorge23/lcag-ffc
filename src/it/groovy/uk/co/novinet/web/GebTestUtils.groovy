@@ -3,6 +3,7 @@ package uk.co.novinet.web
 import geb.Browser
 import org.springframework.format.number.CurrencyStyleFormatter
 import uk.co.novinet.rest.PaymentType
+import uk.co.novinet.service.ContributionType
 
 import java.text.SimpleDateFormat
 
@@ -74,7 +75,7 @@ class GebTestUtils {
     }
 
     static void verifyHappyInitialPaymentFormState(Browser browser) {
-        browser.waitFor { browser.page.paymentDeclinedSection.displayed == false }
+        browser.waitFor { browser.page.paymentDeclinedSection.present == false }
         browser.waitFor { browser.page.termsAndConditionsSection.displayed == true }
         browser.waitFor { browser.page.acceptTermsAndConditionsButton.displayed == true }
         browser.waitFor { browser.page.paymentFormSection.displayed == false }
@@ -249,7 +250,7 @@ class GebTestUtils {
         return true
     }
 
-    static void driveToPaymentType(Browser browser, PaymentType paymentType) {
+    static void driveToPaymentType(Browser browser, PaymentType paymentType, ContributionType contributionType, Boolean vatRegistered) {
         browser.go("http://localhost:8484")
         browser.waitFor { browser.at LcagFfcFormPage }
         verifyHappyInitialPaymentFormState(browser)
@@ -259,16 +260,33 @@ class GebTestUtils {
         switch (paymentType) {
             case (PaymentType.NEW_LCAG_MEMBER):
                 browser.page.existingLcagAccountNo.click()
-                newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
                 break
             case (PaymentType.EXISTING_LCAG_MEMBER):
                 browser.page.existingLcagAccountYes.click()
-                existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
                 break
             case (PaymentType.ANONYMOUS):
                 browser.page.existingLcagAccountAnonymous.click()
                 anonymousPaymentCreditCardFormDisplayed(browser)
+                return
+        }
+
+        switch (contributionType) {
+            case (ContributionType.DONATION):
+                browser.page.contributionTypeDonation.click()
+                break
+            case (ContributionType.CONTRIBUTION_AGREEMENT):
+                browser.page.contributionTypeContributionAgreement.click()
+                if (vatRegistered) {
+                    browser.page.contributorIsVatRegisteredYes.click()
+                } else {
+                    browser.page.contributorIsVatRegisteredNo.click()
+                }
                 break
         }
+
+
+//        newLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+//        existingLcagUserAccountPaymentCreditCardFormDisplayed(browser)
+//        anonymousPaymentCreditCardFormDisplayed(browser)
     }
 }

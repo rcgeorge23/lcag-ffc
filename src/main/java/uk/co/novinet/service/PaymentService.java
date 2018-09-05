@@ -3,6 +3,7 @@ package uk.co.novinet.service;
 import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -231,6 +232,10 @@ public class PaymentService {
     }
 
     public Payment findPaymentForGuid(String guid) {
+        if (guid == null || StringUtils.isBlank(guid)) {
+            return null;
+        }
+
         LOGGER.info("Going to find payment with guid: {}", guid);
 
         String sql = "select * from " + contributionsTableName() + " where `guid` = ?;";

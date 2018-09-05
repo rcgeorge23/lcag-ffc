@@ -127,7 +127,7 @@ lcag.Validation = lcag.Validation || {
             lcag.Validation.showUsernameSection();
             lcag.Validation.hideCompanyNameSection();
             lcag.Validation.showPaymentSection();
-            lcag.Validation.hideNameSection();
+            lcag.Validation.showNameSection();
             lcag.Validation.showAddressSection();
         } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == false && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
             lcag.Validation.hideUsernameSection();
@@ -149,8 +149,15 @@ lcag.Validation = lcag.Validation || {
 
         if (lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
             lcag.Validation.showVatSection();
-        } else {
+            $("#contributionAgreementInfoSection").show();
+            $("#donationInfoSection").hide();
+        } else if (lcag.Validation.contributionTypeRadio() == "DONATION") {
             lcag.Validation.hideVatSection();
+            $("#donationInfoSection").show();
+            $("#contributionAgreementInfoSection").hide();
+        } else {
+            $("#donationInfoSection").hide();
+            $("#contributionAgreementInfoSection").hide();
         }
 
         if (lcag.Validation.contributorIsVatRegisteredRadio() == true) {
@@ -163,7 +170,8 @@ lcag.Validation = lcag.Validation || {
             lcag.Validation.hideUsernameSection();
         }
 
-
+        $("#contributionType").val(lcag.Validation.contributionTypeRadio());
+        $("#paymentType").val(lcag.Validation.paymentTypeRadio());
 
 //        else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == true) {
 //            lcag.Validation.showCompanyNameSection();

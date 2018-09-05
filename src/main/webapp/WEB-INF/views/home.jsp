@@ -1,4 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri='http://java.sun.com/jsp/jstl/core' %>
 <html>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <head>
@@ -39,22 +41,24 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12 col-sm-12">
-                    <div role="alert" class="alert alert-danger alert-dismissible" id="paymentDeclinedSection" style="display: none;">
-                        <div class="row">
-                            <div class="col-md-1 col-sm-2">
-                                <i class="fa fa-exclamation-triangle fa-2x"></i>
-                            </div>
-                            <div class="col-md-10 col-sm-9">
-                                We were unable to take your payment. The error was: <strong><span id="paymentDeclinedErrorMessage"></span></strong>. Please try again or use alternate card details.<br/><br/>
-                                If the problem persists please contact litigation@hmrcloancharge.info.
-                            </div>
-                            <div class="col-md-1 col-sm-1 pull-right">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                    <c:if test="${payment != null && payment.errorDescription != null && payment.errorDescription != ''}">
+                        <div role="alert" class="alert alert-danger alert-dismissible" id="paymentDeclinedSection">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2">
+                                    <i class="fa fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                                <div class="col-md-10 col-sm-9">
+                                    We were unable to take your payment. The error was: <strong><span id="paymentDeclinedErrorMessage">${payment.errorDescription}</span></strong>. Please try again or use alternate card details.<br/><br/>
+                                    If the problem persists please contact litigation@hmrcloancharge.info.
+                                </div>
+                                <div class="col-md-1 col-sm-1 pull-right">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </c:if>
                     <div role="alert" class="alert alert-danger alert-dismissible" id="validationErrorSection" style="display: none;">
                         <div class="row">
                             <div class="col-md-1 col-sm-2">
@@ -79,8 +83,8 @@
                                 <h4>Glossary of terms</h4>
                                 <ul>
                                     <li>Contributor – any person who makes a financial contribution to the legal proceedings, whether that is a donation or a contribution with a Contribution Agreement</li>
-                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of £<span class="contributionAgreementMinimumAmountGbp"></span> or more.</li>
-                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than £<span class="contributionAgreementMinimumAmountGbp"></span>. Those who donate more than £250 will be entitled to an enhanced level of information to help them manage the loan charge.</li>
+                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span> or more.</li>
+                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span>. Those who donate more than ${minimumContributionAmountForEnhancedSupport} will be entitled to an enhanced level of information to help them manage the loan charge.</li>
                                     <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
                                 </ul>
                                 <h4>Terms and conditions</h4>
@@ -158,7 +162,7 @@
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
                                                     Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
-                                                    Minimum payment for a Contribution Agreement is £<span class="contributionAgreementMinimumAmountGbp"></span>.
+                                                    Minimum payment for a Contribution Agreement is <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span>.
                                                 </div>
                                             </div>
                                         </div>

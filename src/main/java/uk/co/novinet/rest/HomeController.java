@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.number.CurrencyStyleFormatter;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,6 +15,7 @@ import uk.co.novinet.service.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -34,11 +36,28 @@ public class HomeController {
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
 
+    @Value("${minimumContributionAmountForEnhancedSupport}")
+    private String minimumContributionAmountForEnhancedSupport;
+
     @Value("${vatNumber}")
     private String vatNumber;
 
+    @Value("${vatRate}")
+    private String vatRate;
+
     @GetMapping("/")
-    public String getHome(HttpServletRequest request) {
+    public String getHome(ModelMap model, @RequestParam(required = false, name = "guid") String guid) {
+        model.addAttribute("contributionAgreementMinimumAmountGbp", new CurrencyStyleFormatter().print(new BigDecimal(contributionAgreementMinimumAmountGbp), Locale.UK));
+        model.addAttribute("minimumContributionAmountForEnhancedSupport", new CurrencyStyleFormatter().print(new BigDecimal(minimumContributionAmountForEnhancedSupport), Locale.UK));
+
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment != null) {
+            model.addAttribute("payment", payment);
+        }
+
+        model.addAttribute("vatRate", new BigDecimal(vatRate));
+
         return "home";
     }
 

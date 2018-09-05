@@ -9,7 +9,7 @@ class LcagFfcFormPage extends Page {
     static at = { title == "Loan Charge Action Group | Fighting Fund Contribution Form" }
 
     static content = {
-        paymentDeclinedSection { $("#paymentDeclinedSection") }
+        paymentDeclinedSection(required: false, wait: 2) { $("#paymentDeclinedSection") }
         termsAndConditionsSection { $("#termsAndConditionsSection") }
         acceptTermsAndConditionsButton { $("#acceptTermsAndConditions") }
         paymentFormSection { $("#paymentFormSection") }

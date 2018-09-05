@@ -37,7 +37,7 @@ class FormSubmissionIT extends GebSpec {
 
     def "i can complete the payment flow as an anonymous donor"() {
         given:
-            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS, ContributionType.DONATION, false)
             contributionAgreementAddressFieldsAreDisplayed(browser, false)
 
         when: "i enter valid values and click pay now"
@@ -67,7 +67,7 @@ class FormSubmissionIT extends GebSpec {
 
     def "anonymous payment, card declined"() {
         given:
-            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS, ContributionType.DONATION, false)
             contributionAgreementAddressFieldsAreDisplayed(browser, false)
 
         when: "i enter valid values and click pay now"
@@ -83,7 +83,7 @@ class FormSubmissionIT extends GebSpec {
     def "i can complete the payment flow for donation of less than £250 as an existing lcag member"() {
         given:
             insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
-            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
@@ -124,7 +124,7 @@ class FormSubmissionIT extends GebSpec {
         given:
             insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
             isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
@@ -165,7 +165,7 @@ class FormSubmissionIT extends GebSpec {
         given:
             insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
             isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.CONTRIBUTION_AGREEMENT, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
@@ -213,7 +213,7 @@ class FormSubmissionIT extends GebSpec {
     def "payment declined for donation as an existing lcag member"() {
         given:
             insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
-            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
@@ -236,7 +236,7 @@ class FormSubmissionIT extends GebSpec {
         given:
             sleep(3000) //wait for member cache to be refreshed
             getUserRows().size() == 0
-            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER, ContributionType.DONATION, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeDonation.click()
@@ -285,7 +285,7 @@ class FormSubmissionIT extends GebSpec {
         given:
             sleep(3000) //wait for member cache to be refreshed
             getUserRows().size() == 0
-            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER, ContributionType.DONATION, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeDonation.click()
@@ -334,7 +334,7 @@ class FormSubmissionIT extends GebSpec {
         given:
             sleep(3000) //wait for member cache to be refreshed
             getUserRows().size() == 0
-            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.NEW_LCAG_MEMBER, ContributionType.CONTRIBUTION_AGREEMENT, false)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionTypeContributionAgreement.click()
