@@ -27,13 +27,7 @@ class ClientSideValidationIT extends GebSpec {
 
     def "anonymous donor validation nothing entered on form"() {
         given:
-            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS)
-
-        when: "i click on the anonymous donation radio"
-            existingLcagAccountAnonymous.click()
-
-        then: "credit card form is displayed"
-            anonymousPaymentCreditCardFormDisplayed(browser)
+        GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS, ContributionType.DONATION, false)
 
         when: "i try to submit the form"
             payNowButton.click()
@@ -46,13 +40,7 @@ class ClientSideValidationIT extends GebSpec {
 
     def "anonymous donor validation less than £1"() {
         given:
-            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS)
-
-        when: "i click on the anonymous donation radio"
-            existingLcagAccountAnonymous.click()
-
-        then: "credit card form is displayed"
-            anonymousPaymentCreditCardFormDisplayed(browser)
+        GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS, ContributionType.DONATION, false)
 
         when: "i try to submit the form"
             amountInput = 0.99
@@ -65,15 +53,24 @@ class ClientSideValidationIT extends GebSpec {
             waitFor { cardError.empty }
     }
 
+    def "anonymous donor validation less than £1000"() {
+        given:
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.CONTRIBUTION_AGREEMENT, false)
+
+        when: "i try to submit the form"
+            amountInput = 999.99
+            GebTestUtils.enterCardDetails(browser, "4242424242424242", "1222", "111", "22222")
+            payNowButton.click()
+
+        then: "i am still on the form page and validation errors are displayed"
+            waitFor { at LcagFfcFormPage }
+            waitFor { grossAmountError == "Please enter a value greater than or equal to 1000." }
+            waitFor { cardError.empty }
+    }
+
     def "anonymous donor validation non numeric"() {
         given:
-            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS)
-
-        when: "i click on the anonymous donation radio"
-            existingLcagAccountAnonymous.click()
-
-        then: "credit card form is displayed"
-            anonymousPaymentCreditCardFormDisplayed(browser)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.ANONYMOUS, ContributionType.DONATION, false)
 
         when: "i try to submit the form"
             amountInput = "abc"

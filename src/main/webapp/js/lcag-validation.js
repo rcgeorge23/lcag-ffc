@@ -148,10 +148,22 @@ lcag.Validation = lcag.Validation || {
         }
 
         if (lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
+            $("#grossAmount").rules("remove");
+            $("#grossAmount").rules("add", {
+                required: true,
+                currency: true,
+                min: parseInt(lcag.Common.config.contributionAgreementMinimumAmountGbp)
+            });
             lcag.Validation.showVatSection();
             $("#contributionAgreementInfoSection").show();
             $("#donationInfoSection").hide();
         } else if (lcag.Validation.contributionTypeRadio() == "DONATION") {
+            $("#grossAmount").rules("remove");
+            $("#grossAmount").rules("add", {
+                required: true,
+                currency: true,
+                min: 1
+            });
             lcag.Validation.hideVatSection();
             $("#donationInfoSection").show();
             $("#contributionAgreementInfoSection").hide();
