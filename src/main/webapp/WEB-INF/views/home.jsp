@@ -19,6 +19,7 @@
     <script src="/js/lcag-common.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/js/lcag-stripe.js"></script>
+    <script src="/js/lcag-validation.js"></script>
     <script>
         lcag.Common.init();
     </script>
@@ -99,7 +100,7 @@
                                 <br />
 
                                 <div class="form-group col-md-12">
-                                    <button id="acceptTermsAndConditions" type="button" class="btn btn-primary btn-block">I have read and agree to the terms and conditions</button>
+                                    <button id="acceptTermsAndConditions" type="button" class="btn btn-primary btn-block" onclick="lcag.Validation.acceptTermsAndConditions();">I have read and agree to the terms and conditions</button>
                                 </div>
                             </div>
                         </div>
@@ -125,18 +126,9 @@
                                     <div class="form-group">
                                         <label>Do you already have an LCAG account?</label>
                                         <div>
-                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
-                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
-                                            <label class="radio-inline"> <input type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
-                                        </div>
-                                    </div>
-                                    <div id="lcagUsernameSection" style="display: none;">
-                                        <div class="form-group">
-                                            <label for="username">LCAG username:</label>
-                                            <div class="input-group">
-                                                <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
-                                                <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
-                                            </div>
+                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
+                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
+                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
                                         </div>
                                     </div>
                                     <div id="newLcagJoinerInfoSection" style="display: none;">
@@ -155,8 +147,8 @@
                                         <div class="form-group">
                                             <label>My contribution will be a:</label>
                                             <div>
-                                                <label class="radio-inline"> <input type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
-                                                <label class="radio-inline"> <input type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
                                             </div>
                                         </div>
                                         <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
@@ -189,8 +181,17 @@
                                                 <i class='glyphicon glyphicon-info-sign'></i>
                                             </a>
                                             <div>
-                                                <label class="radio-inline"> <input type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredYes" value="yes" required> Yes </label>
-                                                <label class="radio-inline"> <input type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredNo" value="no" required> No </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredYes" value="yes" required> Yes </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredNo" value="no" required> No </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="lcagUsernameSection" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="username">LCAG username:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
+                                                <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
                                             </div>
                                         </div>
                                     </div>
@@ -290,366 +291,25 @@
 
         <script type="text/javascript">
             lcag.Stripe.init();
-
-            jQuery.validator.addMethod('currency',
-                function(value, element) {
-                    var result = value.match(/^\d{1,3}?([,]\d{3}|\d)*?([.]\d{1,2})?$/);
-                    return result;
-                },
-                'Please specify an amount in GBP'
-            );
-
-            jQuery.validator.addMethod('lcagUsername',
-                function(value, element) {
-                    console.log("value", value);
-                    console.log("element", element);
-
-                    var validationResult = false;
-
-                    jQuery.ajax({
-                        url: "/member?username=" + value,
-                        success: function (result) {
-                            console.log("result", result);
-                            validationResult = !(result == null || result == "");
-                        },
-                        async: false
-                    });
-
-                    return validationResult;
-                },
-                'This is not a valid LCAG username'
-            );
-
-            var payment = null;
-
-            function getParameterByName(name, url) {
-                if (!url) url = window.location.href;
-                name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                    results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
-            }
-
-            function showLcagUsernameSection() {
-                $("#lcagUsernameSection").show();
-                $("#nameSection").hide();
-                $("#newLcagJoinerInfoSection").hide();
-                $("#paymentFieldsSection").show();
-                $("#contributionTypeSection").show();
-                $("#submitButton").show();
-                $("#paymentType").val("EXISTING_LCAG_MEMBER");
-            }
-
-            function showPaymentFieldsSection() {
-                $("#lcagUsernameSection").hide();
-                $("#paymentFieldsSection").show();
-                $("#nameSection").hide();
-                $("#newLcagJoinerInfoSection").hide();
-                $("#submitButton").show();
-                $("#contributionTypeSection").show();
-                $("#paymentType").val("ANONYMOUS");
-            }
-
-            function showNewLcagJoinerSection() {
-                $("#lcagUsernameSection").hide();
-                $("#nameSection").show();
-                $("#newLcagJoinerInfoSection").show();
-                $("#paymentFieldsSection").show();
-                $("#submitButton").show();
-                $("#contributionTypeSection").show();
-                $("#paymentType").val("NEW_LCAG_MEMBER");
-            }
-
-            function hideContributionAgreementSections() {
-                console.log("hideContributionAgreementSections");
-                $("#nameSection").hide();
-                $("#addressSection").hide();
-                $("#vatSection").hide();
-            }
-
-            function showContributionAgreementSections() {
-                console.log("showContributionAgreementSections");
-                $("#nameSection").show();
-                $("#addressSection").show();
-                $("#vatSection").show();
-            }
-
-            function setupFieldValidationForAnonymousDonation() {
-                console.log("setting up setupFieldValidationForAnonymousDonation validation rules");
-                addDonationGrossAmountValidation();
-
-                $("#username").removeAttr("required");
-                $("#firstName").removeAttr("required");
-                $("#lastName").removeAttr("required");
-                $("#emailAddress").removeAttr("required");
-                $("#contributorIsVatRegistered").removeAttr("required");
-                removeAddressMandatoryValidation();
-                hideContributionAgreementSections();
-            }
-
-            function setupFieldValidationForNewJoinerDonation() {
-                console.log("setting up setupFieldValidationForNewJoinerDonation validation rules");
-                addDonationGrossAmountValidation();
-
-                $("#firstName").prop('required', true);
-                $("#lastName").prop('required', true);
-                $("#emailAddress").prop('required', true);
-
-                $("#contributorIsVatRegistered").removeAttr("required");
-
-                $("#username").removeAttr("required");
-                removeAddressMandatoryValidation();
-                $("#nameSection").show();
-                $("#addressSection").hide();
-            }
-
-            function setupFieldValidationForNewJoinerContributionAgreement() {
-                console.log("setting up setupFieldValidationForNewJoinerContributionAgreement validation rules");
-                addContributionAgreementGrossAmountValidation();
-                $("#firstName").prop('required', true);
-                $("#lastName").prop('required', true);
-                $("#emailAddress").prop('required', true);
-                $("#contributorIsVatRegistered").prop('required', true);
-                $("#username").removeAttr("required");
-                addAddressMandatoryValidation();
-                showContributionAgreementSections()
-            }
-
-            function setupFieldValidationForExistingLcagMemberDonation() {
-                console.log("setting up setupFieldValidationForExistingLcagMemberDonation validation rules");
-                addDonationGrossAmountValidation();
-                $("#username").prop('required', true);
-                $("#firstName").removeAttr("required");
-                $("#lastName").removeAttr("required");
-                $("#emailAddress").removeAttr("required");
-                $("#contributorIsVatRegistered").removeAttr("required");
-                removeAddressMandatoryValidation();
-                hideContributionAgreementSections()
-            }
-
-            function setupFieldValidationForExistingLcagMemberContributionAgreement() {
-                console.log("setting up setupFieldValidationForExistingLcagMemberContributionAgreement validation rules");
-                addContributionAgreementGrossAmountValidation();
-                $("#username").prop('required', true);
-                $("#firstName").prop('required', true);
-                $("#lastName").prop('required', true);
-                $("#emailAddress").prop('required', true);
-                $("#contributorIsVatRegistered").prop('required', true);
-                addAddressMandatoryValidation();
-                showContributionAgreementSections()
-            }
-
-            function removeAddressMandatoryValidation() {
-                $("#addressLine1").removeAttr("required");
-                $("#city").removeAttr("required");
-                $("#postalCode").removeAttr("required");
-                $("#country").removeAttr("required");
-            }
-
-            function addAddressMandatoryValidation() {
-                $("#addressLine1").prop('required', true);
-                $("#city").prop('required', true);
-                $("#postalCode").prop('required', true);
-                $("#country").prop('required', true);
-            }
-
-            function addContributionAgreementGrossAmountValidation() {
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: parseInt(lcag.Common.config.contributionAgreementMinimumAmountGbp)
-                });
-            }
-
-            function addDonationGrossAmountValidation() {
-                $("#grossAmount").rules("remove");
-                $("#grossAmount").rules("add", {
-                    required: true,
-                    currency: true,
-                    min: 1
-                });
-            }
-
-            function setupValidationRules() {
-                if ($("#existingLcagAccountAnonymous").prop("checked")) {
-                    setupFieldValidationForAnonymousDonation();
-                } else if ($("#existingLcagAccountYes").prop("checked") && contributionType() == "DONATION") {
-                    setupFieldValidationForExistingLcagMemberDonation();
-                } else if ($("#existingLcagAccountYes").prop("checked") && contributionType() == "CONTRIBUTION_AGREEMENT") {
-                    setupFieldValidationForExistingLcagMemberContributionAgreement();
-                } else if ($("#existingLcagAccountNo").prop("checked") && contributionType() == "DONATION") {
-                    setupFieldValidationForNewJoinerDonation();
-                } else if ($("#existingLcagAccountNo").prop("checked") && contributionType() == "CONTRIBUTION_AGREEMENT") {
-                    setupFieldValidationForNewJoinerContributionAgreement();
-                }
-            }
-
-            function contributionType() {
-                if ($("#contributionTypeDonation").prop("checked")) {
-                    return "DONATION";
-                } else if ($("#contributionTypeContributionAgreement").prop("checked")) {
-                    return "CONTRIBUTION_AGREEMENT";
-                }
-
-                return null;
-            }
+            lcag.Validation.init();
 
             $(function () {
                 $("a.form-tooltip").tooltip();
 
-                $(".contributionAgreementMinimumAmountGbp").text(lcag.Common.config.contributionAgreementMinimumAmountGbp);
+                $("input[name=existingLcagAccount]").change(function() {
+                    lcag.Validation.displayFieldsAndSetupValidationRules();
+                });
 
                 $("input[name=contributionTypeRadio]").change(function() {
-                    setupValidationRules();
-                    $("#payment-form").validate();
-
-                    if (contributionType() == "DONATION") {
-                        $("#contributionAgreementInfoSection").hide();
-                        $("#donationInfoSection").show();
-                    } else if (contributionType() == "CONTRIBUTION_AGREEMENT") {
-                        $("#contributionAgreementInfoSection").show();
-                        $("#donationInfoSection").hide();
-                    } else {
-                        $("#contributionAgreementInfoSection").hide();
-                        $("#donationInfoSection").hide();
-                    }
-
-                    if ($("#existingLcagAccountAnonymous").prop("checked")) {
-                        $("#payment-form").validate().element("input[name=contributionTypeRadio]");
-                    }
-
-                    if ($("input[name=grossAmount]").val() != null && $("input[name=grossAmount]").val() != "") {
-                        $("#payment-form").validate().element("input[name=grossAmount]");
-                    }
+                    lcag.Validation.displayFieldsAndSetupValidationRules();
                 });
 
-                 $("#acceptTermsAndConditions").click(function() {
-                    $("#paymentFormSection").show();
-                    $("#acceptTermsAndConditions").attr("disabled", "disabled");
-                    document.querySelector('#paymentFormSection').scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-
-                $("input[type=radio][name=existingLcagAccount]").change(function() {
-                    setupValidationRules();
-                    $("#payment-form").validate().element("input[name=contributionTypeRadio]");
-                    if (this.value == 'yes') {
-                        $("input[name=contributionTypeRadio]").attr("disabled", false);
-                        showLcagUsernameSection();
-                    } else if (this.value == 'anonymous') {
-                        $("#contributionTypeDonation").prop("checked", true).change();
-                        $("#contributionTypeContributionAgreement").prop("checked", false).change();
-                        $("input[name=contributionTypeRadio]").attr("disabled", true);
-                        showPaymentFieldsSection();
-                    } else {
-                        $("input[name=contributionTypeRadio]").attr("disabled", false);
-                        showNewLcagJoinerSection();
-                    }
-
-                    document.querySelector('#contributionTypeSection').scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-
-                $("input[type=radio][name=contributorIsVatRegistered]").change(function() {
-                    if (this.value == 'yes') {
-                        $("#companyNameSection").show();
-                        $("#companyName").prop('required', true);
-                    } else {
-                        $("#companyNameSection").hide();
-                        $("#companyName").removeAttr("required");
-                    }
-                });
-
-                if (getParameterByName('guid') != null) {
-                    $.ajax({
-                        url: '/payment?guid=' + getParameterByName('guid'),
-                        method: "GET",
-                        dataType: "json",
-                        complete: function(response, status) {
-                            if (status == "success") {
-                                payment = response.responseJSON;
-
-                                console.log("payment", payment);
-
-                                if (payment.paymentStatus == "DECLINED" || payment.paymentStatus == "UNKNOWN_ERROR") {
-                                    $("#paymentDeclinedSection").show();
-                                    $("#paymentDeclinedErrorMessage").text(payment.errorDescription);
-                                }
-
-                                if (payment.paymentStatus == "VALIDATION_ERROR") {
-                                    $("#validationErrorSection").show();
-                                    $("#validationErrorMessage").text(payment.errorDescription);
-                                }
-                            }
-                        }
-                    });
-                }
-
-                $("#payment-form").validate({
-                    rules: {
-                        grossAmount: {
-                            required: true,
-                            currency: true
-                        },
-                        username: {
-                            required: true,
-                            lcagUsername: true
-                        }
-                    },
-                    errorElement: "em",
-                    errorPlacement: function ( error, element ) {
-                        error.addClass( "help-block" );
-                        element.parents( ".form-group" ).addClass( "has-feedback" );
-
-                        if ($(element).attr('type') == 'radio') {
-                            error.insertAfter( $(element).parent().parent() );
-                        } else {
-                            error.insertAfter( $(element).parent() );
-                        }
-
-                        if ( !element.next( "span" )[ 0 ] ) {
-                            if ($(element).attr('type') == 'radio') {
-                                $( "<span class='glyphicon glyphicon-remove form-control-feedback'></span>" ).insertAfter( $(element).parent().parent() );
-                            } else {
-                                $( "<span class='glyphicon glyphicon-remove form-control-feedback'></span>" ).insertAfter( $(element) );
-                            }
-                        }
-                    },
-                    success: function ( label, element ) {
-                        if ($(element).attr('type') == 'radio') {
-                            if ( !$( element ).parent().parent().next( "span" )[ 0 ] ) {
-                                $( "<span class='glyphicon glyphicon-ok form-control-feedback'></span>" ).insertAfter( $(element).parent().parent() );
-                            }
-                        } else {
-                            if ( !$( element ).next( "span" )[ 0 ] ) {
-                                $( "<span class='glyphicon glyphicon-ok form-control-feedback'></span>" ).insertAfter( $(element) );
-                            }
-                        }
-                    },
-                    highlight: function ( element, errorClass, validClass ) {
-                        $( element ).parents( ".form-group" ).addClass( "has-error" ).removeClass( "has-success" );
-                        if ($(element).attr('type') == 'radio') {
-                            $( element ).parent().parent().next( "span" ).addClass( "glyphicon-remove" ).removeClass( "glyphicon-ok" );
-                        } else {
-                            $( element ).next( "span" ).addClass( "glyphicon-remove" ).removeClass( "glyphicon-ok" );
-                        }
-                    },
-                    unhighlight: function ( element, errorClass, validClass ) {
-                        $( element ).parents( ".form-group" ).addClass( "has-success" ).removeClass( "has-error" );
-                        if ($(element).attr('type') == 'radio') {
-                            console.log("element", $(element));
-                            $( element ).parent().parent().next( "span" ).addClass( "glyphicon-ok" ).removeClass( "glyphicon-remove" );
-                        } else {
-                            $( element ).next( "span" ).addClass( "glyphicon-ok" ).removeClass( "glyphicon-remove" );
-                        }
-                    }
+                $("input[name=contributorIsVatRegistered]").change(function() {
+                    lcag.Validation.displayFieldsAndSetupValidationRules();
                 });
             });
+
+
         </script>
 
     </body>
