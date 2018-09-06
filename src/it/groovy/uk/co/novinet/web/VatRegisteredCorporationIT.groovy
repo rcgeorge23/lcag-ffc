@@ -2,7 +2,8 @@ package uk.co.novinet.web;
 
 import geb.spock.GebSpec
 import uk.co.novinet.e2e.TestUtils;
-import uk.co.novinet.rest.PaymentType;
+import uk.co.novinet.rest.PaymentType
+import uk.co.novinet.service.ContributionType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,12 +30,10 @@ class VatRegisteredCorporationIT extends GebSpec {
         given:
             insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
             isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER)
+            GebTestUtils.driveToPaymentType(browser, PaymentType.EXISTING_LCAG_MEMBER, ContributionType.CONTRIBUTION_AGREEMENT, true)
 
         when: "i enter valid lcag username value and payment details and click pay now"
             username = "testuser1"
-            contributionTypeContributionAgreement.click()
-            contributorIsVatRegisteredYes.click()
             companyNameInput = "My Company"
             contributionAgreementAddressFieldsAreDisplayed(browser, true)
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
