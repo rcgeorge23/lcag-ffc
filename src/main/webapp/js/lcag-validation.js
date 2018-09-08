@@ -1,6 +1,9 @@
 var lcag = lcag || {};
 
 lcag.Validation = lcag.Validation || {
+    config: {
+        contributionAgreementMinimumAmountGbp: null
+    },
     showPaymentSection: function () {
         $("#paymentFieldsSection").show();
         $("#submitButton").show();
@@ -10,22 +13,12 @@ lcag.Validation = lcag.Validation || {
         $("#paymentFieldsSection").hide();
         $("#submitButton").hide();
     },
-    hideVatSection: function() {
-        $("#vatSection").hide();
-        $("#contributorIsVatRegistered").removeAttr("required");
-        $("#contributorIsVatRegisteredYes").prop("checked", false);
-        $("#contributorIsVatRegisteredNo").prop("checked", false);
-    },
     hideContributionTypeSection: function() {
         $("#contributionTypeSection").hide();
         lcag.Validation.enableAndUnsetContributionTypeRadio();
     },
     showContributionTypeSection: function() {
         $("#contributionTypeSection").show();
-    },
-    showVatSection: function() {
-        $("#vatSection").show();
-        $("#contributorIsVatRegistered").prop("required", true);
     },
     showAddressSection: function() {
         $("#addressSection").show();
@@ -61,157 +54,99 @@ lcag.Validation = lcag.Validation || {
         $("#lcagUsernameSection").show();
         $("#lcagUsernameSection").prop("required", true);
     },
-    showCompanyNameSection: function() {
-        $("#companyNameSection").show();
-        $("#companyNameSection").prop("required", true);
-    },
-    hideCompanyNameSection: function() {
-        $("#companyNameSection").hide();
-        $("#companyNameSection").removeAttr("required");
-    },
     selectAndDisableContributionTypeDonation() {
         $("#contributionTypeDonation").prop("checked", true);
         $("#contributionTypeContributionAgreement").prop("checked", false);
         $("input[name=contributionTypeRadio]").attr("disabled", true);
     },
+    unselectContributionType() {
+        $("#contributionTypeContributionAgreement").prop("checked", false);
+        $("#contributionTypeDonation").prop("checked", false);
+    },
+    updateOtherGrossAmountValues: function() {
+        $(".gross-amount").text(lcag.Validation.formatMoney(lcag.Validation.grossAmount()));
+    },
     displayFieldsAndSetupValidationRules: function() {
-        console.log("displayFieldsAndSetupValidationRules");
+        if (lcag.Validation.grossAmount() == null || lcag.Validation.grossAmount() < 1) {
+            $("#contributionType").val("DONATION");
+            lcag.Validation.state.allowedContributionTypes = [];
+            lcag.Validation.unselectContributionType();
+            $("#existingLcagAccountSection").hide();
+            $("#contributionAgreementInfoSection").hide();
+            $("#donationInfoSection").hide();
+        } else if (lcag.Validation.grossAmount() < lcag.Validation.config.contributionAgreementMinimumAmountGbp) {
+            $("#contributionType").val("DONATION");
+            lcag.Validation.unselectContributionType();
+            $("#existingLcagAccountSection").show();
+            $("#contributionAgreementInfoSection").hide();
+            $("#donationInfoSection").show();
+        } else if (lcag.Validation.grossAmount() >= lcag.Validation.config.contributionAgreementMinimumAmountGbp && lcag.Validation.contributionTypeRadio() == null) {
+            $("#existingLcagAccountSection").hide();
+            $("#contributionAgreementInfoSection").show();
+            $("#donationInfoSection").hide();
+        } else if (lcag.Validation.grossAmount() >= lcag.Validation.config.contributionAgreementMinimumAmountGbp && lcag.Validation.contributionTypeRadio() != null) {
+            $("#contributionType").val(lcag.Validation.contributionTypeRadio());
+            $("#existingLcagAccountSection").show();
+            $("#contributionAgreementInfoSection").show();
+            $("#donationInfoSection").hide();
+        }
+
         if (lcag.Validation.paymentTypeRadio() == "ANONYMOUS") {
-            $("#paymentType").val("ANONYMOUS");
-            lcag.Validation.hideVatSection();
-            lcag.Validation.hideAddressSection();
-            lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideNameSection();
-            lcag.Validation.hideCompanyNameSection();
-            lcag.Validation.selectAndDisableContributionTypeDonation();
             $("#newLcagJoinerInfoSection").hide();
+            lcag.Validation.hideAddressSection();
+            lcag.Validation.hideUsernameSection();
+            lcag.Validation.hideNameSection();
             lcag.Validation.showPaymentSection();
-            console.log("scrolling to donation section")
-            $("#donationInfoSection").show();
-            $("#contributionAgreementInfoSection").hide();
             document.querySelector('#donationInfoSection').scrollIntoView({
                 behavior: 'smooth'
             });
-        } else if (lcag.Validation.existingLcagMemberRadioYesOrNoSelectedAfterAnonymous()) {
-            lcag.Validation.enableAndUnsetContributionTypeRadio();
-            lcag.Validation.showContributionTypeSection();
-            lcag.Validation.hideVatSection();
-            lcag.Validation.hideAddressSection();
+        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributionTypeField() == "DONATION") {
             lcag.Validation.hideUsernameSection();
-            lcag.Validation.hidePaymentSection();
-        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == null && lcag.Validation.contributionTypeRadio() == "DONATION") {
-            lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
             lcag.Validation.showNameSection();
             lcag.Validation.showPaymentSection();
-        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == null && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
+            lcag.Validation.hideAddressSection();
+        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributionTypeField() == "CONTRIBUTION_AGREEMENT") {
             lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
             lcag.Validation.showNameSection();
             lcag.Validation.showAddressSection();
             lcag.Validation.showPaymentSection();
-        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == null && lcag.Validation.contributionTypeRadio() == "DONATION") {
+        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributionTypeField() == "DONATION") {
             lcag.Validation.showUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
             lcag.Validation.hideNameSection();
             lcag.Validation.showPaymentSection();
             lcag.Validation.hideAddressSection();
-        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == null && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
+        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
+            lcag.Validation.showUsernameSection();
+            lcag.Validation.showPaymentSection();
+            lcag.Validation.showNameSection();
+            lcag.Validation.showAddressSection();
+            $("#newLcagJoinerInfoSection").hide();
+            $("#donationInfoSection").hide();
+            $("#contributionAgreementInfoSection").show();
+            document.querySelector('#contributionAgreementInfoSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        if (lcag.Validation.contributionTypeField() == "CONTRIBUTION_AGREEMENT") {
+            $("#existingLcagAccountAnonymous").attr("disabled", true);
+            $("#existingLcagAccountAnonymous").prop("checked", false);
+        } else {
+            $("#existingLcagAccountAnonymous").attr("disabled", false);
+        }
+
+        if (lcag.Validation.paymentTypeRadio() == null) {
             lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
             lcag.Validation.hideNameSection();
+            lcag.Validation.hideAddressSection();
             lcag.Validation.hidePaymentSection();
-            lcag.Validation.hideAddressSection();
-            lcag.Validation.showVatSection();
-        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == true && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
-            lcag.Validation.showUsernameSection();
-            lcag.Validation.showCompanyNameSection();
-            lcag.Validation.showPaymentSection();
-            lcag.Validation.showNameSection();
-            lcag.Validation.showAddressSection();
-            $("#donationInfoSection").hide();
-            $("#contributionAgreementInfoSection").show();
-            document.querySelector('#contributionAgreementInfoSection').scrollIntoView({
-                behavior: 'smooth'
-            });
-        } else if (lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == false && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
-            lcag.Validation.showUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
-            lcag.Validation.showPaymentSection();
-            lcag.Validation.showNameSection();
-            lcag.Validation.showAddressSection();
-            $("#donationInfoSection").hide();
-            $("#contributionAgreementInfoSection").show();
-            document.querySelector('#contributionAgreementInfoSection').scrollIntoView({
-                behavior: 'smooth'
-            });
-        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == false && lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
-            lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
-            lcag.Validation.showPaymentSection();
-            lcag.Validation.showNameSection();
-            lcag.Validation.showAddressSection();
-            $("#donationInfoSection").hide();
-            $("#contributionAgreementInfoSection").show();
-            document.querySelector('#contributionAgreementInfoSection').scrollIntoView({
-                behavior: 'smooth'
-            });
-        } else if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" && lcag.Validation.contributorIsVatRegisteredRadio() == false && lcag.Validation.contributionTypeRadio() == "DONATION") {
-            lcag.Validation.hideUsernameSection();
-            lcag.Validation.hideCompanyNameSection();
-            lcag.Validation.showPaymentSection();
-            lcag.Validation.showNameSection();
-            lcag.Validation.hideAddressSection();
-            $("#donationInfoSection").show();
-            $("#contributionAgreementInfoSection").hide();
-            document.querySelector('#donationInfoSection').scrollIntoView({
-                behavior: 'smooth'
-            });
-        } else if (lcag.Validation.newOrExistingLcagMember() && lcag.Validation.contributorIsVatRegisteredRadio() == null) {
-            lcag.Validation.showContributionTypeSection();
-        } else if (lcag.Validation.newOrExistingLcagMember() && lcag.Validation.contributorIsVatRegisteredRadio() != null) {
-            lcag.Validation.showContributionTypeSection();
         }
 
-        if (lcag.Validation.contributionTypeRadio() == "CONTRIBUTION_AGREEMENT") {
-            $("#grossAmount").rules("remove");
-            $("#grossAmount").rules("add", {
-                required: true,
-                currency: true,
-                min: parseInt(lcag.Common.config.contributionAgreementMinimumAmountGbp)
-            });
-            lcag.Validation.showVatSection();
-            $("#contributionAgreementInfoSection").show();
-            $("#donationInfoSection").hide();
-        } else if (lcag.Validation.contributionTypeRadio() == "DONATION") {
-            $("#grossAmount").rules("remove");
-            $("#grossAmount").rules("add", {
-                required: true,
-                currency: true,
-                min: 1
-            });
-            lcag.Validation.hideVatSection();
-            $("#donationInfoSection").show();
-            $("#contributionAgreementInfoSection").hide();
-        } else {
-            $("#donationInfoSection").hide();
-            $("#contributionAgreementInfoSection").hide();
-        }
-
-        if (lcag.Validation.contributorIsVatRegisteredRadio() == true) {
-            lcag.Validation.showCompanyNameSection();
-        } else {
-            lcag.Validation.hideCompanyNameSection();
-        }
-
-        if (lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER") {
-            lcag.Validation.hideUsernameSection();
-        }
-
-        $("#contributionType").val(lcag.Validation.contributionTypeRadio());
         $("#paymentType").val(lcag.Validation.paymentTypeRadio());
     },
-    init: function() {
+    init: function(contributionAgreementMinimumAmountGbp) {
+        lcag.Validation.config.contributionAgreementMinimumAmountGbp = parseInt(contributionAgreementMinimumAmountGbp);
+
         jQuery.validator.addMethod('currency',
             function(value, element) {
                 var result = value.match(/^\d{1,3}?([,]\d{3}|\d)*?([.]\d{1,2})?$/);
@@ -245,7 +180,8 @@ lcag.Validation = lcag.Validation || {
             rules: {
                 grossAmount: {
                     required: true,
-                    currency: true
+                    currency: true,
+                    min: 1
                 },
                 username: {
                     required: true,
@@ -305,7 +241,7 @@ lcag.Validation = lcag.Validation || {
         return lcag.Validation.paymentTypeRadio() == "NEW_LCAG_MEMBER" || lcag.Validation.paymentTypeRadio() == "EXISTING_LCAG_MEMBER";
     },
     existingLcagMemberRadioYesOrNoSelectedAfterAnonymous: function() {
-        return lcag.Validation.paymentTypeRadio() != null && lcag.Validation.contributorIsVatRegisteredRadio() == null && lcag.Validation.contributionTypeRadio() == "DONATION" && lcag.Validation.contributionTypeRadioIsDisabled()
+        return lcag.Validation.paymentTypeRadio() != null && lcag.Validation.contributionTypeRadio() == "DONATION" && lcag.Validation.contributionTypeRadioIsDisabled()
     },
     paymentTypeRadio: function() {
         if ($("#existingLcagAccountAnonymous").prop("checked")) {
@@ -314,15 +250,6 @@ lcag.Validation = lcag.Validation || {
             return "NEW_LCAG_MEMBER";
         } else if ($("#existingLcagAccountYes").prop("checked")) {
             return "EXISTING_LCAG_MEMBER";
-        }
-
-        return null;
-    },
-    contributorIsVatRegisteredRadio: function() {
-        if ($("#contributorIsVatRegisteredYes").prop("checked")) {
-            return true;
-        } else if ($("#contributorIsVatRegisteredNo").prop("checked")) {
-            return false;
         }
 
         return null;
@@ -336,6 +263,9 @@ lcag.Validation = lcag.Validation || {
 
         return null;
     },
+    contributionTypeField: function() {
+        return $("#contributionType").val();
+    },
     contributionTypeRadioIsDisabled: function() {
         return $("input[name=contributionTypeRadio]").attr("disabled") == "disabled";
     },
@@ -344,11 +274,23 @@ lcag.Validation = lcag.Validation || {
         $("#contributionTypeDonation").prop("checked", false);
         $("#contributionTypeDonationContributionAgreement").prop("checked", false);
     },
+    grossAmount: function() {
+        return $("#grossAmount").val() == null ? null : parseFloat($("#grossAmount").val());
+    },
     acceptTermsAndConditions: function() {
         $("#paymentFormSection").show();
         $("#acceptTermsAndConditions").attr("disabled", "disabled");
         document.querySelector('#paymentFormSection').scrollIntoView({
             behavior: 'smooth'
         });
+    },
+    formatMoney: function(n, c, d, t) {
+        var c = isNaN(c = Math.abs(c)) ? 2 : c,
+        d = d == undefined ? "." : d,
+        t = t == undefined ? "," : t,
+        s = n < 0 ? "-" : "",
+        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+        j = (j = i.length) > 3 ? j % 3 : 0;
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
     }
 }

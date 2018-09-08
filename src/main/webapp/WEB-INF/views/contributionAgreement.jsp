@@ -33,14 +33,7 @@
 
                         And<br/><br/>
 
-                        <c:choose>
-                            <c:when test="${payment.companyName != null && payment.companyName != ''}">
-                                <strong><span id="contributorName">${payment.firstName} ${payment.lastName} of ${payment.companyName}</span></strong> (the contributor)<br/><br/>
-                            </c:when>
-                            <c:otherwise>
-                                <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> (the contributor)<br/><br/>
-                            </c:otherwise>
-                        </c:choose>
+                        <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> (the contributor)<br/><br/>
 
                         <span id="addressLine1">${payment.addressLine1}</span><br/>
                         <c:if test="${payment.addressLine2 != null && payment.addressLine2 != ''}">
@@ -50,7 +43,7 @@
                         <span id="postalCode">${payment.postalCode}</span><br/>
                         <span id="country">${payment.country}</span><br/><br/>
 
-                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}${payment.contributorIsVatRegistered ? ' (including VAT)' : ''}</span>.<br/><br/>
+                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}}</span> (including VAT).<br/><br/>
 
                         LCAG FFC agrees to return to the contributor such amounts as may be due under the terms and conditions agreed to at the point of application.<br/><br/>
 

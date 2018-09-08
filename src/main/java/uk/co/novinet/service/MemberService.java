@@ -1,6 +1,5 @@
 package uk.co.novinet.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +19,15 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.co.novinet.service.ContributionType.DONATION;
 import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
-    private static final String LCAG_FFC_CONTRIBUTOR_GROUP = "9";
-    private static final String LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP = "9,10";
+    private static final String LCAG_FFC_CONTRIBUTOR_GROUP = "";
+    private static final String LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP = "9";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -37,8 +38,8 @@ public class MemberService {
     @Value("${vatNumber}")
     private String vatNumber;
 
-    @Value("${minimumContributionAmountForEnhancedSupport}")
-    private BigDecimal minimumContributionAmountForEnhancedSupport;
+    @Value("${contributionAgreementMinimumAmountGbp}")
+    private BigDecimal contributionAgreementMinimumAmountGbp;
 
     private static Map<String, Member> memberByUsernameCache = new ConcurrentHashMap<>();
 
@@ -163,7 +164,7 @@ public class MemberService {
                     extractUsername(payment.getEmailAddress()),
                     payment.getFirstName() + " " + payment.getLastName(),
                     null,
-                    forumGroupForContributionAmount(payment),
+                    forumGroupForContributionType(payment),
                     Instant.now(),
                     false,
                     false,
@@ -251,7 +252,7 @@ public class MemberService {
     }
 
     private String extractUsername(String emailAddress) {
-        if (StringUtils.isBlank(emailAddress)) {
+        if (isBlank(emailAddress)) {
             return "";
         }
 
@@ -295,15 +296,15 @@ public class MemberService {
         payment.setGuid(guid());
         payment.setVatNumber(vatNumber);
 
-        if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
+        if (payment.getContributionType() == DONATION) {
+            payment.setVatRate(BigDecimal.ZERO);
+            payment.setNetAmount(payment.getGrossAmount());
+            payment.setVatAmount(BigDecimal.ZERO);
+        } else {
             BigDecimal vatRate = new BigDecimal(this.vatRate);
             payment.setVatRate(vatRate);
             payment.setNetAmount(calculateNetAmount(payment.getGrossAmount(), vatRate));
             payment.setVatAmount(payment.getGrossAmount().subtract(payment.getNetAmount()));
-        } else {
-            payment.setVatRate(BigDecimal.ZERO);
-            payment.setNetAmount(payment.getGrossAmount());
-            payment.setVatAmount(BigDecimal.ZERO);
         }
 
         switch (payment.getPaymentType()) {
@@ -315,7 +316,7 @@ public class MemberService {
                 payment.setUserId(member.getId());
                 return;
             case EXISTING_LCAG_MEMBER:
-                if (payment.getContributionType() == ContributionType.DONATION) {
+                if (payment.getContributionType() == DONATION) {
                     // if it's a donation, we won't have this stuff in the payment so get it from the member
                     payment.setUsername(member.getUsername());
                     payment.setFirstName(firstName(member.getName()));
@@ -327,13 +328,13 @@ public class MemberService {
         }
     }
 
-    private BigDecimal calculateNetAmount(BigDecimal grossAmount, BigDecimal vatRate) {
-        BigDecimal vatAsFraction = vatRate.divide(new BigDecimal(100));
-        return grossAmount.divide(new BigDecimal(1).add(vatAsFraction), BigDecimal.ROUND_HALF_EVEN);
+    BigDecimal calculateNetAmount(BigDecimal grossAmount, BigDecimal vatRate) {
+        BigDecimal vatAsFraction = vatRate.divide(new BigDecimal(100).setScale(2)).setScale(2);
+        return grossAmount.setScale(2).divide(new BigDecimal(1).add(vatAsFraction).setScale(2), BigDecimal.ROUND_HALF_EVEN).setScale(2);
     }
 
     private String lastName(String name) {
-        if (StringUtils.isBlank(name)) {
+        if (isBlank(name)) {
             return "";
         }
 
@@ -344,7 +345,7 @@ public class MemberService {
 
 
     private String firstName(String name) {
-        if (StringUtils.isBlank(name)) {
+        if (isBlank(name)) {
             return "";
         }
 
@@ -359,9 +360,13 @@ public class MemberService {
         return nameParts.stream().collect(joining(" "));
     }
 
-
     public void assignLcagFfcAdditionalGroup(Member member, Payment payment) {
         LOGGER.info("Going to assign member: {} - to LCAG FFC forum group for payment: {}", member, payment);
+
+        if (isBlank(forumGroupForContributionType(payment))) {
+            LOGGER.info("No new group for member: {} and payment: {} as payment is not sufficiently high", member, payment);
+            return;
+        }
 
         String updateSql = "update " + usersTableName() + " set `additionalgroups` = ? where uid = ?;";
 
@@ -369,14 +374,14 @@ public class MemberService {
 
         int result = jdbcTemplate.update(
                 updateSql,
-                forumGroupForContributionAmount(payment),
+                forumGroupForContributionType(payment),
                 member.getId()
         );
 
         LOGGER.info("Update result: {}", result);
     }
 
-    String forumGroupForContributionAmount(Payment payment) {
-        return payment.getGrossAmount().compareTo(minimumContributionAmountForEnhancedSupport) < 0 ? LCAG_FFC_CONTRIBUTOR_GROUP : LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP;
+    String forumGroupForContributionType(Payment payment) {
+        return payment.getContributionType() == DONATION ? LCAG_FFC_CONTRIBUTOR_GROUP : LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP;
     }
 }

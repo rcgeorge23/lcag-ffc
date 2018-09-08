@@ -1,6 +1,7 @@
 package uk.co.novinet.web
 
 import geb.Browser
+import org.openqa.selenium.Keys
 import org.springframework.format.number.CurrencyStyleFormatter
 import uk.co.novinet.rest.PaymentType
 import uk.co.novinet.service.ContributionType
@@ -65,13 +66,21 @@ class GebTestUtils {
         browser.waitFor { browser.page.paymentDeclinedSection.displayed == false }
         browser.waitFor { browser.page.acceptTermsAndConditionsButton.attr("disabled") == "true" }
         browser.waitFor { browser.page.paymentFormSection.displayed == true }
-        browser.waitFor { browser.page.existingLcagAccountYes.displayed == true }
-        browser.waitFor { browser.page.existingLcagAccountNo.displayed == true }
-        browser.waitFor { browser.page.existingLcagAccountAnonymous.displayed == true }
+        browser.waitFor { browser.page.existingLcagAccountYes.displayed == false }
+        browser.waitFor { browser.page.existingLcagAccountNo.displayed == false }
+        browser.waitFor { browser.page.existingLcagAccountAnonymous.displayed == false }
         browser.waitFor { browser.page.existingLcagAccountYes.value() == null }
         browser.waitFor { browser.page.existingLcagAccountNo.value() == null }
         browser.waitFor { browser.page.existingLcagAccountAnonymous.value() == null }
         browser.waitFor { browser.page.payNowButton.displayed == false }
+        browser.waitFor { browser.page.amountInput.displayed == true }
+        browser.waitFor { browser.page.donationInfoSection.displayed == false }
+        browser.waitFor { browser.page.usernameInput.displayed == false }
+        browser.waitFor { browser.page.firstNameInput.displayed == false }
+        browser.waitFor { browser.page.lastNameInput.displayed == false }
+        browser.waitFor { browser.page.emailAddressInput.displayed == false }
+        browser.waitFor { browser.page.newLcagJoinerInfoSection.displayed == false }
+        browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == false }
     }
 
     static void verifyHappyInitialPaymentFormState(Browser browser) {
@@ -86,12 +95,9 @@ class GebTestUtils {
         browser.waitFor { browser.page.donationInfoSection.displayed == true }
         browser.waitFor { browser.page.usernameInput.displayed == false }
         browser.waitFor { browser.page.contributionAgreementInfoSection.displayed == false }
-        browser.waitFor { browser.page.contributionTypeDonation.displayed == true }
-        browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == true }
-        browser.waitFor { browser.page.contributionTypeDonation.value() == 'DONATION' }
+        browser.waitFor { browser.page.contributionTypeDonation.displayed == false }
+        browser.waitFor { browser.page.contributionTypeContributionAgreement.displayed == false }
         browser.waitFor { browser.page.contributionTypeContributionAgreement.value() == null }
-        browser.waitFor { browser.page.contributionTypeDonation.attr("disabled") == "true" }
-        browser.waitFor { browser.page.contributionTypeContributionAgreement.attr("disabled") == "true" }
         browser.waitFor { browser.page.payNowButton.displayed == true }
     }
 
@@ -147,8 +153,7 @@ class GebTestUtils {
             String vatPercentage,
             String vatAmount,
             String grossAmount,
-            String vatNumber,
-            String companyName = null) {
+            String vatNumber) {
         assert browser.page.reference.text() == reference
         assert browser.page.invoiceCreatedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
         assert browser.page.paymentReceivedDate.text() == new SimpleDateFormat("dd MMM yyyy").format(date)
@@ -161,10 +166,6 @@ class GebTestUtils {
         assert browser.page.vatAmount.text() == vatAmount
         assert browser.page.grossAmount.text() == grossAmount
         assert browser.page.vatNumber.text() == "VAT number: " + vatNumber
-
-        if (companyName != null) {
-            assert browser.page.invoiceRecipientCompanyName.text() == companyName
-        }
 
         return true
     }
@@ -224,16 +225,8 @@ class GebTestUtils {
             String city,
             String postalCode,
             String country,
-            String contributionAmount,
-            Boolean vatRegistered = false,
-            String companyName = null) {
+            String contributionAmount) {
         assert browser.page.contributionAgreementDate == new SimpleDateFormat("dd MMM yyyy").format(date)
-
-        if (companyName != null) {
-            assert browser.page.contributorName == name + " of " + companyName
-        } else {
-            assert browser.page.contributorName == name
-        }
 
         assert browser.page.addressLine1 == addressLine1
         assert browser.page.addressLine2 == addressLine2
@@ -241,21 +234,28 @@ class GebTestUtils {
         assert browser.page.postalCode == postalCode
         assert browser.page.country == country
 
-        if (!vatRegistered) {
-            assert browser.page.grossAmount == contributionAmount
-        } else {
-            assert browser.page.grossAmount == (contributionAmount + " (including VAT)")
-        }
-
         return true
     }
 
-    static void driveToPaymentType(Browser browser, PaymentType paymentType, ContributionType contributionType, Boolean vatRegistered) {
+    static void driveToPaymentType(Browser browser, String paymentAmount, PaymentType paymentType, ContributionType contributionType = ContributionType.DONATION) {
         browser.go("http://localhost:8484")
         browser.waitFor { browser.at LcagFfcFormPage }
         verifyHappyInitialPaymentFormState(browser)
         browser.page.acceptTermsAndConditionsButton.click()
         verifyInitialPaymentFormQuestionsDisplayed(browser)
+        browser.page.amountInput = paymentAmount
+        browser.page.amountInput << Keys.TAB
+
+        if (Double.parseDouble(paymentAmount) >= 600) {
+            switch (contributionType) {
+                case (ContributionType.CONTRIBUTION_AGREEMENT):
+                    browser.page.contributionTypeContributionAgreement.click()
+                    break
+                case (ContributionType.DONATION):
+                    browser.page.contributionTypeDonation.click()
+                    break
+            }
+        }
 
         switch (paymentType) {
             case (PaymentType.NEW_LCAG_MEMBER):
@@ -270,19 +270,7 @@ class GebTestUtils {
                 return
         }
 
-        switch (contributionType) {
-            case (ContributionType.DONATION):
-                browser.page.contributionTypeDonation.click()
-                break
-            case (ContributionType.CONTRIBUTION_AGREEMENT):
-                browser.page.contributionTypeContributionAgreement.click()
-                if (vatRegistered) {
-                    browser.page.contributorIsVatRegisteredYes.click()
-                } else {
-                    browser.page.contributorIsVatRegisteredNo.click()
-                }
-                break
-        }
+
 
 
 //        newLcagUserAccountPaymentCreditCardFormDisplayed(browser)

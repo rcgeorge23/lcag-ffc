@@ -108,8 +108,8 @@ public class PaymentService {
         String insertSql = "insert into " + contributionsTableName() +
                 " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, `net_amount`, `vat_rate`, `vat_amount`, " +
                 "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`, `address_line_1`, " +
-                "`address_line_2`, `city`, `postal_code`, `country`, `vat_number`, `contributor_is_vat_registered`, `company_name`) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                "`address_line_2`, `city`, `postal_code`, `country`, `vat_number`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -140,9 +140,7 @@ public class PaymentService {
                 payment.getCity(),
                 payment.getPostalCode(),
                 payment.getCountry(),
-                payment.getVatNumber(),
-                payment.getContributorIsVatRegistered(),
-                payment.getCompanyName()
+                payment.getVatNumber()
         );
 
         LOGGER.info("Insertion result: {}", result);
@@ -225,9 +223,7 @@ public class PaymentService {
                 rs.getString("payment_method"),
                 ContributionType.valueOf(rs.getString("contribution_type")),
                 rs.getString("guid"),
-                rs.getString("vat_number"),
-                rs.getBoolean("contributor_is_vat_registered"),
-                rs.getString("company_name")
+                rs.getString("vat_number")
         );
     }
 

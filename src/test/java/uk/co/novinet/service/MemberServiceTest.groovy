@@ -4,34 +4,20 @@ import spock.lang.Specification
 
 class MemberServiceTest extends Specification {
     MemberService testObj
-    def paymentMock = Mock(Payment)
 
     def setup() {
         testObj = new MemberService()
-        testObj.minimumContributionAmountForEnhancedSupport = new BigDecimal("250")
     }
 
-    def donationOfLessThan250ResultsInNormalLcagFfcForumGroup() {
-        given:
-        paymentMock.getGrossAmount() >> new BigDecimal("249.99")
-
-        expect:
-        testObj.forumGroupForContributionAmount(paymentMock) == "9"
+    /*
+    BigDecimal calculateNetAmount(BigDecimal grossAmount, BigDecimal vatRate) {
+        BigDecimal vatAsFraction = vatRate.divide(new BigDecimal(100));
+        return grossAmount.divide(new BigDecimal(1).add(vatAsFraction).setScale(12), BigDecimal.ROUND_HALF_EVEN).setScale(12);
     }
+     */
 
-    def donationOf250ResultsInEnhancedLcagFfcForumGroup() {
-        given:
-        paymentMock.getGrossAmount() >> new BigDecimal("250.00")
-
+    def calculateNetAmount() {
         expect:
-        testObj.forumGroupForContributionAmount(paymentMock) == "9,10"
-    }
-
-    def donationOfMoreThan250ResultsInEnhancedLcagFfcForumGroup() {
-        given:
-        paymentMock.getGrossAmount() >> new BigDecimal("250.01")
-
-        expect:
-        testObj.forumGroupForContributionAmount(paymentMock) == "9,10"
+        testObj.calculateNetAmount(new BigDecimal("2000"), new BigDecimal("20")) == new BigDecimal("1666.67")
     }
 }

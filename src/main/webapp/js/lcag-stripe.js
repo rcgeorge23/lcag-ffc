@@ -1,7 +1,7 @@
 var lcag = lcag || {};
 
 lcag.Stripe = lcag.Stripe || {
-    init: function() {
+    init: function(publishableStripeApiKey) {
         // Create a Stripe client.
         // Custom styling can be passed to options when creating an Element.
         // (Note that this demo uses a wider set of styles than the guide below.)
@@ -22,7 +22,7 @@ lcag.Stripe = lcag.Stripe || {
           }
         };
 
-        var stripe = Stripe(lcag.Common.config.key);
+        var stripe = Stripe(publishableStripeApiKey);
         // Create an instance of Elements.
         var elements = stripe.elements();
 
@@ -62,8 +62,6 @@ lcag.Stripe = lcag.Stripe || {
                         hiddenInput.setAttribute('type', 'hidden');
                         hiddenInput.setAttribute('name', 'stripeToken');
                         hiddenInput.setAttribute('value', result.token.id);
-
-                        $("#contributionType").val($("#contributionTypeDonation").prop("checked") ? $("#contributionTypeDonation").val() : $("#contributionTypeContributionAgreement").val());
 
                         form.appendChild(hiddenInput);
                         // Submit the form

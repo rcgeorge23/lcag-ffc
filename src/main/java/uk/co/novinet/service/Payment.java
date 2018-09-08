@@ -42,8 +42,6 @@ public class Payment {
     private ContributionType contributionType;
     private String guid;
     private String vatNumber;
-    private Boolean contributorIsVatRegistered = Boolean.FALSE;
-    private String companyName;
 
     public Payment() {}
 
@@ -75,9 +73,7 @@ public class Payment {
             String paymentMethod,
             ContributionType contributionType,
             String guid,
-            String vatNumber,
-            Boolean contributorIsVatRegistered,
-            String companyName) {
+            String vatNumber) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -106,8 +102,6 @@ public class Payment {
         this.contributionType = contributionType;
         this.guid = guid;
         this.vatNumber = vatNumber;
-        this.contributorIsVatRegistered = contributorIsVatRegistered;
-        this.companyName = companyName;
     }
 
     public Long getId() {
@@ -373,21 +367,5 @@ public class Payment {
 
     public void setVatNumber(String vatNumber) {
         this.vatNumber = vatNumber;
-    }
-
-    public Boolean getContributorIsVatRegistered() {
-        return contributorIsVatRegistered;
-    }
-
-    public void setContributorIsVatRegistered(Boolean contributorIsVatRegistered) {
-        this.contributorIsVatRegistered = contributorIsVatRegistered;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
     }
 }

@@ -13,7 +13,6 @@ class InvoicePage extends Page {
         invoiceCreatedDate { $("#invoiceCreatedDate") }
         paymentReceivedDate { $("#paymentReceivedDate") }
         paymentMethod { $("#paymentMethod") }
-        invoiceRecipientCompanyName(required: false, wait: 2) { $("#invoiceRecipientCompanyName") }
         invoiceRecipientName { $("#invoiceRecipientName") }
         invoiceRecipientEmailAddress { $("#invoiceRecipientEmailAddress") }
         contributionType { $("#contributionType") }

@@ -38,9 +38,6 @@
                                 </td>
 
                                 <td>
-                                    <c:if test="${payment.vatNumber != '<PENDING>'}">
-                                        <span id="invoiceRecipientCompanyName">${payment.companyName}</span><br/>
-                                    </c:if>
                                     <span id="invoiceRecipientName">${payment.firstName} ${payment.lastName}</span><br/>
                                     <span id="invoiceRecipientEmailAddress">${payment.emailAddress}</span>
                                 </td>

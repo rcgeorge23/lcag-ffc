@@ -36,19 +36,19 @@ public class HomeController {
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
 
-    @Value("${minimumContributionAmountForEnhancedSupport}")
-    private String minimumContributionAmountForEnhancedSupport;
-
     @Value("${vatNumber}")
     private String vatNumber;
 
     @Value("${vatRate}")
     private String vatRate;
 
+    @Value("${publishableStripeApiKey}")
+    private String publishableStripeApiKey;
+
     @GetMapping("/")
     public String getHome(ModelMap model, @RequestParam(required = false, name = "guid") String guid) {
-        model.addAttribute("contributionAgreementMinimumAmountGbp", new CurrencyStyleFormatter().print(new BigDecimal(contributionAgreementMinimumAmountGbp), Locale.UK));
-        model.addAttribute("minimumContributionAmountForEnhancedSupport", new CurrencyStyleFormatter().print(new BigDecimal(minimumContributionAmountForEnhancedSupport), Locale.UK));
+        model.addAttribute("formattedContributionAgreementMinimumAmountGbp", new CurrencyStyleFormatter().print(new BigDecimal(contributionAgreementMinimumAmountGbp), Locale.UK));
+        model.addAttribute("contributionAgreementMinimumAmountGbp", contributionAgreementMinimumAmountGbp);
 
         Payment payment = paymentService.findPaymentForGuid(guid);
 
@@ -57,6 +57,7 @@ public class HomeController {
         }
 
         model.addAttribute("vatRate", new BigDecimal(vatRate));
+        model.addAttribute("publishableStripeApiKey", publishableStripeApiKey);
 
         return "home";
     }

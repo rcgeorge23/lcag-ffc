@@ -16,8 +16,6 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `gross_amount` decimal(13,2) NOT NULL,
   `vat_rate` decimal(13,2) NOT NULL,
   `vat_amount` decimal(13,2) NOT NULL,
-  `contributor_is_vat_registered` tinyint(1) NOT NULL,
-  `company_name` varchar(200),
   `invoice_created` int(10) unsigned NOT NULL DEFAULT 0,
   `payment_received` int(10) unsigned NOT NULL DEFAULT 0,
   `stripe_token` varchar(120) NOT NULL,

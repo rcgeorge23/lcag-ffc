@@ -22,9 +22,6 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/js/lcag-stripe.js"></script>
     <script src="/js/lcag-validation.js"></script>
-    <script>
-        lcag.Common.init();
-    </script>
     <title>Loan Charge Action Group | Fighting Fund Contribution Form</title>
 </head>
     <body>
@@ -83,8 +80,8 @@
                                 <h4>Glossary of terms</h4>
                                 <ul>
                                     <li>Contributor – any person who makes a financial contribution to the legal proceedings, whether that is a donation or a contribution with a Contribution Agreement</li>
-                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span> or more.</li>
-                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span>. Those who donate more than ${minimumContributionAmountForEnhancedSupport} will be entitled to an enhanced level of information to help them manage the loan charge.</li>
+                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution agreements will only be entered in to for sums of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more.</li>
+                                    <li>Donation – A donation is a sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span>.</li>
                                     <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
                                 </ul>
                                 <h4>Terms and conditions</h4>
@@ -128,11 +125,56 @@
                                 <div class="panel-heading">Payment<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                                 <div class="panel-body">
                                     <div class="form-group">
-                                        <label>Do you already have an LCAG account?</label>
-                                        <div>
-                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
-                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
-                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
+                                        <label for="grossAmount">Contribution amount:</label>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-addon">£</div>
+                                                <input type="text" name="grossAmount" class="form-control" id="grossAmount" placeholder="Please enter the amount you wish to contribute" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-md-1 col-sm-2">
+                                                <i class="fa fa-info-circle fa-2x"></i>
+                                            </div>
+                                            <div class="col-md-11 col-sm-10">
+                                                You are making a contribution of £<span class="gross-amount"></span><br/><br/>
+                                                Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more can be made by <strong>Contribution Agreement</strong>.<br/><br/>
+                                                Payments made as Contribution Agreements will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
+                                                You may still choose to pay by Donation if you wish to remain anonymous or are not concerned with receiving a partial repayment in the event of a successful litigation outcome.<br/><br/>
+                                                <div id="contributionTypeSection">
+                                                    <div class="form-group">
+                                                        <label>My contribution will be a:</label>
+                                                        <div>
+                                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
+                                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info" id="donationInfoSection" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-md-1 col-sm-2">
+                                                <i class="fa fa-info-circle fa-2x"></i>
+                                            </div>
+                                            <div class="col-md-11 col-sm-10">
+                                                You are making a contribution of £<span class="gross-amount"></span><br/><br/>
+                                                Contributions between £1 and <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> are classed as <strong>Donations</strong>.<br/><br/>
+                                                Donations will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed.<br/><br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="existingLcagAccountSection" style="display:none;">
+                                        <div class="form-group">
+                                            <label>Do you already have an LCAG account?</label>
+                                            <div>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
+                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
+                                            </div>
                                         </div>
                                     </div>
                                     <div id="newLcagJoinerInfoSection" style="display: none;">
@@ -147,64 +189,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="contributionTypeSection" style="display: none;">
-                                        <div class="form-group">
-                                            <label>My contribution will be a:</label>
-                                            <div>
-                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
-                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
-                                            </div>
-                                        </div>
-                                        <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-md-1 col-sm-2">
-                                                    <i class="fa fa-info-circle fa-2x"></i>
-                                                </div>
-                                                <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Contribution Agreements</strong> will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed (less transaction fees).<br/><br/>
-                                                    Minimum payment for a Contribution Agreement is <span class="contributionAgreementMinimumAmountGbp">${contributionAgreementMinimumAmountGbp}</span>.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="alert alert-info" id="donationInfoSection" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-md-1 col-sm-2">
-                                                    <i class="fa fa-info-circle fa-2x"></i>
-                                                </div>
-                                                <div class="col-md-11 col-sm-10">
-                                                    Payments made as <strong>Donations</strong> will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed.<br/><br/>
-                                                    The minimum payment for donations is £1.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="vatSection" style="display: none;">
-                                        <div class="form-group">
-                                            <label>I am making this contribution on behalf of a VAT registered company:</label>
-                                            <a class='form-tooltip' data-toggle="tooltip" data-placement="right" title="You must only answer yes to this question if you are making a contribution on behalf of a VAT registered company.">
-                                                <i class='glyphicon glyphicon-info-sign'></i>
-                                            </a>
-                                            <div>
-                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredYes" value="yes" required> Yes </label>
-                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributorIsVatRegistered" id="contributorIsVatRegisteredNo" value="no" required> No </label>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div id="lcagUsernameSection" style="display: none;">
                                         <div class="form-group">
                                             <label for="username">LCAG username:</label>
                                             <div class="input-group">
                                                 <div class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></div>
                                                 <input type="text" name="username" class="form-control" id="username" placeholder="Please enter your LCAG username" required />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="companyNameSection" style="display: none;">
-                                        <div class="form-group">
-                                            <label for="companyName">Company name:</label>
-                                            <div class="input-group">
-                                                <div class="input-group-addon"><i class="fa fa-align-justify" aria-hidden="true"></i></div>
-                                                <input type="text" name="companyName" class="form-control" id="companyName" placeholder="Please enter your company name" required />
                                             </div>
                                         </div>
                                     </div>
@@ -269,14 +259,6 @@
                                         </div>
                                     </div>
                                     <div id="paymentFieldsSection" class="form-group" style="display: none;">
-                                        <label for="grossAmount">Amount:</label>
-                                        <div class="form-group">
-                                            <div class="input-group">
-                                                <div class="input-group-addon">£</div>
-                                                <input type="text" name="grossAmount" class="form-control" id="grossAmount" placeholder="Please enter the amount you wish to contribute" required />
-                                            </div>
-                                        </div>
-
                                         <label for="card-element">Credit or debit card:</label>
                                         <div id="card-element" classes="form-control">
                                         </div>
@@ -294,21 +276,25 @@
         </div>
 
         <script type="text/javascript">
-            lcag.Stripe.init();
-            lcag.Validation.init();
+            lcag.Stripe.init("${publishableStripeApiKey}");
+            lcag.Validation.init("${contributionAgreementMinimumAmountGbp}");
 
             $(function () {
                 $("a.form-tooltip").tooltip();
+
+                $("input[name=grossAmount]").keyup(function() {
+                    lcag.Validation.updateOtherGrossAmountValues();
+                });
+
+                $("input[name=grossAmount]").change(function() {
+                    lcag.Validation.displayFieldsAndSetupValidationRules();
+                });
 
                 $("input[name=existingLcagAccount]").change(function() {
                     lcag.Validation.displayFieldsAndSetupValidationRules();
                 });
 
                 $("input[name=contributionTypeRadio]").change(function() {
-                    lcag.Validation.displayFieldsAndSetupValidationRules();
-                });
-
-                $("input[name=contributorIsVatRegistered]").change(function() {
                     lcag.Validation.displayFieldsAndSetupValidationRules();
                 });
             });
