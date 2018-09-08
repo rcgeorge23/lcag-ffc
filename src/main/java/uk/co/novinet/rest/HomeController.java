@@ -170,6 +170,10 @@ public class HomeController {
         }
 
         if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
+            if (payment.getPaymentType() == PaymentType.ANONYMOUS) {
+                throw updatePaymentForValidationErrorAndThrowException(payment, "Payment cannot be anonymous if contribution is to be made by Contribution Agreement");
+            }
+
             if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(contributionAgreementMinimumAmountGbp)) < 0) {
                 throw updatePaymentForValidationErrorAndThrowException(payment, "Contribution Agreement amount must be at least £" + contributionAgreementMinimumAmountGbp);
             }
