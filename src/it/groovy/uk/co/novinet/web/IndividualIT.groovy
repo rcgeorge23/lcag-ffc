@@ -454,5 +454,102 @@ class IndividualIT extends GebSpec {
             verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Test Name1", "user1@something.com", "Donation", "£2,000.00", "0%", "£0.00", "£2,000.00", "1234567890")
     }
 
+
+
+    def "i can make 2 donations of £300 each as an existing lcag member"() {
+        given:
+            insertUser(1, "testuser1", "user1@something.com", "Test Name1", 8, "1234_1", "claim_1")
+            GebTestUtils.driveToPaymentType(browser, "300", PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            username = "testuser1"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90001" }
+            waitFor { getEmails("user1@something.com", "Inbox").size() == 1 }
+            waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your contribution of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            assert isBlank(getUserRows().get(0).getAdditionalGroups())
+            GebTestUtils.verifyNoAttachments("user1@something.com")
+
+        when:
+            GebTestUtils.driveToPaymentType(browser, "300", PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION)
+            username = "testuser1"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90002" }
+            waitFor { getEmails("user1@something.com", "Inbox").size() == 2 }
+            waitFor { getEmails("user1@something.com", "Inbox").get(1).content.contains("Dear Test Name1, Thank you for your contribution of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            assert isBlank(getUserRows().get(0).getAdditionalGroups())
+            GebTestUtils.verifyNoAttachments("user1@something.com")
+
+    }
+
+    def "second contribution of less than £600 does not remove my fcc forum group membership"() {
+        given:
+            sleep(3000) //wait for member cache to be refreshed
+            getUserRows().size() == 0
+            GebTestUtils.driveToPaymentType(browser, "2000", PaymentType.NEW_LCAG_MEMBER, ContributionType.CONTRIBUTION_AGREEMENT)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            contributionTypeContributionAgreement.click()
+            contributionAgreementAddressFieldsAreDisplayed(browser, true)
+            enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+            waitFor { at ThankYouPage }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90001" }
+            waitFor { getUserRows().size() == 1 }
+            waitFor { getUserRows().get(0).emailAddress == "harry@generous.com" }
+            waitFor { getUserRows().get(0).name == "Harry Generous" }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
+            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted once we have verified your identity. In order to verify your identity we need to collect some additional information. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
+
+        when:
+            GebTestUtils.driveToPaymentType(browser, "300", PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION)
+            username = "harry"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+            donationInfoSection.displayed == true
+            contributionAgreementInfoSection.displayed == false
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90002" }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 2 }
+            waitFor { getEmails("harry@generous.com", "Inbox").get(1).content.contains("Dear Harry Generous, Thank you for your contribution of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
+            GebTestUtils.verifyNoAttachments("harry@generous.com", 1)
+            getPaymentRows().size() == 2
+            getPaymentRows()[0].username == "harry"
+            getPaymentRows()[1].username == "harry"
+            getPaymentRows()[0].grossAmount == new BigDecimal("2000.00")
+            getPaymentRows()[1].grossAmount == new BigDecimal("300.00")
+    }
+
 }
 

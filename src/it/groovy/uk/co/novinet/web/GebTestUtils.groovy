@@ -212,8 +212,8 @@ class GebTestUtils {
         return true
     }
 
-    static boolean verifyNoAttachments(String emailAddress) {
-        return getEmails(emailAddress, "Inbox").get(0).getAttachments().size() == 0
+    static boolean verifyNoAttachments(String emailAddress, int index = 0) {
+        return getEmails(emailAddress, "Inbox").get(index).getAttachments().size() == 0
     }
 
     static boolean verifyContributionAgreement(
