@@ -43,7 +43,7 @@
                         <span id="postalCode">${payment.postalCode}</span><br/>
                         <span id="country">${payment.country}</span><br/><br/>
 
-                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}}</span> (including VAT).<br/><br/>
+                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> (including VAT).<br/><br/>
 
                         LCAG FFC agrees to return to the contributor such amounts as may be due under the terms and conditions agreed to at the point of application.<br/><br/>
 
