@@ -1,30 +1,30 @@
-/*/* xs < 768 */ */
-/*@media screen and (max-width: 767px) { */
-/*    body { */
-/*        font-size: 1.8em; */
-/*    } */
-/*} */
-/* */
-/*/* sm */ */
-/*@media screen and (min-width: 768px) { */
-/*    body { */
-/*        font-size: 1.8em; */
-/*    } */
-/*} */
-/* */
-/*/* md */ */
-/*@media screen and (min-width: 992px) { */
-/*    body { */
-/*        font-size: 1.8em; */
-/*    } */
-/*} */
-/* */
-/*/* lg */ */
-/*@media screen and (min-width: 1200px) { */
-/*    body { */
-/*        font-size: 1.8em; */
-/*    } */
-/*} */
+/* xs < 768  */
+@media screen and (max-width: 767px) { 
+    body { 
+        font-size: 2em;
+    } 
+} 
+ 
+/* sm  */
+@media screen and (min-width: 768px) { 
+    body { 
+        font-size: 1.8em; 
+    } 
+} 
+ 
+/* md  */
+@media screen and (min-width: 992px) { 
+    body { 
+        font-size: 1.3em;
+    } 
+} 
+ 
+/* lg  */
+@media screen and (min-width: 1200px) { 
+    body { 
+        font-size: 1em;
+    } 
+} 
 
 .dropzone {
     border-style: dashed;
