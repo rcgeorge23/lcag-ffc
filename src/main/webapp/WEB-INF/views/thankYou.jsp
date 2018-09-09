@@ -16,7 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
-    <title>Loan Charge Action Group | Thank You</title>
+    <title>Loan Charge Action Group Fighting Fund Company | Thank You</title>
 </head>
     <body>
         <nav class="navbar navbar-default">

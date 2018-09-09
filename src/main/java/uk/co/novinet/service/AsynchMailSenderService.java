@@ -105,9 +105,11 @@ public class AsynchMailSenderService {
         applySubjectAndText(payment, email);
 
         if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
-            addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE);
-            addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT);
+            addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE, true);
+            addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT, true);
         }
+
+        addPdfAttachment(payment, email, "lcag-ffc-terms-and-conditions", DocumentType.TERMS_AND_CONDITIONS, false);
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
@@ -115,10 +117,10 @@ public class AsynchMailSenderService {
         LOGGER.info("Email successfully sent to new ffc contributor {}", payment);
     }
 
-    private void addPdfAttachment(Payment payment, Email email, String filenamePrefix, DocumentType documentType) {
+    private void addPdfAttachment(Payment payment, Email email, String filenamePrefix, DocumentType documentType, Boolean withDateSuffix) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         invoicePdfRendererService.render(documentType, payment.getGuid(), out);
-        email.addAttachment(filenamePrefix + formattedDate() + ".pdf", out.toByteArray(), "application/pdf");
+        email.addAttachment(filenamePrefix + (withDateSuffix ? formattedDate() : "") + ".pdf", out.toByteArray(), "application/pdf");
     }
 
     private String formattedDate() {

@@ -6,7 +6,7 @@ class InvoicePage extends Page {
 
     static url = "http://localhost:8484/invoice"
 
-    static at = { title == "Loan Charge Action Group | Fighting Fund Contribution Invoice" }
+    static at = { title == "Loan Charge Action Group Fighting Fund Company | Invoice" }
 
     static content = {
         reference { $("#reference") }

@@ -77,26 +77,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">LCAG FFC contributor terms and conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
-                                <h4>Glossary of terms</h4>
-                                <ul>
-                                    <li>Contributor – any person who makes a financial contribution to the legal proceedings, whether that is a donation or a contribution with a Contribution Agreement</li>
-                                    <li>Contribution Agreement – an agreement between LCAG FFC and the contributor that stipulates that in the case of a win that the contributor is entitled to a refund of their contribution on a pro-rata basis after all LCAG FFC’s costs and disbursements have been met. Contribution Agreements will only be entered in to for sums of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more.</li>
-                                    <li>Donation – A sum of money contributed to the fund where there is no agreement for it to be returned. Donations are sums less than <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span>.</li>
-                                    <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
-                                </ul>
-                                <h4>Terms and conditions</h4>
-                                <ol>
-                                    <li>Contributions can be made in the form of a Contribution Agreement or by a Donation.</li>
-                                    <li>Contribution Agreements will be drawn up to reflect the amount of money contributed, the details of the contributor and the arrangements for any refunds of payments which may be due.</li>
-                                    <li>Refunds will be made to Contributors making a Contribution Agreement on a pro rata basis and after administration costs have been deducted.</li>
-                                    <li>Refunds to contributors making a Contribution Agreement will be subject to repayment only of the funds which are available following any payments received from the other party in the proceedings.  These are likely to be in the region of between 60% and 70% of the amount contributed originally in the event of a success.</li>
-                                    <li>Full details of the Contribution Agreement will be sent to the contributor by email shortly after the contribution has been made.</li>
-                                    <li>Donations are made on the basis that refunds will only be provided (less card processing fees) in the event that the litigation does not take place due to insufficient funds being raised.</li>
-                                    <li>Contributors are asked to provide contact details so that they can be given access to the LCAG FCC forum where progress reports and pertinent information regarding activities which may assist those contributors will be posted.</li>
-                                    <li>Any person making a Donation does not have to provide contact details and can remain fully anonymous if they wish, however, they will not be privy to the additional information which is available on the LCAG FCC Forum in this event.</li>
-                                    <li>It is anticipated that larger or corporate/organisation contributors will provide funding via a Contribution Agreement, however, Contribution Agreements are not limited to these contributors.</li>
-                                    <li>It is anticipated that smaller donations or funding provided by individuals will be made by way of a Donation, however, Donations are not limited to these contributors.</li>
-                                </ol>
+                                <jsp:include page="termsAndConditionsFragment.jsp"/>
 
                                 <br />
 

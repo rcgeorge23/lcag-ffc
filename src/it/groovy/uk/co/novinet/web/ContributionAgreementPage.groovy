@@ -6,7 +6,7 @@ class ContributionAgreementPage extends Page {
 
     static url = "http://localhost:8484/invoice"
 
-    static at = { title == "Loan Charge Action Group | Contribution Agreement" }
+    static at = { title == "Loan Charge Action Group Fighting Fund Company | Contribution Agreement" }
 
     static content = {
         contributionAgreementDate { $("#contributionAgreementDate").text() }

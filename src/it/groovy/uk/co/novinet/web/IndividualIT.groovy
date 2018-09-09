@@ -94,7 +94,7 @@ class IndividualIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your payment of £10.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.verifyNoAttachments("user1@something.com")
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
@@ -133,7 +133,7 @@ class IndividualIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your payment of £250.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.verifyNoAttachments("user1@something.com")
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
@@ -171,8 +171,9 @@ class IndividualIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear John Smith, Thank you for your payment of £600.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
-            verifyAttachment("user1@something.com", 0, 2, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
-            verifyAttachment("user1@something.com", 1, 2, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("user1@something.com", 0, 3, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("user1@something.com", 1, 3, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("user1@something.com", 2, 3, "lcag-ffc-terms-and-conditions.pdf")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
@@ -247,7 +248,7 @@ class IndividualIT extends GebSpec {
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted if you become a full member. In order to become a full member we need to verify your identity and confirm receipt of your one-off £100 LCAG joining fee. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.verifyNoAttachments("harry@generous.com")
+            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
 
         when: "i navigate to the invoice page"
             go driver.currentUrl.replace("thankYou", "invoice")
@@ -291,8 +292,9 @@ class IndividualIT extends GebSpec {
             waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
             waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’, ‘Welcome’ and ‘LCAG FFC’ areas. This restriction will be lifted if you become a full member. In order to become a full member we need to verify your identity and confirm receipt of your one-off £100 LCAG joining fee. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
-            verifyAttachment("harry@generous.com", 0, 2, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
-            verifyAttachment("harry@generous.com", 1, 2, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("harry@generous.com", 0, 3, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("harry@generous.com", 1, 3, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("harry@generous.com", 2, 3, "lcag-ffc-terms-and-conditions.pdf")
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
             waitFor { getPaymentRows().size() == 1 }
@@ -360,7 +362,7 @@ class IndividualIT extends GebSpec {
             waitFor { emailContent.contains("Dear Harry Generous, Thank you for your donation of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you may like to join LCAG. We have already set up a forum user account for you: Username: harry Temporary password:") }
             waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted if you become a full member. In order to become a full member we need to verify your identity and confirm receipt of your one-off £100 LCAG joining fee. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
-            verifyNoAttachments("harry@generous.com")
+            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
             waitFor { getPaymentRows().size() == 1 }
@@ -425,7 +427,7 @@ class IndividualIT extends GebSpec {
             waitFor { getUserRows().get(0).name == "Test Name1" }
             waitFor { getEmails("user1@something.com", "Inbox").size() == 1 }
             waitFor { emailContent.contains("Dear Test Name1, Thank you for your payment of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
-            verifyNoAttachments("user1@something.com")
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
             waitFor { getPaymentRows().size() == 1 }
@@ -476,7 +478,7 @@ class IndividualIT extends GebSpec {
             waitFor { getEmails("user1@something.com", "Inbox").get(0).content.contains("Dear Test Name1, Thank you for your payment of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.verifyNoAttachments("user1@something.com")
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
 
         when:
             GebTestUtils.driveToPaymentType(browser, "300", PaymentType.EXISTING_LCAG_MEMBER, ContributionType.DONATION)
@@ -491,10 +493,10 @@ class IndividualIT extends GebSpec {
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90002" }
             waitFor { getEmails("user1@something.com", "Inbox").size() == 2 }
-            waitFor { getEmails("user1@something.com", "Inbox").get(1).content.contains("Dear Test Name1, Thank you for your donation of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. Many thanks, LCAG FFC Team") }
+            waitFor { getEmails("user1@something.com", "Inbox").get(1).content.contains("Dear Test Name1, Thank you for your payment of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             assert isBlank(getUserRows().get(0).getAdditionalGroups())
-            GebTestUtils.verifyNoAttachments("user1@something.com")
+            verifyAttachment("user1@something.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
 
     }
 
@@ -523,6 +525,9 @@ class IndividualIT extends GebSpec {
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            verifyAttachment("harry@generous.com", 0, 3, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("harry@generous.com", 1, 3, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+            verifyAttachment("harry@generous.com", 2, 3, "lcag-ffc-terms-and-conditions.pdf")
             waitFor { emailContent.contains("Dear Harry Generous, Thank you for your contribution of £2,000.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90001. You have indicated that you would like to join LCAG and be kept up to date with the latest developments regarding the 2019 Loan Charge legal challenge. We have already set up a forum user account for you: Username: harry Temporary password:") }
             waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
             waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’, ‘Welcome’ and ‘LCAG FFC’ areas. This restriction will be lifted if you become a full member. In order to become a full member we need to verify your identity and confirm receipt of your one-off £100 LCAG joining fee. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(0).membershipToken} Many thanks, LCAG FFC Team") }
@@ -543,7 +548,7 @@ class IndividualIT extends GebSpec {
             waitFor { getEmails("harry@generous.com", "Inbox").get(1).content.contains("Dear Harry Generous, Thank you for your payment of £300.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. Many thanks, LCAG FFC Team") }
             waitFor { getUserRows().get(0).getGroup() == "8" }
             waitFor { getUserRows().get(0).getAdditionalGroups() == "9" }
-            GebTestUtils.verifyNoAttachments("harry@generous.com", 1)
+            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf", 1)
             getPaymentRows().size() == 2
             getPaymentRows()[0].username == "harry"
             getPaymentRows()[1].username == "harry"

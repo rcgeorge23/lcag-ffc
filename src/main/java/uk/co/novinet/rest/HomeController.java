@@ -90,6 +90,22 @@ public class HomeController {
         return "invoice";
     }
 
+    @GetMapping("/termsAndConditions")
+    public String getTermsAndconditions(ModelMap model) {
+        model.addAttribute("formattedContributionAgreementMinimumAmountGbp", new CurrencyStyleFormatter().print(new BigDecimal(contributionAgreementMinimumAmountGbp), Locale.UK));
+        model.addAttribute("contributionAgreementMinimumAmountGbp", contributionAgreementMinimumAmountGbp);
+
+        return "termsAndConditions";
+    }
+
+    @ResponseBody
+    @GetMapping(path = "/termsAndConditionsExport", produces = MediaType.APPLICATION_PDF_VALUE)
+    public byte[] exportTermsAndConditions() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        invoicePdfRendererService.renderTermsAndConditionsPdf(out);
+        return out.toByteArray();
+    }
+
     @GetMapping("/contributionAgreement")
     public String getContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
         Payment payment = paymentService.findPaymentForGuid(guid);

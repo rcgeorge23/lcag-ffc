@@ -205,10 +205,10 @@ class GebTestUtils {
         browser.page.countryInput = "Some Country"
     }
 
-    static boolean verifyAttachment(String emailAddress, int index, int expectedNumberOfAttachments, String expectedFileName) {
-        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().size() == expectedNumberOfAttachments
-        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().get(index).getFilename().equals(expectedFileName)
-        assert getEmails(emailAddress, "Inbox").get(0).getAttachments().get(index).getBytes().length > 0
+    static boolean verifyAttachment(String emailAddress, int attachmentIndex, int expectedNumberOfAttachments, String expectedFileName, int emailIndex = 0) {
+        assert getEmails(emailAddress, "Inbox").get(emailIndex).getAttachments().size() == expectedNumberOfAttachments
+        assert getEmails(emailAddress, "Inbox").get(emailIndex).getAttachments().get(attachmentIndex).getFilename().equals(expectedFileName)
+        assert getEmails(emailAddress, "Inbox").get(emailIndex).getAttachments().get(attachmentIndex).getBytes().length > 0
         return true
     }
 

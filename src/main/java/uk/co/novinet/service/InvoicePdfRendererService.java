@@ -30,6 +30,9 @@ public class InvoicePdfRendererService {
             case INVOICE:
                 renderInvoicePdf(guid, outputStream);
                 break;
+            case TERMS_AND_CONDITIONS:
+                renderTermsAndConditionsPdf(outputStream);
+                break;
         }
     }
 
@@ -37,14 +40,22 @@ public class InvoicePdfRendererService {
         renderPdf("/invoice?guid=", guid, outputStream);
     }
 
+    public void renderTermsAndConditionsPdf(OutputStream outputStream) {
+        renderPdf("/termsAndConditions", outputStream);
+    }
+
     public void renderContributionAgreementPdf(String guid, OutputStream outputStream) {
         renderPdf("/contributionAgreement?guid=", guid, outputStream);
+    }
+
+    public void renderPdf(String path, OutputStream outputStream) {
+        renderPdf(path, null, outputStream);
     }
 
     public void renderPdf(String path, String guid, OutputStream outputStream) {
         try {
             ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocument(baseUrl + path + guid);
+            renderer.setDocument(baseUrl + path + (guid == null ? "" : guid));
             renderer.layout();
             renderer.createPDF(outputStream);
             outputStream.close();

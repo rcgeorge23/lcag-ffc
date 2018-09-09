@@ -5,7 +5,7 @@
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <link rel="stylesheet" href="/css/lcag-invoice.css" />
-        <title>Loan Charge Action Group | Fighting Fund Contribution Invoice</title>
+        <title>Loan Charge Action Group Fighting Fund Company | Invoice</title>
     </head>
     <body>
         <div class="invoice-box">

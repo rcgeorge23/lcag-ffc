@@ -5,7 +5,7 @@
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <link rel="stylesheet" href="/css/lcag-contribution-agreement.css" />
-        <title>Loan Charge Action Group | Contribution Agreement </title>
+        <title>Loan Charge Action Group Fighting Fund Company | Contribution Agreement</title>
     </head>
     <body>
         <div class="contribution-agreement-box">
@@ -22,7 +22,7 @@
 
                         The following agreement is made between<br/><br/>
 
-                        <strong>The Loan Charge Action Group fighting Fund Company</strong> (LCAG FFC)<br/><br/>
+                        <strong>The Loan Charge Action Group Fighting Fund Company</strong> (LCAG FFC)<br/><br/>
 
                         Registered Address:<br/><br/>
 

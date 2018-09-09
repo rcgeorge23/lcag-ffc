@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
-    <title>Loan Charge Action Group | An Error Occurred</title>
+    <title>Loan Charge Action Group Fighting Fund Company | An Error Occurred</title>
 </head>
     <body>
         <nav class="navbar navbar-default">
@@ -33,8 +33,8 @@
 
                         <div class="panel-body">
                             <p>
-                                Sorry, an error occurred while trying to save your claim details - probably because we have exceeded our hourly quota.
-                                Please retry in an hour. If the problem persists then please contact <a href="mailto:claim@hmrcloancharge.info">claim@hmrcloancharge.info</a>.
+                                Sorry, an error occurred while trying to make a payment - probably because we have exceeded our hourly quota.
+                                Please retry in an hour. If the problem persists then please contact <a href="mailto:litigation@hmrcloancharge.info">litigation@hmrcloancharge.info</a>.
                             </p>
                         </div>
                     </div>
