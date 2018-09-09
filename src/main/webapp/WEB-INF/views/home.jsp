@@ -108,17 +108,6 @@
                     </div>
 
                     <div id="paymentFormSection" style="display:none;">
-                        <div class="alert alert-info">
-                            <div class="row">
-                                <div class="col-md-1 col-sm-2">
-                                    <i class="fa fa-info-circle fa-2x"></i>
-                                </div>
-                                <div class="col-md-11 col-sm-10">
-                                    <strong>GDPR information</strong>: The details that you provide will not be shared with third parties however it is possible that they may be seen by the small team of LCAG volunteers responsible for membership administration.<br/><br/>
-                                    LCAG will not store your credit card details.</p>
-                                </div>
-                            </div>
-                        </div>
                         <form action="/submit" method="post" id="payment-form">
                             <input type="hidden" id="paymentType" name="paymentType" value="" />
                             <input type="hidden" id="contributionType" name="contributionType" value="" />
@@ -276,76 +265,101 @@
             </div>
         </div>
 
-<!-- Button trigger modal -->
-<div class="text-center"><a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Privacy Policy</a></div>
+        <!-- GDPR Information -->
+        <div class="text-center">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-5">
+                    </div>
+                    <div class="col-sm-1">
+                        <a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Privacy Policy</a>
+                    </div>
+                    <div class="col-sm-1">
+                        <a href="#" data-toggle="modal" data-target="#gdpryModal">GDPR Information</a>
+                    </div>
+                    <div class="col-sm-5">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- Modal -->
-<div class="modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h4>
-      </div>
-      <div class="modal-body">
+        <div class="modal fade" id="gdpryModal" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="gdpryModalLabel">GDPR Information</h4>
+              </div>
+              <div class="modal-body">
+                <p>The details that you provide will not be shared with third parties however it is possible that they may be seen by the small team of LCAG volunteers responsible for membership administration.</p>
+                <p>LCAG will not store your credit card details.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <p>Your data is very important, so we are committed to maintaining the trust and confidence of everyone who contacts us. We are GDPR-compliant but strive to go above and beyond this standard.</p>
+        <div class="modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h4>
+              </div>
+              <div class="modal-body">
 
-        <p>Whether you contact us, join our forum, or donate money to the litigation fund, we will do our best to protect your privacy and keep your data safe and secure.</p>
+                <p>Your data is very important, so we are committed to maintaining the trust and confidence of everyone who contacts us. We are GDPR-compliant but strive to go above and beyond this standard.</p>
 
-        <p>LCAG does use cookies, encryption and individual login IDs</p>
+                <p>Whether you contact us, join our forum, or donate money to the litigation fund, we will do our best to protect your privacy and keep your data safe and secure.</p>
 
-        <p>On request we will remove all information concerning you / authenticated check prior to deletion</p>
+                <p>LCAG does use cookies, encryption and individual login IDs</p>
 
-        <p>LCAG does not:</p>
-        <ul>
-            <li>collect any other data apart from that used to identify the user</li>
-            <li>profile, analyse, or record further information</li>
-            <li>share with external 3rd parties any data / or transfers data outside the UK / EU</li>
-            <li>collect sensitive data</li>
-            <li>record telephone or web traffic</li>
-        </ul>
+                <p>On request we will remove all information concerning you / authenticated check prior to deletion</p>
 
-        <h4>Cookies Policy</h4>
+                <p>LCAG does not:</p>
+                <ul>
+                    <li>collect any other data apart from that used to identify the user</li>
+                    <li>profile, analyse, or record further information</li>
+                    <li>share with external 3rd parties any data / or transfers data outside the UK / EU</li>
+                    <li>collect sensitive data</li>
+                    <li>record telephone or web traffic</li>
+                </ul>
 
-        <p>We use a system of classifying the different types of cookies which we use on the Website, or which may be used by third parties through our websites. The classification was developed by the International Chamber of Commerce UK and explains more about which cookies we use, why we use them, and the functionality you will lose if you decide you don’t want to have them on your device.</p>
+                <h4>Cookies Policy</h4>
 
-        <h5>Strictly necessary cookies</h5>
-        <p>These cookies enable services you have specifically asked for. These cookies are essential in order to enable you to move around the website and use its features, such as accessing secure areas of the website.</p>
+                <p>We use a system of classifying the different types of cookies which we use on the Website, or which may be used by third parties through our websites. The classification was developed by the International Chamber of Commerce UK and explains more about which cookies we use, why we use them, and the functionality you will lose if you decide you don’t want to have them on your device.</p>
 
-        <h5>Performance cookies</h5>
-        <p>These cookies collect anonymous information on the pages visited. By using the website, you agree that we can place these types of cookies on your device.</p>
+                <h5>Strictly necessary cookies</h5>
+                <p>These cookies enable services you have specifically asked for. These cookies are essential in order to enable you to move around the website and use its features, such as accessing secure areas of the website.</p>
 
-        <p>These cookies collect information about how visitors use the website, for instance which pages visitors go to most often, and if they get error messages from web pages. These cookies don’t collect information that identifies a visitor. All information these cookies collect is aggregated and therefore anonymous. It is only used to improve how the Website works.</p>
+                <h5>Performance cookies</h5>
+                <p>These cookies collect anonymous information on the pages visited. By using the website, you agree that we can place these types of cookies on your device.</p>
 
-        <h5>Functionality cookies</h5>
-        <p>These cookies remember choices you make to improve your experience.  By using the Website, you agree that we can place these types of cookies on your device.</p>
+                <p>These cookies collect information about how visitors use the website, for instance which pages visitors go to most often, and if they get error messages from web pages. These cookies don’t collect information that identifies a visitor. All information these cookies collect is aggregated and therefore anonymous. It is only used to improve how the Website works.</p>
 
-        <p>These cookies allow the Website to remember choices you make (such as your user name, language or the region you are in) and provide enhanced, more personal features. These cookies can also be used to remember changes you have made to text size, fonts and other parts of web pages that you can customise. They may also be used to provide services you have asked for such as watching a video or commenting on a blog. The information these cookies collect may be anonymised and they cannot track your browsing activity on other websites.</p>
+                <h5>Functionality cookies</h5>
+                <p>These cookies remember choices you make to improve your experience.  By using the Website, you agree that we can place these types of cookies on your device.</p>
 
-        <h5>Third party cookies</h5>
-        <p>These cookies allow third parties to track the success of their application or customise the application for you. Because of how cookies work we cannot access these cookies, nor can the third parties access the data in cookies used on our site.</p>
+                <p>These cookies allow the Website to remember choices you make (such as your user name, language or the region you are in) and provide enhanced, more personal features. These cookies can also be used to remember changes you have made to text size, fonts and other parts of web pages that you can customise. They may also be used to provide services you have asked for such as watching a video or commenting on a blog. The information these cookies collect may be anonymised and they cannot track your browsing activity on other websites.</p>
 
-        <p>For example, if you choose to ‘share’ content through Twitter or other social networks you might be sent cookies from these websites. We don’t control the setting of these cookies, so please check those websites for more information about their cookies and how to manage them.</p>
+                <h5>Third party cookies</h5>
+                <p>These cookies allow third parties to track the success of their application or customise the application for you. Because of how cookies work we cannot access these cookies, nor can the third parties access the data in cookies used on our site.</p>
 
-        <h4>Managing Cookies</h4>
-        <p>If you do not wish to accept cookies on to your device you can do so by adjusting the settings on your browser. However, be aware that if you do block cookies, some features of our websites may not be available to you and some web pages may not display properly.</p>
+                <p>For example, if you choose to ‘share’ content through Twitter or other social networks you might be sent cookies from these websites. We don’t control the setting of these cookies, so please check those websites for more information about their cookies and how to manage them.</p>
 
-        <p><a href="http://aboutcookies.org/">AboutCookies.org</a> provides a guide to how you can do this on the most commonly used browsers, or you can visit the following webpages:</p>
+                <h4>Managing Cookies</h4>
+                <p>If you do not wish to accept cookies on to your device you can do so by adjusting the settings on your browser. However, be aware that if you do block cookies, some features of our websites may not be available to you and some web pages may not display properly.</p>
 
-        <p><a href="https://support.google.com/chrome/answer/95647">Google Chrome</a></p>
-        <p><a href="https://support.microsoft.com/en-us/help/17442/windows-internet-explorer-delete-manage-cookies">Microsoft Internet Explorer</a></p>
-        <p><a href="https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences">Mozilla Firefox</a></p>
+                <p><a href="http://aboutcookies.org/">AboutCookies.org</a> provides a guide to how you can do this on the most commonly used browsers, or you can visit the following webpages:</p>
 
-        <p>If you have concerns about any cookies set by the British Museum please contact info@britishmuseum.org, and include a link to the page on which the cookie is set.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+                <p><a href="https://support.google.com/chrome/answer/95647">Google Chrome</a></p>
+                <p><a href="https://support.microsoft.com/en-us/help/17442/windows-internet-explorer-delete-manage-cookies">Microsoft Internet Explorer</a></p>
+                <p><a href="https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences">Mozilla Firefox</a></p>
+
+                <p>If you have concerns about any cookies set by the The Loan Charge Action Group FFC please contact litigation@hmrcloancharge.info, and include a link to the page on which the cookie is set.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
 

@@ -47,11 +47,17 @@ public class AsynchMailSenderService {
     @Value("${thankYouForYourContributionEmailSubject}")
     private String thankYouForYourContributionEmailSubject;
 
-    @Value("${newMemberEmailSourceUrl}")
-    private String newMemberEmailSourceUrl;
+    @Value("${newMemberDonationEmailSourceUrl}")
+    private String newMemberDonationEmailSourceUrl;
 
-    @Value("${newMemberEmailSubject}")
-    private String newMemberEmailSubject;
+    @Value("${newMemberDonationEmailSubject}")
+    private String newMemberDonationEmailSubject;
+
+    @Value("${newMemberContributionAgreementEmailSourceUrl}")
+    private String newMemberContributionAgreementEmailSourceUrl;
+
+    @Value("${newMemberContributionAgreementEmailSubject}")
+    private String newMemberContributionAgreementEmailSubject;
 
     @Value("${emailFromName}")
     private String emailFromName;
@@ -127,8 +133,16 @@ public class AsynchMailSenderService {
                 email.setSubject(thankYouForYourContributionEmailSubject);
                 return;
             default:
-                email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberEmailSourceUrl), payment));
-                email.setSubject(newMemberEmailSubject);
+                switch (payment.getContributionType()) {
+                    case DONATION:
+                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberDonationEmailSourceUrl), payment));
+                        email.setSubject(newMemberDonationEmailSubject);
+                        return;
+                    case CONTRIBUTION_AGREEMENT:
+                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberContributionAgreementEmailSourceUrl), payment));
+                        email.setSubject(newMemberContributionAgreementEmailSubject);
+                        return;
+                }
         }
     }
 
