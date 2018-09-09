@@ -38,40 +38,13 @@
 
                         <div class="panel-body">
                             <p>
-                                Thank you for your litigation contribution. Your payment reference is <span id="paymentReference">...</span>.
+                                Thank you for your litigation contribution. Your payment reference is <span id="paymentReference">${payment == null ? '...' : payment.reference}</span>.<br/><br/>
+                                You will receive a confirmation email within the next 10 minutes.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            function getParameterByName(name, url) {
-                if (!url) url = window.location.href;
-                name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                    results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
-            }
-
-            if (getParameterByName('guid') != null) {
-                $.ajax({
-                    url: '/payment?guid=' + getParameterByName('guid'),
-                    method: "GET",
-                    dataType: "json",
-                    complete: function(response, status) {
-                        console.log(response);
-                        if (status == "success") {
-                            payment = response.responseJSON;
-                            if (payment.paymentStatus == "AUTHORIZED") {
-                                $("#paymentReference").text(payment.reference);
-                            }
-                        }
-                    }
-                });
-            }
-        </script>
     </body>
 </html>

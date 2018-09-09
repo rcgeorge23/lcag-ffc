@@ -63,7 +63,15 @@ public class HomeController {
     }
 
     @GetMapping("/thankYou")
-    public String getThankYou() {
+    public String getThankYou(ModelMap model, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return "thankYou";
+        }
+
+        model.addAttribute("payment", payment);
+
         return "thankYou";
     }
 
