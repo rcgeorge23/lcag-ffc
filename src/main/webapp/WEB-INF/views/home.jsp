@@ -250,15 +250,15 @@
         <div class="text-center">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-5 col-sm-2">
+                    <div class="col-lg-4 col-md-3 col-sm-2">
                     </div>
-                    <div class="col-lg-1 col-sm-4">
+                    <div class="col-lg-2 col-md-3 col-sm-4">
                         <a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Privacy Policy</a>
                     </div>
-                    <div class="col-lg-1 col-sm-4">
+                    <div class="col-lg-2 col-md-3 col-sm-4">
                         <a href="#" data-toggle="modal" data-target="#gdpryModal">GDPR Information</a>
                     </div>
-                    <div class="col-lg-5 col-sm-2">
+                    <div class="col-lg-4 col-md-3 col-sm-2">
                     </div>
                 </div>
             </div>
