@@ -29,7 +29,7 @@
             <div class="container-fluid">
                 <div class="navbar-header">
                     <a href="#" class="navbar-brand">
-                        <img alt="Brand" src="/images/lcag_logo.jpg" width="60">
+                        <img alt="Brand" src="/images/lcag_logo.png" width="60">
                     </a>
                 </div>
             </div>

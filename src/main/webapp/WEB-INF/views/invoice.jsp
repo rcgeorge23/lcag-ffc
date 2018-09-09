@@ -15,7 +15,7 @@
                         <table>
                             <tr>
                                 <td class="title">
-                                    <img src="/images/lcag_logo_small.jpg" style="max-width:150px;" width="150px;" />
+                                    <img src="/images/lcag_logo_small.png" style="max-width:150px;" width="150px;" />
                                 </td>
 
                                 <td>

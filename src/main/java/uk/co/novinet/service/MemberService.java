@@ -289,6 +289,7 @@ public class MemberService {
             payment.setMembershipToken(member.getToken());
 
             if (memberAlreadyExisted) {
+                payment.setUsername(member.getUsername());
                 payment.setPaymentType(PaymentType.EXISTING_LCAG_MEMBER);
             }
         }
