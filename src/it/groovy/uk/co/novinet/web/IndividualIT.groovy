@@ -316,6 +316,70 @@ class IndividualIT extends GebSpec {
             verifyInvoice(browser, "LCAGFFC90001", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00", "1234567890")
     }
 
+    def "new lcag member - declined card, then use the same email address to create an account for a new lcag member with a valid card"() {
+        given:
+            sleep(3000) //wait for member cache to be refreshed
+            getUserRows().size() == 0
+            GebTestUtils.driveToPaymentType(browser, "200", PaymentType.NEW_LCAG_MEMBER, ContributionType.DONATION)
+
+        when: "i enter valid lcag username value and payment details and click pay now"
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+            firstNameInput = "Harry"
+            lastNameInput = "Generous"
+            emailAddressInput = "harry@generous.com"
+            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+        then:
+            waitFor { at LcagFfcFormPage }
+            waitFor { paymentDeclinedSection.displayed == true }
+            sleep(3000) //wait for member cache to be refreshed
+
+        when:
+            GebTestUtils.driveToPaymentType(browser, "200", PaymentType.NEW_LCAG_MEMBER, ContributionType.DONATION)
+            contributionAgreementAddressFieldsAreDisplayed(browser, false)
+            firstNameInput = "Harry"
+            lastNameInput = "Generous"
+            emailAddressInput = "harry@generous.com"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
+            payNowButton.click()
+
+            waitFor { at ThankYouPage }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
+
+        and: "i land on the thank you page and i receive a confirmation email"
+            waitFor { at ThankYouPage }
+            waitFor { paymentReference.text() == "LCAGFFC90002" }
+            waitFor { getUserRows().size() == 2 }
+            waitFor { getUserRows().get(0).emailAddress.startsWith("DELETED_ON_") && getUserRows().get(0).emailAddress.endsWith("harry@generous.com") }
+            waitFor { getUserRows().get(0).username.startsWith("DELETED_ON_")  && getUserRows().get(0).username.endsWith("harry") }
+            waitFor { getUserRows().get(0).name == "Harry Generous" }
+            waitFor { getUserRows().get(1).emailAddress == "harry@generous.com" }
+            waitFor { getUserRows().get(1).username == "harry" }
+            waitFor { getUserRows().get(1).name == "Harry Generous" }
+            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            waitFor { emailContent.contains("Dear Harry Generous, Thank you for your donation of £200.00 towards the Loan Charge Action Group litigation fund. Your payment reference is LCAGFFC90002. You have indicated that you may like to join LCAG. We have already set up a forum user account for you: Username: harry Temporary password:") }
+            waitFor { emailContent.contains("Temporary password: 2019l0anCharg3") || emailContent.contains("Temporary password: lc4g2019Ch4rg3") || emailContent.contains("Temporary password: hm7cL04nch4rGe") || emailContent.contains("Temporary password: ch4l1Eng3Hm7C") }
+            waitFor { emailContent.contains("You can access the forum from here: https://forum.hmrcloancharge.info/ Initially your ability to interact on the forum will be limited to the ‘Guest’ and ‘Welcome’ areas. This restriction will be lifted if you become a full member. In order to become a full member we need to verify your identity and confirm receipt of your one-off £100 LCAG joining fee. If you are happy to proceed, please complete the LCAG membership form and we will get back to you as soon as we can: https://membership.hmrcloancharge.info?token=${getUserRows().get(1).membershipToken} Many thanks, LCAG FFC Team") }
+            waitFor { getUserRows().get(0).getGroup() == "8" }
+            assert isBlank(getUserRows().get(0).getAdditionalGroups())
+            verifyAttachment("harry@generous.com", 0, 1, "lcag-ffc-terms-and-conditions.pdf")
+            go driver.currentUrl.replace("thankYou", "invoice")
+            waitFor { at InvoicePage }
+
+        then:
+            verifyNoVatNumberInvoice(browser, "LCAGFFC90002", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00")
+
+        when: "i set the vat number and refresh the page"
+            runSqlUpdate("update i7b0_ffc_contributions set vat_number = '1234567890' where `reference` = 'LCAGFFC90002'")
+            driver.navigate().refresh()
+            waitFor { at InvoicePage }
+
+        then:
+            verifyInvoice(browser, "LCAGFFC90002", new Date(), "Card", "Harry Generous", "harry@generous.com", "Donation", "£200.00", "0%", "£0.00", "£200.00", "1234567890")
+    }
+
     def "i can complete the payment flow for contribution agreement for a new lcag applicant"() {
         given:
             sleep(3000) //wait for member cache to be refreshed
@@ -468,7 +532,7 @@ class IndividualIT extends GebSpec {
 
             payNowButton.click()
 
-            waitFor { getEmails("user1@something.com", "Inbox").size() == 1 }
+            waitFor(10) { getEmails("user1@something.com", "Inbox").size() == 1 }
             String emailContent = getEmails("user1@something.com", "Inbox").get(0).content
 
         then: "i land on the thank you page and i receive a confirmation email"

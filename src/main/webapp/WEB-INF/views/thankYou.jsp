@@ -1,4 +1,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri='http://java.sun.com/jsp/jstl/core' %>
 <html>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <head>
@@ -39,7 +40,9 @@
                         <div class="panel-body">
                             <p>
                                 Thank you for your litigation contribution. Your payment reference is <span id="paymentReference">${payment == null ? '...' : payment.reference}</span>.<br/><br/>
-                                You will receive a confirmation email within the next 10 minutes.
+                                <c:if test="${payment.paymentType != 'ANONYMOUS'}">
+                                    You will receive a confirmation email within 24 hours.
+                                </c:if>
                             </p>
                         </div>
                     </div>

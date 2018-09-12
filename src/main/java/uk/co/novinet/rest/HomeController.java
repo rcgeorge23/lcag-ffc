@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.novinet.service.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -139,45 +138,50 @@ public class HomeController {
     @CrossOrigin
     @PostMapping(path = "/submit")
     public ModelAndView submit(ModelMap model, Payment payment) {
+        MemberCreationResult memberCreationResult = null;
         try {
             LOGGER.info("model: {}", model);
             LOGGER.info("payment: {}", payment);
 
-            Member member = prePaymentActions(payment);
+            memberCreationResult = prePaymentActions(payment);
 
             paymentService.executePayment(payment);
 
-            postPaymentActions(payment, member);
+            postPaymentActions(payment, memberCreationResult == null ? null : memberCreationResult.getMember());
 
             model.addAttribute("guid", payment.getGuid());
             return new ModelAndView("redirect:/thankYou", model);
         } catch (Exception e) {
             model.addAttribute("guid", payment == null ? null : payment.getGuid());
             LOGGER.error("Unable to make payment", e);
+
+            if (memberCreationResult != null && !memberCreationResult.memberAlreadyExisted()) {
+                LOGGER.error("Deleting new member to free up email address for another payment attempt", e);
+                memberService.softDeleteMember(memberCreationResult.getMember());
+            }
+
             return new ModelAndView("redirect:/", model);
         }
     }
 
-    private Member prePaymentActions(Payment payment) throws LcagValidationException {
-        Member member = null;
+    private MemberCreationResult prePaymentActions(Payment payment) throws LcagValidationException {
         MemberCreationResult memberCreationResult = null;
 
         switch (payment.getPaymentType()) {
             case EXISTING_LCAG_MEMBER:
-                member = memberService.findMemberByUsername(payment.getUsername());
+                memberCreationResult = new MemberCreationResult(true, memberService.findMemberByUsername(payment.getUsername()));
                 break;
             case NEW_LCAG_MEMBER:
                 memberCreationResult = memberService.createForumUserIfNecessary(payment);
-                member = memberCreationResult.getMember();
                 break;
         }
 
-        memberService.fillInPaymentBlanks(payment, member, memberCreationResult == null ? false : memberCreationResult.memberAlreadyExisted());
+        memberService.fillInPaymentBlanks(payment, memberCreationResult);
         paymentService.createFfcContribution(payment);
 
         validatePayment(payment);
 
-        return member;
+        return memberCreationResult;
     }
 
     private void postPaymentActions(Payment payment, Member member) {

@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS `i7b0_users` (
   `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(120) NOT NULL DEFAULT '',
+  `username` varchar(200) NOT NULL DEFAULT '',
   `password` varchar(120) NOT NULL DEFAULT '',
   `salt` varchar(10) NOT NULL DEFAULT '',
   `loginkey` varchar(50) NOT NULL DEFAULT '',
-  `email` varchar(220) NOT NULL DEFAULT '',
+  `email` varchar(500) NOT NULL DEFAULT '',
   `postnum` int(10) unsigned NOT NULL DEFAULT '0',
   `threadnum` int(10) unsigned NOT NULL DEFAULT '0',
   `avatar` varchar(200) NOT NULL DEFAULT '',

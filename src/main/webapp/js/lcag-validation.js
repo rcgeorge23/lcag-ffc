@@ -181,7 +181,8 @@ lcag.Validation = lcag.Validation || {
                 grossAmount: {
                     required: true,
                     currency: true,
-                    min: 1
+                    min: 1,
+                    max: 999999.99
                 },
                 username: {
                     required: true,

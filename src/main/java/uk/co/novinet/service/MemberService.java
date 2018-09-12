@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -165,7 +166,7 @@ public class MemberService {
                     payment.getFirstName() + " " + payment.getLastName(),
                     null,
                     forumGroupForContributionType(payment),
-                    Instant.now(),
+                    now(),
                     false,
                     false,
                     "",
@@ -205,7 +206,7 @@ public class MemberService {
                     "`mp_name`, `mp_constituency`, `mp_party`, `mp_engaged`, `mp_sympathetic`, `schemes`, `industry`, `how_did_you_hear_about_lcag`, `member_of_big_group`) " +
                     "VALUES (?, ?, ?, ?, 'lvhLksjhHGcZIWgtlwNTJNr3bjxzCE2qgZNX6SBTBPbuSLx21u', ?, 0, 0, '', '', '', 8, ?, 0, '', ?, ?, ?, 0, '', '0', '', '', '', '', '', " +
                     "'all', '', 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 'linear', 1, 1, 1, 1, 1, 1, 0, 0, 0, '', '', '', 0, 0, '', '', 0, 0, 0, '0', '', '', '', 0, 0, 0, '', '', '', 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
-                    "0, 0, 1, '', 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                    "0, 0, 1, '', 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
             LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -283,11 +284,13 @@ public class MemberService {
         return emailAddress.substring(0, emailAddress.indexOf("@"));
     }
 
-    public void fillInPaymentBlanks(Payment payment, Member member, boolean memberAlreadyExisted) {
-        if (member != null) {
+    public void fillInPaymentBlanks(Payment payment, MemberCreationResult memberCreationResult) {
+        Member member = memberCreationResult == null ? null : memberCreationResult.getMember();
+
+        if (memberCreationResult != null) {
             payment.setMembershipToken(member.getToken());
 
-            if (memberAlreadyExisted) {
+            if (memberCreationResult.memberAlreadyExisted()) {
                 payment.setUsername(member.getUsername());
                 payment.setPaymentType(PaymentType.EXISTING_LCAG_MEMBER);
             }
@@ -383,5 +386,22 @@ public class MemberService {
 
     String forumGroupForContributionType(Payment payment) {
         return payment.getContributionType() == DONATION ? LCAG_FFC_CONTRIBUTOR_GROUP : LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP;
+    }
+
+    public void softDeleteMember(Member member) {
+        LOGGER.info("Going to delete member: {}", member);
+
+        String updateSql = "update " + usersTableName() + " set `email` = ?, `username` = ? where uid = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+                updateSql,
+                "DELETED_ON_" + unixTime(now()) + member.getEmailAddress(),
+                "DELETED_ON_" + unixTime(now()) + member.getUsername(),
+                member.getId()
+        );
+
+        LOGGER.info("Deletion result: {}", result);
     }
 }
