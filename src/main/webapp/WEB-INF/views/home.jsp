@@ -104,28 +104,31 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="alert alert-info" id="contributionAgreementInfoSection" style="display: none;">
-                                        <div class="row">
-                                            <div class="col-md-1 col-sm-2">
-                                                <i class="fa fa-info-circle fa-2x"></i>
-                                            </div>
-                                            <div class="col-md-11 col-sm-10">
-                                                You are making a contribution of £<span class="gross-amount"></span><br/><br/>
-                                                Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more can be made by <strong>Contribution Agreement</strong>.<br/><br/>
-                                                Payments made as Contribution Agreements will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed to the first stage (less transaction fees).<br/><br/>
-                                                You may still choose to pay by Donation if you wish to remain anonymous or are not concerned with receiving a partial repayment in the event of a successful litigation outcome.<br/><br/>
-                                                <div id="contributionTypeSection">
-                                                    <div class="form-group">
-                                                        <label>My contribution will be a:</label>
-                                                        <div>
-                                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
-                                                            <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
+                                    <div id="contributionAgreementInfoSection" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <div class="row">
+                                                <div class="col-md-1 col-sm-2">
+                                                    <i class="fa fa-info-circle fa-2x"></i>
+                                                </div>
+                                                <div class="col-md-11 col-sm-10">
+                                                    You are making a contribution of £<span class="gross-amount"></span><br/><br/>
+                                                    Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more can be made by <strong>Contribution Agreement</strong>.<br/><br/>
+                                                    Payments made as Contribution Agreements will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed to the first stage (less transaction fees).<br/><br/>
+                                                    You may still choose to pay by Donation if you wish to remain anonymous or are not concerned with receiving a partial repayment in the event of a successful litigation outcome.<br/><br/>
+                                                    <div id="contributionTypeSection">
+                                                        <div class="form-group">
+                                                            <label>My contribution will be a:</label>
+                                                            <div>
+                                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
+                                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="alert alert-info" id="donationInfoSection" style="display: none;">
                                         <div class="row">
                                             <div class="col-md-1 col-sm-2">
@@ -294,14 +297,13 @@
 
                 <p>LCAG does use cookies, encryption and individual login IDs</p>
 
-                <p>On request we will remove all information concerning you / authenticated check prior to deletion</p>
+                <p>On request we will remove all of your details that we hold on record.</p>
 
                 <p>LCAG does not:</p>
                 <ul>
                     <li>collect any other data apart from that used to identify the user</li>
                     <li>profile, analyse, or record further information</li>
-                    <li>share with external 3rd parties any data / or transfers data outside the UK / EU</li>
-                    <li>collect sensitive data</li>
+                    <li>share any data with external third parties</li>
                     <li>record telephone or web traffic</li>
                 </ul>
 
