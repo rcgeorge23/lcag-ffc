@@ -4,14 +4,17 @@ lcag.Validation = lcag.Validation || {
     config: {
         contributionAgreementMinimumAmountGbp: null
     },
+    state: {
+        hasConfirmedContributionDetails: false
+    },
     showPaymentSection: function () {
         $("#paymentFieldsSection").show();
-        $("#submitButton").show();
+        $("#confirmButton").show();
         $("#contributionTypeSection").show();
     },
     hidePaymentSection: function () {
         $("#paymentFieldsSection").hide();
-        $("#submitButton").hide();
+        $("#confirmButton").hide();
     },
     hideContributionTypeSection: function() {
         $("#contributionTypeSection").hide();
@@ -66,10 +69,33 @@ lcag.Validation = lcag.Validation || {
     updateOtherGrossAmountValues: function() {
         $(".gross-amount").text(lcag.Validation.formatMoney(lcag.Validation.grossAmount()));
     },
+    updateVisibilityOfConfirmationSection: function() {
+        var validate = $("#payment-form").validate();
+
+        console.log("lcag.Validation.state.hasConfirmedContributionDetails:", lcag.Validation.state.hasConfirmedContributionDetails);
+        console.log("validate.checkForm():", validate.checkForm());
+
+        if (lcag.Validation.state.hasConfirmedContributionDetails == true && validate.checkForm()) {
+            $("#confirmButton").show();
+            $("#confirmationSection").show();
+            $("#confirmButton").attr("disabled", "disabled");
+            return true;
+        } else {
+//            $("#confirmButton").hide();
+            lcag.Validation.state.hasConfirmedContributionDetails = false;
+            $("#confirmationSection").hide();
+            $("#confirmButton").prop("disabled", false);
+            document.querySelector('#contributionDetailsSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+            return false;
+        }
+        validate.submitted = {};
+    },
     displayFieldsAndSetupValidationRules: function() {
+        lcag.Validation.state.hasConfirmedContributionDetails = false;
         if (lcag.Validation.grossAmount() == null || lcag.Validation.grossAmount() < 1) {
             $("#contributionType").val("DONATION");
-            lcag.Validation.state.allowedContributionTypes = [];
             lcag.Validation.unselectContributionType();
             $("#existingLcagAccountSection").hide();
             $("#contributionAgreementInfoSection").hide();
@@ -278,10 +304,20 @@ lcag.Validation = lcag.Validation || {
     grossAmount: function() {
         return $("#grossAmount").val() == null ? null : parseFloat($("#grossAmount").val());
     },
+    confirmContributionDetails: function() {
+        if ($("#payment-form").valid()) {
+            lcag.Validation.state.hasConfirmedContributionDetails = true;
+            if (lcag.Validation.updateVisibilityOfConfirmationSection()) {
+                document.querySelector('#confirmationSection').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+    },
     acceptTermsAndConditions: function() {
-        $("#paymentFormSection").show();
+        $("#contributionDetailsSection").show();
         $("#acceptTermsAndConditions").attr("disabled", "disabled");
-        document.querySelector('#paymentFormSection').scrollIntoView({
+        document.querySelector('#contributionDetailsSection').scrollIntoView({
             behavior: 'smooth'
         });
     },

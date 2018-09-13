@@ -75,7 +75,7 @@
 
                     <div id="termsAndConditionsSection">
                         <div class="panel panel-default">
-                            <div class="panel-heading">LCAG FFC contributor terms and conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel-heading">LCAG FFC Contributor Terms and Conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
                                 <jsp:include page="termsAndConditionsFragment.jsp"/>
 
@@ -88,12 +88,12 @@
                         </div>
                     </div>
 
-                    <div id="paymentFormSection" style="display:none;">
+                    <div id="contributionDetailsSection" style="display:none;">
                         <form action="/submit" method="post" id="payment-form">
                             <input type="hidden" id="paymentType" name="paymentType" value="" />
                             <input type="hidden" id="contributionType" name="contributionType" value="" />
-                            <div class="panel panel-default">
-                                <div class="panel-heading">Payment<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel panel-default" id="contributionDetailsSection">
+                                <div class="panel-heading">Contribution Details<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                                 <div class="panel-body">
                                     <div class="form-group">
                                         <label for="grossAmount">Contribution amount:</label>
@@ -232,6 +232,50 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="panel-footer clearfix">
+                                    <button type="button" class="btn btn-primary btn-block" id="confirmButton" onclick="lcag.Validation.confirmContributionDetails();" style="display: none;">Confirm</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div id="confirmationSection" style="display:none;">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Confirmation and Payment<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                                <div class="panel-body">
+                                    <ul class="list-group mb-3">
+                                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                            <div>
+                                                <h6 class="my-0">Product name</h6>
+                                                <small class="text-muted">Brief description</small>
+                                            </div>
+                                            <span class="text-muted">$12</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                            <div>
+                                                <h6 class="my-0">Second product</h6>
+                                                <small class="text-muted">Brief description</small>
+                                            </div>
+                                            <span class="text-muted">$8</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                            <div>
+                                                <h6 class="my-0">Third item</h6>
+                                                <small class="text-muted">Brief description</small>
+                                            </div>
+                                            <span class="text-muted">$5</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between bg-light">
+                                            <div class="text-success">
+                                                <h6 class="my-0">Promo code</h6>
+                                                <small>EXAMPLECODE</small>
+                                            </div>
+                                            <span class="text-success">-$5</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Total (USD)</span>
+                                            <strong>$20</strong>
+                                        </li>
+                                    </ul>
                                     <div id="paymentFieldsSection" class="form-group" style="display: none;">
                                         <label for="card-element">Credit or debit card:</label>
                                         <div id="card-element" classes="form-control">
@@ -240,10 +284,10 @@
                                     </div>
                                 </div>
                                 <div class="panel-footer clearfix">
-                                    <button type="submit" class="btn btn-primary btn-block" id="submitButton" style="display: none;">Pay Now</button>
+                                    <button type="submit" class="btn btn-primary btn-block" id="submitButton">Pay Now</button>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -356,7 +400,6 @@
 
                 $("input[name=grossAmount]").keyup(function() {
                     lcag.Validation.updateOtherGrossAmountValues();
-                    lcag.Validation.displayFieldsAndSetupValidationRules();
                 });
 
                 $("input[name=grossAmount]").change(function() {
@@ -365,10 +408,16 @@
 
                 $("input[name=existingLcagAccount]").change(function() {
                     lcag.Validation.displayFieldsAndSetupValidationRules();
+                    lcag.Validation.updateVisibilityOfConfirmationSection();
                 });
 
                 $("input[name=contributionTypeRadio]").change(function() {
                     lcag.Validation.displayFieldsAndSetupValidationRules();
+                    lcag.Validation.updateVisibilityOfConfirmationSection();
+                });
+
+                $("#contributionDetailsSection input").keyup(function() {
+                    lcag.Validation.updateVisibilityOfConfirmationSection();
                 });
             });
 

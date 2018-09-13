@@ -65,7 +65,7 @@ class GebTestUtils {
     static void verifyInitialPaymentFormQuestionsDisplayed(Browser browser) {
         browser.waitFor { browser.page.paymentDeclinedSection.displayed == false }
         browser.waitFor { browser.page.acceptTermsAndConditionsButton.attr("disabled") == "true" }
-        browser.waitFor { browser.page.paymentFormSection.displayed == true }
+        browser.waitFor { browser.page.contributionDetailsSection.displayed == true }
         browser.waitFor { browser.page.existingLcagAccountYes.displayed == false }
         browser.waitFor { browser.page.existingLcagAccountNo.displayed == false }
         browser.waitFor { browser.page.existingLcagAccountAnonymous.displayed == false }
@@ -87,7 +87,7 @@ class GebTestUtils {
         browser.waitFor { browser.page.paymentDeclinedSection.present == false }
         browser.waitFor { browser.page.termsAndConditionsSection.displayed == true }
         browser.waitFor { browser.page.acceptTermsAndConditionsButton.displayed == true }
-        browser.waitFor { browser.page.paymentFormSection.displayed == false }
+        browser.waitFor { browser.page.contributionDetailsSection.displayed == false }
         browser.waitFor { browser.page.payNowButton.displayed == false }
     }
 

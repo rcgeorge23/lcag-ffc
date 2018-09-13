@@ -12,7 +12,7 @@ class LcagFfcFormPage extends Page {
         paymentDeclinedSection(required: false, wait: 2) { $("#paymentDeclinedSection") }
         termsAndConditionsSection { $("#termsAndConditionsSection") }
         acceptTermsAndConditionsButton { $("#acceptTermsAndConditions") }
-        paymentFormSection { $("#paymentFormSection") }
+        contributionDetailsSection { $("#contributionDetailsSection") }
         newLcagJoinerInfoSection { $("#newLcagJoinerInfoSection") }
 
         existingLcagAccountInput { $("input[name=existingLcagAccount]") }
@@ -45,6 +45,7 @@ class LcagFfcFormPage extends Page {
         paymentFormPostalCodeInput { $("input[name=postal]") }
 
         payNowButton { $("#submitButton") }
+        confirmButton { $("#confirmButton") }
 
         //errors
         grossAmountError { $("#grossAmount-error").text() }
