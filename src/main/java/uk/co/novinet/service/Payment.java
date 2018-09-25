@@ -29,9 +29,6 @@ public class Payment {
     private String postalCode;
     private String country;
     private BigDecimal grossAmount;
-    private BigDecimal netAmount;
-    private BigDecimal vatRate;
-    private BigDecimal vatAmount;
     private Instant invoiceCreated;
     private Instant paymentReceived;
     private String stripeToken;
@@ -39,9 +36,7 @@ public class Payment {
     private String errorDescription;
     private PaymentType paymentType;
     private String paymentMethod;
-    private ContributionType contributionType;
     private String guid;
-    private String vatNumber;
 
     public Payment() {}
 
@@ -61,9 +56,6 @@ public class Payment {
             String postalCode,
             String country,
             BigDecimal grossAmount,
-            BigDecimal netAmount,
-            BigDecimal vatRate,
-            BigDecimal vatAmount,
             Instant invoiceCreated,
             Instant paymentReceived,
             String stripeToken,
@@ -71,9 +63,7 @@ public class Payment {
             String errorDescription,
             PaymentType paymentType,
             String paymentMethod,
-            ContributionType contributionType,
-            String guid,
-            String vatNumber) {
+            String guid) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -89,9 +79,6 @@ public class Payment {
         this.postalCode = postalCode;
         this.country = country;
         this.grossAmount = grossAmount;
-        this.netAmount = netAmount;
-        this.vatRate = vatRate;
-        this.vatAmount = vatAmount;
         this.invoiceCreated = invoiceCreated;
         this.paymentReceived = paymentReceived;
         this.stripeToken = stripeToken;
@@ -99,9 +86,7 @@ public class Payment {
         this.errorDescription = errorDescription;
         this.paymentType = paymentType;
         this.paymentMethod = paymentMethod;
-        this.contributionType = contributionType;
         this.guid = guid;
-        this.vatNumber = vatNumber;
     }
 
     public Long getId() {
@@ -221,14 +206,6 @@ public class Payment {
         this.membershipToken = membershipToken;
     }
 
-    public ContributionType getContributionType() {
-        return contributionType;
-    }
-
-    public void setContributionType(ContributionType contributionType) {
-        this.contributionType = contributionType;
-    }
-
     public String getGuid() {
         return guid;
     }
@@ -265,14 +242,6 @@ public class Payment {
         return uiFriendlyMoneyString(grossAmount);
     }
 
-    public String getUiFriendlyNetAmount() {
-        return uiFriendlyMoneyString(netAmount);
-    }
-
-    public String getUiFriendlyVatAmount() {
-        return uiFriendlyMoneyString(vatAmount);
-    }
-
     private String uiFriendlyMoneyString(BigDecimal moneyAmount) {
         if (moneyAmount == null) {
             return "";
@@ -287,30 +256,6 @@ public class Payment {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
-    }
-
-    public BigDecimal getNetAmount() {
-        return netAmount;
-    }
-
-    public void setNetAmount(BigDecimal netAmount) {
-        this.netAmount = netAmount;
-    }
-
-    public BigDecimal getVatRate() {
-        return vatRate;
-    }
-
-    public void setVatRate(BigDecimal vatRate) {
-        this.vatRate = vatRate;
-    }
-
-    public BigDecimal getVatAmount() {
-        return vatAmount;
-    }
-
-    public void setVatAmount(BigDecimal vatAmount) {
-        this.vatAmount = vatAmount;
     }
 
     public Instant getPaymentReceived() {
@@ -359,13 +304,5 @@ public class Payment {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public String getVatNumber() {
-        return vatNumber;
-    }
-
-    public void setVatNumber(String vatNumber) {
-        this.vatNumber = vatNumber;
     }
 }

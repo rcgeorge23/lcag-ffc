@@ -110,12 +110,10 @@ public class AsynchMailSenderService {
         email.addRecipient(payment.getEmailAddress(), payment.getEmailAddress(), MimeMessage.RecipientType.TO);
         applySubjectAndText(payment, email);
 
-        if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
             addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE, true);
 //            addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT, true);
-        }
 
-        addPdfAttachment(payment, email, "lcag-ffc-terms-and-conditions", DocumentType.TERMS_AND_CONDITIONS, false);
+        addPdfAttachment(payment, email, "lcag-ffc-guidance-notes", DocumentType.GUIDANCE_NOTES, false);
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
@@ -135,30 +133,14 @@ public class AsynchMailSenderService {
 
     private void applySubjectAndText(Payment payment, Email email) throws IOException {
         switch (payment.getPaymentType()) {
-            case ANONYMOUS:
             case EXISTING_LCAG_MEMBER:
-                switch (payment.getContributionType()) {
-                    case DONATION:
-                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(existingMemberThankYouForYourDonationEmailSourceUrl), payment));
-                        email.setSubject(existingMemberThankYouForYourDonationEmailSubject);
-                        return;
-                    case CONTRIBUTION_AGREEMENT:
-                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(existingMemberThankYouForYourContributionAgreementEmailSourceUrl), payment));
-                        email.setSubject(existingMemberThankYouForYourContributionAgreementEmailSubject);
-                        return;
-                }
+                email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(existingMemberThankYouForYourContributionAgreementEmailSourceUrl), payment));
+                email.setSubject(existingMemberThankYouForYourContributionAgreementEmailSubject);
                 return;
             default:
-                switch (payment.getContributionType()) {
-                    case DONATION:
-                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberDonationEmailSourceUrl), payment));
-                        email.setSubject(newMemberDonationEmailSubject);
-                        return;
-                    case CONTRIBUTION_AGREEMENT:
-                        email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberContributionAgreementEmailSourceUrl), payment));
-                        email.setSubject(newMemberContributionAgreementEmailSubject);
-                        return;
-                }
+                email.setTextHTML(replaceTokens(retrieveEmailBodyHtmlFromGoogleDocs(newMemberContributionAgreementEmailSourceUrl), payment));
+                email.setSubject(newMemberContributionAgreementEmailSubject);
+                return;
         }
     }
 

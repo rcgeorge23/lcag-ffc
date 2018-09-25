@@ -197,30 +197,24 @@ public class HomeController {
             throw updatePaymentForValidationErrorAndThrowException(payment, "Amount must be at least £1.00");
         }
 
-        if (payment.getContributionType() == ContributionType.CONTRIBUTION_AGREEMENT) {
-            if (payment.getPaymentType() == PaymentType.ANONYMOUS) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Payment cannot be anonymous if contribution is to be made by Contribution Agreement");
-            }
+        if (payment.getPaymentType() == PaymentType.ANONYMOUS) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "Payment cannot be anonymous if contribution is to be made by Contribution Agreement");
+        }
 
-            if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(contributionAgreementMinimumAmountGbp)) < 0) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Contribution Agreement amount must be at least £" + contributionAgreementMinimumAmountGbp);
-            }
+        if (isBlank(payment.getAddressLine1())) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "Address line 1 is mandatory");
+        }
 
-            if (isBlank(payment.getAddressLine1())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Address line 1 is mandatory");
-            }
+        if (isBlank(payment.getCity())) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "City is mandatory");
+        }
 
-            if (isBlank(payment.getCity())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "City is mandatory");
-            }
+        if (isBlank(payment.getPostalCode())) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "Postal code is mandatory");
+        }
 
-            if (isBlank(payment.getPostalCode())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Postal code is mandatory");
-            }
-
-            if (isBlank(payment.getCountry())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Country is mandatory");
-            }
+        if (isBlank(payment.getCountry())) {
+            throw updatePaymentForValidationErrorAndThrowException(payment, "Country is mandatory");
         }
 
         if (payment.getPaymentType() == PaymentType.NEW_LCAG_MEMBER) {

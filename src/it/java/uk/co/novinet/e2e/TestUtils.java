@@ -16,7 +16,6 @@ import org.codemonkey.simplejavamail.email.Email;
 import org.jsoup.Jsoup;
 import uk.co.novinet.rest.PaymentStatus;
 import uk.co.novinet.rest.PaymentType;
-import uk.co.novinet.service.ContributionType;
 import uk.co.novinet.service.Payment;
 
 import javax.mail.*;
@@ -207,9 +206,6 @@ public class TestUtils {
                 rs.getString("postal_code"),
                 rs.getString("country"),
                 rs.getBigDecimal("gross_amount"),
-                rs.getBigDecimal("net_amount"),
-                rs.getBigDecimal("vat_rate"),
-                rs.getBigDecimal("vat_amount"),
                 dateFromMyBbRow(rs, "invoice_created"),
                 dateFromMyBbRow(rs, "payment_received"),
                 rs.getString("stripe_token"),
@@ -217,9 +213,7 @@ public class TestUtils {
                 rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
-                ContributionType.valueOf(rs.getString("contribution_type")),
-                rs.getString("guid"),
-                rs.getString("vat_number")
+                rs.getString("guid")
         );
     }
 

@@ -106,10 +106,10 @@ public class PaymentService {
         Long nextAvailableId = findNextAvailableId("id", contributionsTableName());
 
         String insertSql = "insert into " + contributionsTableName() +
-                " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, `net_amount`, `vat_rate`, `vat_amount`, " +
-                "`invoice_created`, `payment_received`, `payment_type`, `contribution_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`, `address_line_1`, " +
-                "`address_line_2`, `city`, `postal_code`, `country`, `vat_number`) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                " (`id`, `user_id`, `username`, `hash`, `membership_token`, `first_name`, `last_name`, `email_address`, `gross_amount`, " +
+                "`invoice_created`, `payment_received`, `payment_type`, `stripe_token`, `status`, `reference`, `payment_method`, `guid`, `address_line_1`, " +
+                "`address_line_2`, `city`, `postal_code`, `country`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         LOGGER.info("Going to execute insert sql: {}", insertSql);
 
@@ -123,13 +123,9 @@ public class PaymentService {
                 payment.getLastName(),
                 payment.getEmailAddress(),
                 payment.getGrossAmount(),
-                payment.getNetAmount(),
-                payment.getVatRate(),
-                payment.getVatAmount(),
                 unixTime(Instant.now()),
                 unixTime(Instant.now()),
                 payment.getPaymentType().toString(),
-                payment.getContributionType().toString(),
                 payment.getStripeToken(),
                 PaymentStatus.NEW.toString(),
                 buildReference(nextAvailableId),
@@ -139,8 +135,7 @@ public class PaymentService {
                 payment.getAddressLine2(),
                 payment.getCity(),
                 payment.getPostalCode(),
-                payment.getCountry(),
-                payment.getVatNumber()
+                payment.getCountry()
         );
 
         LOGGER.info("Insertion result: {}", result);
@@ -211,9 +206,6 @@ public class PaymentService {
                 rs.getString("postal_code"),
                 rs.getString("country"),
                 rs.getBigDecimal("gross_amount"),
-                rs.getBigDecimal("net_amount"),
-                rs.getBigDecimal("vat_rate"),
-                rs.getBigDecimal("vat_amount"),
                 dateFromMyBbRow(rs, "invoice_created"),
                 dateFromMyBbRow(rs, "payment_received"),
                 rs.getString("stripe_token"),
@@ -221,9 +213,7 @@ public class PaymentService {
                 rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
-                ContributionType.valueOf(rs.getString("contribution_type")),
-                rs.getString("guid"),
-                rs.getString("vat_number")
+                rs.getString("guid")
         );
     }
 

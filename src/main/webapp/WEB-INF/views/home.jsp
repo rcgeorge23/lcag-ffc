@@ -75,14 +75,14 @@
 
                     <div id="termsAndConditionsSection">
                         <div class="panel panel-default">
-                            <div class="panel-heading">LCAG FFC contributor terms and conditions<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel-heading">LCAG FFC contributor guidance notes<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
                                 <jsp:include page="termsAndConditionsFragment.jsp"/>
 
                                 <br />
 
                                 <div class="form-group col-md-12">
-                                    <button id="acceptTermsAndConditions" type="button" class="btn btn-primary btn-block" onclick="lcag.Validation.acceptTermsAndConditions();">I have read and agree to the terms and conditions</button>
+                                    <button id="acceptTermsAndConditions" type="button" class="btn btn-primary btn-block" onclick="lcag.Validation.acceptTermsAndConditions();">I have read and understood the Guidance Notes</button>
                                 </div>
                             </div>
                         </div>
@@ -112,18 +112,7 @@
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
                                                     You are making a contribution of £<span class="gross-amount"></span><br/><br/>
-                                                    Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more can be made by <strong>Contribution Agreement</strong>.<br/><br/>
-                                                    Payments made as Contribution Agreements will be partially refunded in the event of a successful litigation outcome as outlined in the terms and conditions above OR if insufficient funds are raised and the litigation does not proceed to the first stage (less transaction fees).<br/><br/>
-                                                    You may still choose to pay by Donation if you wish to remain anonymous or are not concerned with receiving a partial repayment in the event of a successful litigation outcome.<br/><br/>
-                                                    <div id="contributionTypeSection">
-                                                        <div class="form-group">
-                                                            <label>My contribution will be a:</label>
-                                                            <div>
-                                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeDonation" value="DONATION" required> Donation </label>
-                                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="contributionTypeRadio" id="contributionTypeContributionAgreement" value="CONTRIBUTION_AGREEMENT" required> Contribution Agreement </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more will be partially refunded in the event of a successful litigation outcome OR if insufficient funds are raised and the litigation does not proceed to the first stage in the Guidance Notes above.<br/><br/>
                                                 </div>
                                             </div>
                                         </div>
@@ -136,8 +125,8 @@
                                             </div>
                                             <div class="col-md-11 col-sm-10">
                                                 You are making a contribution of £<span class="gross-amount"></span><br/><br/>
-                                                Contributions between £1 and <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> are classed as <strong>Donations</strong>.<br/><br/>
-                                                Donations will only be refunded to the card holder (less transaction fees) in the event that insufficient funds are raised and the litigation does not proceed to the first stage.<br/><br/>
+                                                Contributions between £1 and <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> are <strong>non-refundable under any circumstances once proceedings have started</strong>.<br/><br/>
+                                                Contributions at this level will only be refunded to the card holder (less administration fees) in the event that insufficient funds are raised and the litigation does not proceed to the first stage.<br/><br/>
                                             </div>
                                         </div>
                                     </div>
@@ -147,19 +136,6 @@
                                             <div>
                                                 <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountYes" value="yes" required> Yes </label>
                                                 <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountNo" value="no" required> No - I would like to join </label>
-                                                <label class="radio-inline"> <input class="update-fields" type="radio" name="existingLcagAccount" id="existingLcagAccountAnonymous" value="anonymous" required> No - I would like to donate anonymously </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="newLcagJoinerInfoSection" style="display: none;">
-                                        <div class="alert alert-info">
-                                            <div class="row">
-                                                <div class="col-md-1 col-sm-2">
-                                                    <i class="fa fa-info-circle fa-2x"></i>
-                                                </div>
-                                                <div class="col-md-11 col-sm-10">
-                                                    A new LCAG forum account will be created and joining instructions emailed to you once you complete this form and submit your payment.
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

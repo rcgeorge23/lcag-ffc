@@ -18,23 +18,14 @@
 
                 <tr class="information">
                     <td colspan="2">
-                        Date: <span id="contributionAgreementDate">${payment.uiFriendlyPaymentReceivedDate}</span><br/><br/>
-
-                        The following agreement is made between<br/><br/>
-
+                        To the Directors of
                         <strong>The Loan Charge Action Group Fighting Fund Company</strong> (LCAG FFC)<br/><br/>
-
-                        Registered Address:<br/><br/>
-
                         11 Rothersthorpe<br/>
                         Giffard Park<br/>
                         Milton Keynes<br/>
                         MK14 5JL<br/><br/>
 
-                        And<br/><br/>
-
-                        <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> (the contributor)<br/><br/>
-
+                        I <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> of<br/><br/>
                         <span id="addressLine1">${payment.addressLine1}</span><br/>
                         <c:if test="${payment.addressLine2 != null && payment.addressLine2 != ''}">
                             <span id="addressLine2">${payment.addressLine2}</span><br/>
@@ -43,14 +34,11 @@
                         <span id="postalCode">${payment.postalCode}</span><br/>
                         <span id="country">${payment.country}</span><br/><br/>
 
-                        LCAG FFC hereby confirms that it has received the following ‘contribution’ from the contributor named above in the amount of <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> (including VAT).<br/><br/>
-
-                        LCAG FFC agrees to return to the contributor such amounts as may be due under the terms and conditions agreed to at the point of application.<br/><br/>
-
-                        Signed on behalf of LCAG FFC<br/><br/>
-
-                        <img src="/images/richard_horsley_signature.png" style="max-width:150px;" width="150px;" /><br/><br/>
-                        Richard Horsley CFO
+                        declare that I have made a payment via credit / debit card to LOAN CHARGE ACTION GROUP FFC on
+                        <span id="contributionAgreementDate">${payment.uiFriendlyPaymentReceivedDate}</span> for the amount of
+                        <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> which amount is a contribution to be held by
+                        LOAN CHARGE ACTION GROUP FFC as an addition to the Trust Fund of a trust known as
+                        "THE LOAN CHARGE LITIGATION TRUST" of which LOAN CHARGE ACTION GROUP FFC is the Trustee.
                     </td>
                 </tr>
             </table>

@@ -12,10 +12,7 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `city` varchar(200),
   `postal_code` varchar(50),
   `country` varchar(100),
-  `net_amount` decimal(13,2) NOT NULL,
   `gross_amount` decimal(13,2) NOT NULL,
-  `vat_rate` decimal(13,2) NOT NULL,
-  `vat_amount` decimal(13,2) NOT NULL,
   `invoice_created` int(10) unsigned NOT NULL DEFAULT 0,
   `payment_received` int(10) unsigned NOT NULL DEFAULT 0,
   `stripe_token` varchar(120) NOT NULL,
@@ -24,9 +21,7 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `error_description` varchar(200),
   `payment_type` varchar(20) NOT NULL,
   `payment_method` varchar(40) NOT NULL,
-  `contribution_type` varchar(30) NOT NULL,
   `email_sent` tinyint(1) NOT NULL DEFAULT 0,
   `guid` varchar(120) NOT NULL DEFAULT 0,
-  `vat_number` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

@@ -12,7 +12,6 @@ import uk.co.novinet.rest.PaymentType;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -21,13 +20,11 @@ import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.co.novinet.service.ContributionType.DONATION;
 import static uk.co.novinet.service.PersistenceUtils.*;
 
 @Service
 public class MemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
-    private static final String LCAG_FFC_CONTRIBUTOR_GROUP = "";
     private static final String LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP = "9";
 
     @Autowired
@@ -165,7 +162,7 @@ public class MemberService {
                     extractUsername(payment.getEmailAddress()),
                     payment.getFirstName() + " " + payment.getLastName(),
                     null,
-                    forumGroupForContributionType(payment),
+                    LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP,
                     now(),
                     false,
                     false,
@@ -297,35 +294,14 @@ public class MemberService {
         }
 
         payment.setGuid(guid());
-        payment.setVatNumber(vatNumber);
-
-        if (payment.getContributionType() == DONATION) {
-            payment.setVatRate(BigDecimal.ZERO);
-            payment.setNetAmount(payment.getGrossAmount());
-            payment.setVatAmount(BigDecimal.ZERO);
-        } else {
-            BigDecimal vatRate = new BigDecimal(this.vatRate);
-            payment.setVatRate(vatRate);
-            payment.setNetAmount(calculateNetAmount(payment.getGrossAmount(), vatRate));
-            payment.setVatAmount(payment.getGrossAmount().subtract(payment.getNetAmount()));
-        }
 
         switch (payment.getPaymentType()) {
-            case ANONYMOUS:
-                return;
             case NEW_LCAG_MEMBER:
                 payment.setHash(member.getPasswordDetails().getPasswordHash());
                 payment.setUsername(member.getUsername());
                 payment.setUserId(member.getId());
                 return;
             case EXISTING_LCAG_MEMBER:
-                if (payment.getContributionType() == DONATION) {
-                    // if it's a donation, we won't have this stuff in the payment so get it from the member
-                    payment.setUsername(member.getUsername());
-                    payment.setFirstName(firstName(member.getName()));
-                    payment.setLastName(lastName(member.getName()));
-                    payment.setEmailAddress(member.getEmailAddress());
-                }
                 payment.setUserId(member.getId());
                 return;
         }
@@ -366,26 +342,17 @@ public class MemberService {
     public void assignLcagFfcAdditionalGroup(Member member, Payment payment) {
         LOGGER.info("Going to assign member: {} - to LCAG FFC forum group for payment: {}", member, payment);
 
-        if (isBlank(forumGroupForContributionType(payment))) {
-            LOGGER.info("No new group for member: {} and payment: {} as payment is not sufficiently high", member, payment);
-            return;
-        }
-
         String updateSql = "update " + usersTableName() + " set `additionalgroups` = ? where uid = ?;";
 
         LOGGER.info("Going to execute update sql: {}", updateSql);
 
         int result = jdbcTemplate.update(
                 updateSql,
-                forumGroupForContributionType(payment),
+                LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP,
                 member.getId()
         );
 
         LOGGER.info("Update result: {}", result);
-    }
-
-    String forumGroupForContributionType(Payment payment) {
-        return payment.getContributionType() == DONATION ? LCAG_FFC_CONTRIBUTOR_GROUP : LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP;
     }
 
     public void softDeleteMember(Member member) {

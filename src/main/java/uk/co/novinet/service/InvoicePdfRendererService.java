@@ -30,7 +30,7 @@ public class InvoicePdfRendererService {
             case INVOICE:
                 renderInvoicePdf(guid, outputStream);
                 break;
-            case TERMS_AND_CONDITIONS:
+            case GUIDANCE_NOTES:
                 renderTermsAndConditionsPdf(outputStream);
                 break;
         }

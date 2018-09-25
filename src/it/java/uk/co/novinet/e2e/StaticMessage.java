@@ -1,6 +1,7 @@
 package uk.co.novinet.e2e;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -55,4 +56,9 @@ public class StaticMessage {
     }
 
     public List<Attachment> getAttachments() { return attachments; }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
