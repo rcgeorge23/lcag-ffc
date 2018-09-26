@@ -52,3 +52,7 @@ div.card-errors {
   background-color: #fefde5 !important;
 }
 
+canvas {
+  width: 100%;
+  height: auto;
+}

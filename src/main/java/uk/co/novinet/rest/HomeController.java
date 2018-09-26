@@ -119,6 +119,20 @@ public class HomeController {
         return "contributionAgreement";
     }
 
+    @GetMapping("/signContributionAgreement")
+    public String getSignContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return "error";
+        }
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+
+        return "signContributionAgreement";
+    }
+
     @ResponseBody
     @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportInvoice(@RequestParam("guid") String guid) {
