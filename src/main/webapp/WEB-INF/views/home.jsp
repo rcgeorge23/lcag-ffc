@@ -75,7 +75,7 @@
 
                     <div id="termsAndConditionsSection">
                         <div class="panel panel-default">
-                            <div class="panel-heading">LCAG FFC contributor guidance notes<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel-heading">LCAG FFC Contributor Guidance Hotes<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
                                 <jsp:include page="termsAndConditionsFragment.jsp"/>
 

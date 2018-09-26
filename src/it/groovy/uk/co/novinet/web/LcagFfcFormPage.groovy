@@ -20,10 +20,6 @@ class LcagFfcFormPage extends Page {
         existingLcagAccountNo { $("#existingLcagAccountNo") }
         existingLcagAccountAnonymous { $("#existingLcagAccountAnonymous") }
 
-        contributionTypeInput { $("#contributionType") }
-        contributionTypeDonation { $("#contributionTypeDonation") }
-        contributionTypeContributionAgreement { $("#contributionTypeContributionAgreement") }
-
         donationInfoSection { $("#donationInfoSection") }
         contributionAgreementInfoSection { $("#contributionAgreementInfoSection") }
 

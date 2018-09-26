@@ -41,23 +41,11 @@ public class AsynchMailSenderService {
     @Value("${smtpPassword}")
     private String smtpPassword;
 
-    @Value("${existingMemberThankYouForYourDonationEmailSourceUrl}")
-    private String existingMemberThankYouForYourDonationEmailSourceUrl;
-
-    @Value("${existingMemberThankYouForYourDonationEmailSubject}")
-    private String existingMemberThankYouForYourDonationEmailSubject;
-
     @Value("${existingMemberThankYouForYourContributionAgreementEmailSourceUrl}")
     private String existingMemberThankYouForYourContributionAgreementEmailSourceUrl;
 
     @Value("${existingMemberThankYouForYourContributionAgreementEmailSubject}")
     private String existingMemberThankYouForYourContributionAgreementEmailSubject;
-
-    @Value("${newMemberDonationEmailSourceUrl}")
-    private String newMemberDonationEmailSourceUrl;
-
-    @Value("${newMemberDonationEmailSubject}")
-    private String newMemberDonationEmailSubject;
 
     @Value("${newMemberContributionAgreementEmailSourceUrl}")
     private String newMemberContributionAgreementEmailSourceUrl;
@@ -110,10 +98,9 @@ public class AsynchMailSenderService {
         email.addRecipient(payment.getEmailAddress(), payment.getEmailAddress(), MimeMessage.RecipientType.TO);
         applySubjectAndText(payment, email);
 
-            addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE, true);
-//            addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT, true);
-
+        addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE, true);
         addPdfAttachment(payment, email, "lcag-ffc-guidance-notes", DocumentType.GUIDANCE_NOTES, false);
+        addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT, true);
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);

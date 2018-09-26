@@ -208,11 +208,6 @@ lcag.Validation = lcag.Validation || {
 
         return null;
     },
-    enableAndUnsetContributionTypeRadio: function() {
-        $("input[name=contributionTypeRadio]").attr("disabled", false);
-        $("#contributionTypeDonation").prop("checked", false);
-        $("#contributionTypeDonationContributionAgreement").prop("checked", false);
-    },
     grossAmount: function() {
         return $("#grossAmount").val() == null ? null : parseFloat($("#grossAmount").val());
     },
