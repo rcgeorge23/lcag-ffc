@@ -71,7 +71,7 @@
 
                     <div id="termsAndConditionsSection">
                         <div class="panel panel-default">
-                            <div class="panel-heading">LCAG FFC Contributor Guidance Hotes<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
+                            <div class="panel-heading">LCAG FFC Contributor Guidance Notes<div class="pull-right"><i class="fa fa-lock" aria-hidden="true"></i></div></div>
                             <div class="panel-body">
                                 <jsp:include page="termsAndConditionsFragment.jsp"/>
 
@@ -108,7 +108,7 @@
                                                 </div>
                                                 <div class="col-md-11 col-sm-10">
                                                     You are making a contribution of £<span class="gross-amount"></span><br/><br/>
-                                                    Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more will be partially refunded in the event of a successful litigation outcome OR if insufficient funds are raised and the litigation does not proceed to the first stage in the Guidance Notes above.<br/><br/>
+                                                    Contributions of <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> or more will be partially refunded in the event of a successful litigation outcome OR if insufficient funds are raised and the litigation does not proceed beyond the first stage as described in the Guidance Notes above.<br/><br/>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,7 +122,7 @@
                                             <div class="col-md-11 col-sm-10">
                                                 You are making a contribution of £<span class="gross-amount"></span><br/><br/>
                                                 Contributions between £1 and <span class="contributionAgreementMinimumAmountGbp">${formattedContributionAgreementMinimumAmountGbp}</span> are <strong>non-refundable under any circumstances once proceedings have started</strong>.<br/><br/>
-                                                Contributions at this level will only be refunded to the card holder (less administration fees) in the event that insufficient funds are raised and the litigation does not proceed to the first stage.<br/><br/>
+                                                Contributions at this level will only be refunded to the card holder (less administration fees) in the event that insufficient funds are raised and the litigation does not proceed beyond the first stage as described in the Guidance Notes above.<br/><br/>
                                             </div>
                                         </div>
                                     </div>
