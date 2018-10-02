@@ -6,11 +6,11 @@
 <h4>Glossary of terms</h4>
 <ul>
     <li>LCAG FFC – Loan Charge Action Group Fighting Fund Company</li>
-    <li>LOAN CHARGE LITIGATION TRUST – the trust set up by the LACG FFC to receive monies for the purpose of procuring the institution and continuance of the Loan Charge Judicial Review Proceedings.</li>
+    <li>LOAN CHARGE LITIGATION TRUST – the trust set up by the LCAG FFC to receive monies for the purpose of procuring the institution and continuance of the Loan Charge Judicial Review Proceedings.</li>
     <li>TRUST DEED – the document creating the relationship between the contributor and the Loan Charge Litigation Trust, of which LCAG FFC is the trustee.</li>
     <li>CONTRIBUTOR – any person who makes a financial contribution to the Loan Charge Litigation Trust.</li>
     <li>CONTRIBUTION AGREEMENT – an agreement between the Loan Charge Action Group FFC as trustee of the Loan Charge Litigation Trust and the contributor.</li>
-    <li>JUDICIAL REVIEW - means a) making and prosecuting an application for permission to bring judicial review proceedings in the Administrative Division of the High Court against the Commissioners for Her Majesty’s Revenue and Customs (HMRC) and b) bringing and prosecuting such judicial review proceedings if permission is granted to do so.  This also includes the bringing and / or defending of an appeal against any adverse decision made in the Judicial Review Proceedings (whether in the Administrative Court or elsewhere).</li>
+    <li>JUDICIAL REVIEW - The High Court has the jurisdiction to review the actions of the administration. HMRC are part of the administration, their actions are subject to review by the High Court. The High Court can make a number of orders which can (putting things simply) make the administration act in a different way.</li>
 </ul>
 <h4>Guidance Notes</h4>
 <ol>
