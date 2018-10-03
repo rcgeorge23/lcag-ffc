@@ -213,7 +213,8 @@ public class PaymentService {
                 rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
-                rs.getString("guid")
+                rs.getString("guid"),
+                rs.getString("signature_data")
         );
     }
 
@@ -237,5 +238,21 @@ public class PaymentService {
         }
 
         return payments.get(0);
+    }
+
+    public void addSignatureToContributionAgreement(Payment payment, String signatureData) {
+        LOGGER.info("Going to add signature: {} to payment: {}", signatureData, payment);
+
+        String updateSql = "update " + contributionsTableName() + " set `signature_data` = ? where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+            updateSql,
+            signatureData,
+            payment.getId()
+        );
+
+        LOGGER.info("Update result: {}", result);
     }
 }

@@ -213,8 +213,8 @@ public class TestUtils {
                 rs.getString("error_description"),
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
-                rs.getString("guid")
-        );
+                rs.getString("guid"),
+                rs.getString("signature_data"));
     }
 
     static List<StaticMessage> getEmails(String emailAddress, String folderName) {

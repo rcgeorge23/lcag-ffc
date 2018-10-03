@@ -37,6 +37,7 @@ public class Payment {
     private PaymentType paymentType;
     private String paymentMethod;
     private String guid;
+    private String signatureData;
 
     public Payment() {}
 
@@ -63,7 +64,8 @@ public class Payment {
             String errorDescription,
             PaymentType paymentType,
             String paymentMethod,
-            String guid) {
+            String guid,
+            String signatureData) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -87,6 +89,7 @@ public class Payment {
         this.paymentType = paymentType;
         this.paymentMethod = paymentMethod;
         this.guid = guid;
+        this.signatureData = signatureData;
     }
 
     public Long getId() {
@@ -304,5 +307,13 @@ public class Payment {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getSignatureData() {
+        return signatureData;
+    }
+
+    public void setSignatureData(String signatureData) {
+        this.signatureData = signatureData;
     }
 }
