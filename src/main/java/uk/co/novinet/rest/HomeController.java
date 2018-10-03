@@ -129,8 +129,26 @@ public class HomeController {
 
         model.addAttribute("payment", payment);
         model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+        model.addAttribute("guid", guid);
 
         return "signContributionAgreement";
+    }
+
+    @PostMapping("/signContributionAgreement")
+    public String postSignContributionAgreement(ModelMap model, @RequestParam("signatureData") String signatureData, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return "error";
+        }
+
+        paymentService.addSignatureToContributionAgreement(payment, signatureData);
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+        model.addAttribute("guid", guid);
+
+        return "thankYouForSigningContributionAgreement";
     }
 
     @ResponseBody
@@ -164,7 +182,7 @@ public class HomeController {
             postPaymentActions(payment, memberCreationResult == null ? null : memberCreationResult.getMember());
 
             model.addAttribute("guid", payment.getGuid());
-            return new ModelAndView("redirect:/thankYou", model);
+            return new ModelAndView("redirect:/signContributionAgreement", model);
         } catch (Exception e) {
             model.addAttribute("guid", payment == null ? null : payment.getGuid());
             LOGGER.error("Unable to make payment", e);

@@ -10,6 +10,11 @@
     <body>
         <div class="contribution-agreement-box">
             <jsp:include page="contributionAgreementFragment.jsp"/>
+            <br/>
+            <div style="width: 100%;">
+                <img style="" src="${payment.signatureData}" />
+                <br/><br/>
+            </div>
         </div>
     </body>
 </html>
