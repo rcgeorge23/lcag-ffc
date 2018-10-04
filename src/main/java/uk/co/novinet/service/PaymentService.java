@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import uk.co.novinet.rest.PaymentStatus;
 import uk.co.novinet.rest.PaymentType;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +41,9 @@ public class PaymentService {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private PdfRendererService pdfRendererService;
+
     @Value("${secretStripeApiKey}")
     private String secretStripeApiKey;
 
@@ -55,9 +59,10 @@ public class PaymentService {
             chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
             chargeMap.put("currency", "gbp");
             chargeMap.put("metadata", filterEmptyStringValues(describe(payment),
-                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount", "uiFriendlyNetAmount",
-                            "uiFriendlyVatAmount", "hash", "membershipToken", "errorDescription", "paymentStatus", "membershipToken", "addressLine2",
-                            "invoiceCreated", "id")));
+                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount",
+                            "hash", "membershipToken", "errorDescription", "paymentStatus", "addressLine2",
+                            "signatureData", "signedContributionAgreement", "invoiceCreated", "id")));
+
             chargeMap.put("source", payment.getStripeToken());
 
             Charge charge = Charge.create(chargeMap);
@@ -180,10 +185,9 @@ public class PaymentService {
     public List<Payment> getFfcContributionsAwaitingEmails() {
         LOGGER.info("Going to find contributions awaiting emails");
 
-        String sql = "select * from " + contributionsTableName() + " where `email_sent` = ? and payment_type <> ? and status = ?;";
+        String sql = "select * from " + contributionsTableName() + " where `email_sent` = 0 and payment_type <> ? and status = ? and has_provided_signature = 1;";
 
         return jdbcTemplate.query(sql, new Object[] {
-                EMAIL_NOT_SENT,
                 PaymentType.ANONYMOUS.toString(),
                 PaymentStatus.AUTHORIZED.toString()
         }, (rs, rowNum) -> buildPayment(rs));
@@ -214,7 +218,10 @@ public class PaymentService {
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
                 rs.getString("guid"),
-                rs.getString("signature_data")
+                rs.getString("signature_data"),
+                rs.getBoolean("has_provided_signature"),
+                rs.getBytes("signed_contribution_agreement"),
+                dateFromMyBbRow(rs, "contribution_agreement_signature_date")
         );
     }
 
@@ -243,16 +250,28 @@ public class PaymentService {
     public void addSignatureToContributionAgreement(Payment payment, String signatureData) {
         LOGGER.info("Going to add signature: {} to payment: {}", signatureData, payment);
 
-        String updateSql = "update " + contributionsTableName() + " set `signature_data` = ? where id = ?;";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        pdfRendererService.render(DocumentType.CONTRIBUTION_AGREEMENT, payment.getGuid(), out);
+
+        String updateSql = "update " + contributionsTableName() + " set " +
+                "`signature_data` = ?, " +
+                "`signed_contribution_agreement` = ?, " +
+                "`contribution_agreement_signature_date` = ?, " +
+                "`has_provided_signature` = 1 " +
+                "where id = ?;";
 
         LOGGER.info("Going to execute update sql: {}", updateSql);
 
         int result = jdbcTemplate.update(
             updateSql,
             signatureData,
+            out.toByteArray(),
+            unixTime(Instant.now()),
             payment.getId()
         );
 
         LOGGER.info("Update result: {}", result);
+
+
     }
 }

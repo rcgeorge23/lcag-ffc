@@ -214,7 +214,11 @@ public class TestUtils {
                 PaymentType.valueOf(rs.getString("payment_type")),
                 rs.getString("payment_method"),
                 rs.getString("guid"),
-                rs.getString("signature_data"));
+                rs.getString("signature_data"),
+                rs.getBoolean("has_provided_signature"),
+                rs.getBytes("signed_contribution_agreement"),
+                dateFromMyBbRow(rs, "contribution_agreement_signature_date")
+        );
     }
 
     static List<StaticMessage> getEmails(String emailAddress, String folderName) {

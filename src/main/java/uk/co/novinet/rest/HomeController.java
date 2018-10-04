@@ -1,5 +1,6 @@
 package uk.co.novinet.rest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Controller
 public class HomeController {
 
+    private static final String EMPTY_BASE64_ENCODED_SIGNATURE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAACWCAYAAACvgFEsAAAEYUlEQVR4Xu3UAREAAAgCMelf2iA/GzA8do4AAQJRgUVzi02AAIEzgJ6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQMAA+gECBLICBjBbveAECBhAP0CAQFbAAGarF5wAAQPoBwgQyAoYwGz1ghMgYAD9AAECWQEDmK1ecAIEDKAfIEAgK2AAs9ULToCAAfQDBAhkBQxgtnrBCRAwgH6AAIGsgAHMVi84AQIG0A8QIJAVMIDZ6gUnQOABWPMAl9GmB/4AAAAASUVORK5CYII=";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
@@ -30,7 +33,7 @@ public class HomeController {
     private PaymentService paymentService;
 
     @Autowired
-    private InvoicePdfRendererService invoicePdfRendererService;
+    private PdfRendererService pdfRendererService;
 
     @Value("${contributionAgreementMinimumAmountGbp}")
     private String contributionAgreementMinimumAmountGbp;
@@ -61,19 +64,6 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/thankYou")
-    public String getThankYou(ModelMap model, @RequestParam("guid") String guid) {
-        Payment payment = paymentService.findPaymentForGuid(guid);
-
-        if (payment == null) {
-            return "thankYou";
-        }
-
-        model.addAttribute("payment", payment);
-
-        return "thankYou";
-    }
-
     @GetMapping("/invoice")
     public String getInvoice(ModelMap model, @RequestParam("guid") String guid) {
         Payment payment = paymentService.findPaymentForGuid(guid);
@@ -101,7 +91,7 @@ public class HomeController {
     @GetMapping(path = "/termsAndConditionsExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportTermsAndConditions() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderTermsAndConditionsPdf(out);
+        pdfRendererService.renderTermsAndConditionsPdf(out);
         return out.toByteArray();
     }
 
@@ -120,7 +110,27 @@ public class HomeController {
     }
 
     @GetMapping("/signContributionAgreement")
-    public String getSignContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
+    public ModelAndView getSignContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
+        Payment payment = paymentService.findPaymentForGuid(guid);
+
+        if (payment == null) {
+            return new ModelAndView("error");
+        }
+
+        model.addAttribute("guid", guid);
+
+        if (payment.getHasProvidedSignature()) {
+            return new ModelAndView("redirect:/thankYou", model);
+        }
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+
+        return new ModelAndView("signContributionAgreement", model);
+    }
+
+    @GetMapping("/thankYou")
+    public String getThankYou(ModelMap model, @RequestParam("guid") String guid) {
         Payment payment = paymentService.findPaymentForGuid(guid);
 
         if (payment == null) {
@@ -131,31 +141,37 @@ public class HomeController {
         model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
         model.addAttribute("guid", guid);
 
-        return "signContributionAgreement";
+        return "thankYou";
     }
 
     @PostMapping("/signContributionAgreement")
-    public String postSignContributionAgreement(ModelMap model, @RequestParam("signatureData") String signatureData, @RequestParam("guid") String guid) {
+    public ModelAndView postSignContributionAgreement(ModelMap model, @RequestParam("signatureData") String signatureData, @RequestParam("guid") String guid) {
+        model.addAttribute("guid", guid);
+
+        if (StringUtils.isBlank(signatureData) || EMPTY_BASE64_ENCODED_SIGNATURE.equals(signatureData)) {
+            LOGGER.info("Invalid signature data: {}", signatureData);
+            return new ModelAndView("redirect:/signContributionAgreement", model);
+        }
+
         Payment payment = paymentService.findPaymentForGuid(guid);
 
         if (payment == null) {
-            return "error";
+            return new ModelAndView("redirect:/error", model);
         }
 
         paymentService.addSignatureToContributionAgreement(payment, signatureData);
 
         model.addAttribute("payment", payment);
         model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
-        model.addAttribute("guid", guid);
 
-        return "thankYouForSigningContributionAgreement";
+        return new ModelAndView("redirect:/thankYou", model);
     }
 
     @ResponseBody
     @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportInvoice(@RequestParam("guid") String guid) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderInvoicePdf(guid, out);
+        pdfRendererService.renderInvoicePdf(guid, out);
         return out.toByteArray();
     }
 
@@ -163,7 +179,7 @@ public class HomeController {
     @GetMapping(path = "/contributionAgreementExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportContributionAgreement(@RequestParam("guid") String guid) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.renderContributionAgreementPdf(guid, out);
+        pdfRendererService.renderContributionAgreementPdf(guid, out);
         return out.toByteArray();
     }
 

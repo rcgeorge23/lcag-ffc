@@ -4,13 +4,15 @@
 <html>
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
-
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+        <script src="https:////cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="/js/lcag-common.js"></script>
         <link rel="stylesheet" href="/css/lcag-sign-contribution-agreement.css" />
         <title>Loan Charge Action Group Fighting Fund Company | Contribution Agreement</title>
     </head>
@@ -43,7 +45,7 @@
                                 <br/>
                                 Your signature:
                                 <div style="align: right;">
-                                    <canvas id="myCanvas" height="150" width="320" style="border:1px solid #000000;">
+                                    <canvas height="150" width="320" style="border:1px solid #000000;">
                                     </canvas>
                                 </div>
                             </div>
@@ -74,7 +76,8 @@
                 e.preventDefault();
 
                 if (signaturePad.isEmpty()) {
-                    lcag.Common.alertError("Please provide a signature.")
+                    lcag.Common.alertError("Please provide a signature.");
+                    return;
                 }
 
                 $("input[name=signatureData]").val(signaturePad.toDataURL('image/png'));

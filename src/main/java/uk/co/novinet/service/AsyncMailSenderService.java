@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,9 +26,9 @@ import java.util.Scanner;
 import static java.time.Instant.now;
 
 @Service
-public class AsynchMailSenderService {
+public class AsyncMailSenderService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsynchMailSenderService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncMailSenderService.class);
 
     @Value("${smtpHost}")
     private String smtpHost;
@@ -63,7 +64,7 @@ public class AsynchMailSenderService {
     private MemberService memberService;
 
     @Autowired
-    private InvoicePdfRendererService invoicePdfRendererService;
+    private PdfRendererService pdfRendererService;
 
     @Autowired
     private PaymentService paymentService;
@@ -100,7 +101,7 @@ public class AsynchMailSenderService {
 
         addPdfAttachment(payment, email, "lcag-ffc-payment-invoice-", DocumentType.INVOICE, true);
         addPdfAttachment(payment, email, "lcag-ffc-guidance-notes", DocumentType.GUIDANCE_NOTES, false);
-        addPdfAttachment(payment, email, "lcag-ffc-contribution-agreement-", DocumentType.CONTRIBUTION_AGREEMENT, true);
+        email.addAttachment("lcag-ffc-contribution-agreement-" + formattedDate(payment.getContributionAgreementSignatureDate()) + ".pdf", payment.getSignedContributionAgreement(), "application/pdf");
 
         LOGGER.info("Going to try sending email to new ffc contributor {}", payment);
         new Mailer(smtpHost, smtpPort, smtpUsername, smtpPassword, TransportStrategy.SMTP_TLS).sendMail(email);
@@ -110,12 +111,16 @@ public class AsynchMailSenderService {
 
     private void addPdfAttachment(Payment payment, Email email, String filenamePrefix, DocumentType documentType, Boolean withDateSuffix) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        invoicePdfRendererService.render(documentType, payment.getGuid(), out);
+        pdfRendererService.render(documentType, payment.getGuid(), out);
         email.addAttachment(filenamePrefix + (withDateSuffix ? formattedDate() : "") + ".pdf", out.toByteArray(), "application/pdf");
     }
 
     private String formattedDate() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("UTC")).format(now());
+        return formattedDate(now());
+    }
+
+    private String formattedDate(Instant instant) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("UTC")).format(instant);
     }
 
     private void applySubjectAndText(Payment payment, Email email) throws IOException {
