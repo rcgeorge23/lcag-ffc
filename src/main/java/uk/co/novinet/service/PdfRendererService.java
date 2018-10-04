@@ -8,17 +8,17 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.OutputStream;
 
 @Service
-public class InvoicePdfRendererService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InvoicePdfRendererService.class);
+public class PdfRendererService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdfRendererService.class);
 
     private static String baseUrl;
 
     public String getBaseUrl() {
-        return InvoicePdfRendererService.baseUrl;
+        return PdfRendererService.baseUrl;
     }
 
     public void setBaseUrl(String baseUrl) {
-        InvoicePdfRendererService.baseUrl = baseUrl;
+        PdfRendererService.baseUrl = baseUrl;
     }
 
     public void render(DocumentType documentType, String guid, OutputStream outputStream) {

@@ -3,7 +3,7 @@ package uk.co.novinet.filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import uk.co.novinet.service.InvoicePdfRendererService;
+import uk.co.novinet.service.PdfRendererService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class BaseUrlSettingFilter implements Filter {
 
     @Autowired
-    private InvoicePdfRendererService invoicePdfRendererService;
+    private PdfRendererService pdfRendererService;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -23,7 +23,7 @@ public class BaseUrlSettingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        invoicePdfRendererService.setBaseUrl(baseUrl((HttpServletRequest) request));
+        pdfRendererService.setBaseUrl(baseUrl((HttpServletRequest) request));
         chain.doFilter(request, response);
     }
 

@@ -38,6 +38,9 @@ public class Payment {
     private String paymentMethod;
     private String guid;
     private String signatureData;
+    private Boolean hasProvidedSignature;
+    private byte[] signedContributionAgreement;
+    private Instant contributionAgreementSignatureDate;
 
     public Payment() {}
 
@@ -65,7 +68,10 @@ public class Payment {
             PaymentType paymentType,
             String paymentMethod,
             String guid,
-            String signatureData) {
+            String signatureData,
+            Boolean hasProvidedSignature,
+            byte[] signedContributionAgreement,
+            Instant contributionAgreementSignatureDate) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -90,6 +96,9 @@ public class Payment {
         this.paymentMethod = paymentMethod;
         this.guid = guid;
         this.signatureData = signatureData;
+        this.hasProvidedSignature = hasProvidedSignature;
+        this.signedContributionAgreement = signedContributionAgreement;
+        this.contributionAgreementSignatureDate = contributionAgreementSignatureDate;
     }
 
     public Long getId() {
@@ -315,5 +324,29 @@ public class Payment {
 
     public void setSignatureData(String signatureData) {
         this.signatureData = signatureData;
+    }
+
+    public Boolean getHasProvidedSignature() {
+        return hasProvidedSignature;
+    }
+
+    public void setHasProvidedSignature(Boolean hasProvidedSignature) {
+        this.hasProvidedSignature = hasProvidedSignature;
+    }
+
+    public byte[] getSignedContributionAgreement() {
+        return signedContributionAgreement;
+    }
+
+    public void setSignedContributionAgreement(byte[] signedContributionAgreement) {
+        this.signedContributionAgreement = signedContributionAgreement;
+    }
+
+    public Instant getContributionAgreementSignatureDate() {
+        return contributionAgreementSignatureDate;
+    }
+
+    public void setContributionAgreementSignatureDate(Instant contributionAgreementSignatureDate) {
+        this.contributionAgreementSignatureDate = contributionAgreementSignatureDate;
     }
 }
