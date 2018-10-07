@@ -115,6 +115,15 @@ class GebTestUtils {
         browser.page.countryInput = "Some Country"
     }
 
+    static void signContributionAgreement(Browser browser) {
+        browser.interact {
+            clickAndHold(browser.page.signatureCanvas)
+            moveByOffset(50,50)
+            release()
+        }
+        browser.page.saveSignatureButton.click()
+    }
+
     static boolean verifyAttachment(String emailAddress, int attachmentIndex, int expectedNumberOfAttachments, String expectedFileName, int emailIndex = 0) {
         assert getEmails(emailAddress, "Inbox").get(emailIndex).getAttachments().size() == expectedNumberOfAttachments
         assert getEmails(emailAddress, "Inbox").get(emailIndex).getAttachments().get(attachmentIndex).getFilename().equals(expectedFileName)

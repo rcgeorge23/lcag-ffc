@@ -12,6 +12,6 @@ class SignContributionAgreementPage extends Page {
         paymentReference { $("#paymentReference") }
         clearSignatureButton { $("#clearSignature") }
         saveSignatureButton { $("#saveSignature") }
-        signatureCanvas { $("canvas") }
+        signatureCanvas(required: false, wait: 2) { $("canvas") }
     }
 }

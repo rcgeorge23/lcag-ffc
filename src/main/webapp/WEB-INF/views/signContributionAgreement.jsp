@@ -38,14 +38,14 @@
                         <div class="panel-body">
                             <p>Thank you for your litigation contribution. Your payment reference is <span id="paymentReference">${payment == null ? '...' : payment.reference}</span>.</p>
                             <p>A <strong>Contribution Agreement</strong> document has been drawn up to reflect the amount of money that you have contributed.</p>
-                            <p>In order to complete the process you must electronically sign this document below.</p>
+                            <p>In order to complete the process you must electronically sign the Contribution Agreement document below.</p>
                             <hr/>
                             <div class="contribution-agreement-box">
                                 <jsp:include page="contributionAgreementFragment.jsp"/>
                                 <br/>
                                 Your signature:
                                 <div style="align: right;">
-                                    <canvas height="150" width="320" style="border:1px solid #000000;">
+                                    <canvas height="150" width="450" style="border:1px solid #000000;">
                                     </canvas>
                                 </div>
                             </div>

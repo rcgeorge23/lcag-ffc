@@ -167,6 +167,11 @@ public class HomeController {
         return new ModelAndView("redirect:/thankYou", model);
     }
 
+    @GetMapping("/error")
+    public String getError() {
+        return "error";
+    }
+
     @ResponseBody
     @GetMapping(path = "/invoiceExport", produces = MediaType.APPLICATION_PDF_VALUE)
     public byte[] exportInvoice(@RequestParam("guid") String guid) {

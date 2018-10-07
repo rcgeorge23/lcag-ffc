@@ -312,33 +312,6 @@ public class MemberService {
         return grossAmount.setScale(2).divide(new BigDecimal(1).add(vatAsFraction).setScale(2), BigDecimal.ROUND_HALF_EVEN).setScale(2);
     }
 
-    private String lastName(String name) {
-        if (isBlank(name)) {
-            return "";
-        }
-
-        List<String> parts = asList(name.split("(\\s)+"));
-        Collections.reverse(parts);
-        return parts.get(0);
-    }
-
-
-    private String firstName(String name) {
-        if (isBlank(name)) {
-            return "";
-        }
-
-        List<String> nameParts = new ArrayList<>(asList(name.split("(\\s)+")));
-
-        if (nameParts.size() == 1) {
-            return nameParts.get(0);
-        }
-
-        nameParts.remove(nameParts.size() - 1);
-
-        return nameParts.stream().collect(joining(" "));
-    }
-
     public void assignLcagFfcAdditionalGroup(Member member, Payment payment) {
         LOGGER.info("Going to assign member: {} - to LCAG FFC forum group for payment: {}", member, payment);
 
