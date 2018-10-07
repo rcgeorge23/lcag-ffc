@@ -250,14 +250,9 @@ public class PaymentService {
     public void addSignatureToContributionAgreement(Payment payment, String signatureData) {
         LOGGER.info("Going to add signature: {} to payment: {}", signatureData, payment);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        pdfRendererService.render(DocumentType.CONTRIBUTION_AGREEMENT, payment.getGuid(), out);
-
         String updateSql = "update " + contributionsTableName() + " set " +
                 "`signature_data` = ?, " +
-                "`signed_contribution_agreement` = ?, " +
-                "`contribution_agreement_signature_date` = ?, " +
-                "`has_provided_signature` = 1 " +
+                "`contribution_agreement_signature_date` = ? " +
                 "where id = ?;";
 
         LOGGER.info("Going to execute update sql: {}", updateSql);
@@ -265,13 +260,32 @@ public class PaymentService {
         int result = jdbcTemplate.update(
             updateSql,
             signatureData,
-            out.toByteArray(),
             unixTime(Instant.now()),
             payment.getId()
         );
 
         LOGGER.info("Update result: {}", result);
 
+        renderAndPersistSignedContributionAgreementPdf(payment);
+    }
 
+    private void renderAndPersistSignedContributionAgreementPdf(Payment payment) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        pdfRendererService.render(DocumentType.CONTRIBUTION_AGREEMENT, payment.getGuid(), out);
+
+        String updateSql = "update " + contributionsTableName() + " set " +
+                "`signed_contribution_agreement` = ?, " +
+                "`has_provided_signature` = 1 " +
+                "where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+                updateSql,
+                out.toByteArray(),
+                payment.getId()
+        );
+
+        LOGGER.info("Update result: {}", result);
     }
 }

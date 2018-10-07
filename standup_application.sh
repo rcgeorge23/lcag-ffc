@@ -13,10 +13,10 @@ docker run -d \
 	-e "MYBB_FORUM_DATABASE_PASSWORD=p@ssword" \
 	-e "BCC_RECIPIENTS=test@bcc.com" \
 	-e "EMAIL_FROM_NAME=LCAG" \
-	-e "EXISTING_MEMBER_THANK_YOU_FOR_YOUR_CONTRIBUTION_AGREEMENT_EMAIL_SOURCE_URL=https://docs.google.com/document/d/1sMrQkPC-aOEnQWLGwqM6EWwXdFdYm579oa-KKw6tsaQ/export?format=html" \
-	-e "EXISTING_MEMBER_THANK_YOU_FOR_YOUR_CONTRIBUTION_AGREEMENT_EMAIL_SUBJECT=Thank you for your litigation contribution" \
-    -e "NEW_MEMBER_CONTRIBUTION_AGREEMENT_EMAIL_SOURCE_URL=https://docs.google.com/document/d/1XNNMMi0L7dNJbIZS1O57Zmyxjv6_0sJL2YBVAfdQz9o/export?format=html" \
-	-e "NEW_MEMBER_CONTRIBUTION_AGREEMENT_EMAIL_SUBJECT=Loan Charge Action Group - joining instructions" \
+    -e "EXISTING_MEMBER_THANK_YOU_FOR_YOUR_CONTRIBUTION_AGREEMENT_EMAIL_SOURCE_URL=https://docs.google.com/document/d/1JwN1yHLJFjTi6fxU_-8oX4LBBbPgSRaQ1xdj5A0x244/export?format=html" \
+    -e "EXISTING_MEMBER_THANK_YOU_FOR_YOUR_CONTRIBUTION_AGREEMENT_EMAIL_SUBJECT=Thank you for your litigation contribution" \
+    -e "NEW_MEMBER_CONTRIBUTION_AGREEMENT_EMAIL_SOURCE_URL=https://docs.google.com/document/d/1YHIS5D99S-PNmmOoqgjrifUzd7iIHwwAXpzR1VCfIrA/export?format=html" \
+    -e "NEW_MEMBER_CONTRIBUTION_AGREEMENT_EMAIL_SUBJECT=Loan Charge Action Group - joining instructions" \
 	-e "PUBLISHABLE_STRIPE_API_KEY=$LCAG_TEST_PUBLISHED_STRIPE_KEY" \
 	-e "SECRET_STRIPE_API_KEY=$LCAG_TEST_SECRET_STRIPE_KEY" \
 	-e "CONTRIBUTION_AGREEMENT_MINIMUM_AMOUNT_GBP=600" \
