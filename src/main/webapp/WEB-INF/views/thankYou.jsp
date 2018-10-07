@@ -39,7 +39,8 @@
 
                         <div class="panel-body">
                             <p>
-                                Thank you for your litigation contribution. A copy of the Contribution Agreement has been emailed to ${payment.emailAddress}<br/><br/>
+                                Thank you for your litigation contribution. Your payment reference is <span id="paymentReference">${payment.reference}</span>.<br/><br/>
+                                A copy of the Contribution Agreement has been emailed to ${payment.emailAddress}<br/><br/>
                             </p>
                         </div>
                     </div>

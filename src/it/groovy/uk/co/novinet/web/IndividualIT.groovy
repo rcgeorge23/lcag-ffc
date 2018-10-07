@@ -62,6 +62,12 @@ class IndividualIT extends GebSpec {
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor(10) { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
@@ -99,6 +105,12 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
 
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
@@ -159,11 +171,19 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
+        then:
             waitFor { at ThankYouPage }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
-        then: "i land on the thank you page and i receive a confirmation email"
+        and: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
             waitFor { getUserRows().size() == 1 }
@@ -201,8 +221,8 @@ class IndividualIT extends GebSpec {
             payNowButton.click()
 
         then:
-            waitFor { at LcagFfcFormPage }
-            waitFor { paymentDeclinedSection.displayed == true }
+            waitFor(10) { at LcagFfcFormPage }
+            waitFor(10) { paymentDeclinedSection.displayed == true }
             sleep(3000) //wait for member cache to be refreshed
 
         when:
@@ -215,6 +235,13 @@ class IndividualIT extends GebSpec {
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
+        then:
             waitFor { at ThankYouPage }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
@@ -238,8 +265,10 @@ class IndividualIT extends GebSpec {
             verifyAttachment("harry@generous.com", 0, 3, "lcag-ffc-payment-invoice-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
             verifyAttachment("harry@generous.com", 1, 3, "lcag-ffc-guidance-notes.pdf")
             verifyAttachment("harry@generous.com", 2, 3, "lcag-ffc-contribution-agreement-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".pdf")
+
+        when:
             go driver.currentUrl.replace("thankYou", "invoice")
-            waitFor { at InvoicePage }
+            waitFor(10) { at InvoicePage }
 
         then:
             verifyNoVatNumberInvoice(browser, "LCAGFFC90002", new Date(), "Card", "Harry Generous", "harry@generous.com", "£200.00")
@@ -256,11 +285,19 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
+        then:
             waitFor { at ThankYouPage }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
-        then: "i land on the thank you page and i receive a confirmation email"
+        and: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
             waitFor { getUserRows().size() == 1 }
@@ -309,6 +346,12 @@ class IndividualIT extends GebSpec {
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
@@ -327,6 +370,12 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "Test", "Name1", "user1@something.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
 
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
@@ -352,11 +401,19 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
+
+        then:
             waitFor { at ThankYouPage }
             waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
-        then: "i land on the thank you page and i receive a confirmation email"
+        and: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
             waitFor { paymentReference.text() == "LCAGFFC90001" }
             waitFor { getUserRows().size() == 1 }
@@ -379,6 +436,12 @@ class IndividualIT extends GebSpec {
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
             enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on the sign contribution agreement page"
+            waitFor(10) { at SignContributionAgreementPage }
+
+        when:
+            signContributionAgreement(browser)
 
         then: "i land on the thank you page and i receive a confirmation email"
             waitFor { at ThankYouPage }
