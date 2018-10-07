@@ -410,7 +410,7 @@ class IndividualIT extends GebSpec {
 
         then:
             waitFor { at ThankYouPage }
-            waitFor { getEmails("harry@generous.com", "Inbox").size() == 1 }
+            waitFor(10) { getEmails("harry@generous.com", "Inbox").size() == 1 }
             String emailContent = getEmails("harry@generous.com", "Inbox").get(0).content
 
         and: "i land on the thank you page and i receive a confirmation email"
