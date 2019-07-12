@@ -113,20 +113,36 @@ public class HomeController {
     public ModelAndView getSignContributionAgreement(ModelMap model, @RequestParam("guid") String guid) {
         Payment payment = paymentService.findPaymentForGuid(guid);
 
-        if (payment == null) {
-            return new ModelAndView("error");
+        if (paymentService.paymentHasBeenProcessedByStripe(payment)) {
+
+            postPaymentActions(payment, memberService.findMemberById(payment.getUserId()));
+
+            if (payment == null) {
+                return new ModelAndView("error");
+            }
+
+            model.addAttribute("guid", guid);
+
+            if (payment.getHasProvidedSignature()) {
+                return new ModelAndView("redirect:/thankYou", model);
+            }
+
+            model.addAttribute("payment", payment);
+            model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
+
+            return new ModelAndView("signContributionAgreement", model);
+        } else {
+            return new ModelAndView("paymentPending", model);
         }
 
-        model.addAttribute("guid", guid);
+    }
 
-        if (payment.getHasProvidedSignature()) {
-            return new ModelAndView("redirect:/thankYou", model);
+    private void postPaymentActions(Payment payment, Member member) {
+        switch (payment.getPaymentType()) {
+            case EXISTING_LCAG_MEMBER:
+                memberService.assignLcagFfcAdditionalGroup(member, payment);
+                break;
         }
-
-        model.addAttribute("payment", payment);
-        model.addAttribute("member", memberService.findMemberById(payment.getUserId()));
-
-        return new ModelAndView("signContributionAgreement", model);
     }
 
     @GetMapping("/thankYou")
@@ -188,111 +204,4 @@ public class HomeController {
         return out.toByteArray();
     }
 
-    @CrossOrigin
-    @PostMapping(path = "/submit")
-    public ModelAndView submit(ModelMap model, Payment payment) {
-        MemberCreationResult memberCreationResult = null;
-        try {
-            LOGGER.info("model: {}", model);
-            LOGGER.info("payment: {}", payment);
-
-            memberCreationResult = prePaymentActions(payment);
-
-            paymentService.executePayment(payment);
-
-            postPaymentActions(payment, memberCreationResult == null ? null : memberCreationResult.getMember());
-
-            model.addAttribute("guid", payment.getGuid());
-            return new ModelAndView("redirect:/signContributionAgreement", model);
-        } catch (Exception e) {
-            model.addAttribute("guid", payment == null ? null : payment.getGuid());
-            LOGGER.error("Unable to make payment", e);
-
-            if (memberCreationResult != null && !memberCreationResult.memberAlreadyExisted()) {
-                LOGGER.error("Deleting new member to free up email address for another payment attempt", e);
-                memberService.softDeleteMember(memberCreationResult.getMember());
-            }
-
-            return new ModelAndView("redirect:/", model);
-        }
-    }
-
-    private MemberCreationResult prePaymentActions(Payment payment) throws LcagValidationException {
-        MemberCreationResult memberCreationResult = null;
-
-        switch (payment.getPaymentType()) {
-            case EXISTING_LCAG_MEMBER:
-                memberCreationResult = new MemberCreationResult(true, memberService.findMemberByUsername(payment.getUsername()));
-                break;
-            case NEW_LCAG_MEMBER:
-                memberCreationResult = memberService.createForumUserIfNecessary(payment);
-                break;
-        }
-
-        memberService.fillInPaymentBlanks(payment, memberCreationResult);
-        paymentService.createFfcContribution(payment);
-
-        validatePayment(payment);
-
-        return memberCreationResult;
-    }
-
-    private void postPaymentActions(Payment payment, Member member) {
-        switch (payment.getPaymentType()) {
-            case EXISTING_LCAG_MEMBER:
-                memberService.assignLcagFfcAdditionalGroup(member, payment);
-                break;
-        }
-    }
-
-    void validatePayment(Payment payment) throws LcagValidationException {
-        if (payment.getGrossAmount() == null || payment.getGrossAmount().compareTo(new BigDecimal(1)) < 0) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "Amount must be at least £1.00");
-        }
-
-        if (payment.getPaymentType() == PaymentType.ANONYMOUS) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "Payment cannot be anonymous if contribution is to be made by Contribution Agreement");
-        }
-
-        if (isBlank(payment.getAddressLine1())) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "Address line 1 is mandatory");
-        }
-
-        if (isBlank(payment.getCity())) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "City is mandatory");
-        }
-
-        if (isBlank(payment.getPostalCode())) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "Postal code is mandatory");
-        }
-
-        if (isBlank(payment.getCountry())) {
-            throw updatePaymentForValidationErrorAndThrowException(payment, "Country is mandatory");
-        }
-
-        if (payment.getPaymentType() == PaymentType.NEW_LCAG_MEMBER) {
-            if (isBlank(payment.getFirstName())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "First Name is mandatory");
-            }
-
-            if (isBlank(payment.getLastName())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Last Name is mandatory");
-            }
-
-            if (isBlank(payment.getEmailAddress())) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "Email Address is mandatory");
-            }
-        }
-
-        if (payment.getPaymentType() == PaymentType.EXISTING_LCAG_MEMBER) {
-            if (isBlank(payment.getUsername()) || memberService.findMemberByUsername(payment.getUsername()) == null) {
-                throw updatePaymentForValidationErrorAndThrowException(payment, "A valid LCAG username must be provided");
-            }
-        }
-    }
-
-    private LcagValidationException updatePaymentForValidationErrorAndThrowException(Payment payment, String message) throws LcagValidationException {
-        paymentService.updateFfcContributionStatus(payment, PaymentStatus.VALIDATION_ERROR, message);
-        return new LcagValidationException(message);
-    }
 }

@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/lcag.css">
     <script src="/js/lcag-common.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
@@ -203,12 +204,6 @@
                                                 <input type="text" name="country" class="form-control" id="country" placeholder="Please enter your country" required />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div id="paymentFieldsSection" class="form-group" style="display: none;">
-                                        <label for="card-element">Credit or debit card:</label>
-                                        <div id="card-element" classes="form-control">
-                                        </div>
-                                        <div id="card-errors" class="error help-block" role="alert"></div>
                                     </div>
                                 </div>
                                 <div class="panel-footer clearfix">

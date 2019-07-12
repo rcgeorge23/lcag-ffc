@@ -41,6 +41,7 @@ public class Payment {
     private Boolean hasProvidedSignature;
     private byte[] signedContributionAgreement;
     private Instant contributionAgreementSignatureDate;
+    private String stripeSessionId;
 
     public Payment() {}
 
@@ -71,7 +72,8 @@ public class Payment {
             String signatureData,
             Boolean hasProvidedSignature,
             byte[] signedContributionAgreement,
-            Instant contributionAgreementSignatureDate) {
+            Instant contributionAgreementSignatureDate,
+            String stripeSessionId) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -99,6 +101,7 @@ public class Payment {
         this.hasProvidedSignature = hasProvidedSignature;
         this.signedContributionAgreement = signedContributionAgreement;
         this.contributionAgreementSignatureDate = contributionAgreementSignatureDate;
+        this.stripeSessionId = stripeSessionId;
     }
 
     public Long getId() {
@@ -348,5 +351,9 @@ public class Payment {
 
     public void setContributionAgreementSignatureDate(Instant contributionAgreementSignatureDate) {
         this.contributionAgreementSignatureDate = contributionAgreementSignatureDate;
+    }
+
+    public String getStripeSessionId() {
+        return stripeSessionId;
     }
 }

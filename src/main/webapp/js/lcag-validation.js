@@ -5,12 +5,10 @@ lcag.Validation = lcag.Validation || {
         contributionAgreementMinimumAmountGbp: null
     },
     showPaymentSection: function () {
-        $("#paymentFieldsSection").show();
         $("#submitButton").show();
         $("#contributionTypeSection").show();
     },
     hidePaymentSection: function () {
-        $("#paymentFieldsSection").hide();
         $("#submitButton").hide();
     },
     hideContributionTypeSection: function() {

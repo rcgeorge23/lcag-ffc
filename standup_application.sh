@@ -26,6 +26,9 @@ docker run -d \
     -e "SEND_EMAILS_INITIAL_DELAY_MILLISECONDS=1000" \
 	-e "SEND_EMAILS_INTERVAL_MILLISECONDS=1000" \
 	-e "VAT_RATE=20" \
+	-e "BASE_URL=http://localhost:8484" \
+	-e "PAYMENT_SUCCESS_PATH=/signContributionAgreement?guid=%s" \
+	-e "PAYMENT_CANCEL_PATH=/?guid=%s" \
 	-e "VIRTUAL_PORT=8484" \
 	-e "SERVER_PORT=8484" \
 	--name lcag-ffc \

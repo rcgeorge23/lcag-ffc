@@ -217,7 +217,8 @@ public class TestUtils {
                 rs.getString("signature_data"),
                 rs.getBoolean("has_provided_signature"),
                 rs.getBytes("signed_contribution_agreement"),
-                dateFromMyBbRow(rs, "contribution_agreement_signature_date")
+                dateFromMyBbRow(rs, "contribution_agreement_signature_date"),
+                rs.getString("stripe_session_id")
         );
     }
 

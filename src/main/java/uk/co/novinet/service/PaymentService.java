@@ -1,8 +1,10 @@
 package uk.co.novinet.service;
 
 import com.stripe.Stripe;
-import com.stripe.exception.CardException;
-import com.stripe.model.Charge;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Event;
+import com.stripe.model.EventDataObjectDeserializer;
+import com.stripe.model.checkout.Session;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +20,12 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static org.apache.commons.beanutils.PropertyUtils.describe;
@@ -47,50 +51,121 @@ public class PaymentService {
     @Value("${secretStripeApiKey}")
     private String secretStripeApiKey;
 
+    @Value("${paymentSuccessPath}")
+    private String paymentSuccessPath;
 
-    public void executePayment(Payment payment) {
+    @Value("${paymentCancelPath}")
+    private String paymentCancelPath;
+
+    @Value("${baseUrl}")
+    private String baseUrl;
+
+
+    public String startStripePaymentSession(Payment payment) {
         LOGGER.info("Going to execute payment for: {}", payment);
 
         try {
+
+            // Set your secret key: remember to change this to your live secret key in production
+            // See your keys here: https://dashboard.stripe.com/account/apikeys
             Stripe.apiKey = secretStripeApiKey;
 
-            Map<String, Object> chargeMap = new HashMap<>();
+            Map<String, Object> params = new HashMap<>();
 
-            chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
-            chargeMap.put("currency", "gbp");
-            chargeMap.put("metadata", filterEmptyStringValues(describe(payment),
-                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount",
-                            "hash", "membershipToken", "errorDescription", "paymentStatus", "addressLine2",
-                            "signatureData", "signedContributionAgreement", "invoiceCreated", "id")));
+            List<String> paymentMethodTypes = new ArrayList<>();
+            paymentMethodTypes.add("card");
+            params.put("payment_method_types", paymentMethodTypes);
+            params.put("customer_email", payment.getEmailAddress());
 
-            chargeMap.put("source", payment.getStripeToken());
+            List<HashMap<String, Object>> lineItems = new ArrayList<>();
+            HashMap<String, Object> lineItem = new HashMap<>();
+            lineItem.put("name", "Litigation Contribution");
+            lineItem.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
+            lineItem.put("currency", "gbp");
+            lineItem.put("quantity", 1);
+            lineItems.add(lineItem);
+            params.put("line_items", lineItems);
 
-            Charge charge = Charge.create(chargeMap);
+//            params.put("metadata", filterEmptyStringValues(describe(payment),
+//                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount",
+//                            "hash", "membershipToken", "errorDescription", "paymentStatus", "addressLine2",
+//                            "signatureData", "signedContributionAgreement", "invoiceCreated", "id")));
 
-            LOGGER.info("Charge: {}", charge);
+            params.put("success_url", baseUrl + format(paymentSuccessPath, payment.getGuid()));
+            params.put("cancel_url", baseUrl + format(paymentCancelPath, payment.getGuid()));
 
-            if (!"authorized".equals(charge.getOutcome().getType())) {
-                updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
-                throw new CardDeclinedException();
-            }
+            Session session = Session.create(params);
 
-            updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
+            addStripeSessionIdToPayment(payment, session.getId());
+
+            return session.getId();
+
+            // ----------------------
+
+
+
+
+
+//
+//            Stripe.apiKey = secretStripeApiKey;
+//
+//            Map<String, Object> chargeMap = new HashMap<>();
+//
+//            chargeMap.put("amount", payment.getGrossAmount().multiply(BigDecimal.valueOf(100)).longValue());
+//            chargeMap.put("currency", "gbp");
+//            chargeMap.put("metadata", filterEmptyStringValues(describe(payment),
+//                    asList("class", "uiFriendlyPaymentReceivedDate", "uiFriendlyInvoiceCreatedDate", "uiFriendlyGrossAmount",
+//                            "hash", "membershipToken", "errorDescription", "paymentStatus", "addressLine2",
+//                            "signatureData", "signedContributionAgreement", "invoiceCreated", "id")));
+//
+//            chargeMap.put("source", payment.getStripeToken());
+//
+//            Charge charge = Charge.create(chargeMap);
+//
+//            LOGGER.info("Charge: {}", charge);
+//
+//            if (!"authorized".equals(charge.getOutcome().getType())) {
+//                updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
+//                throw new CardDeclinedException();
+//            }
+//
+//            updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
+//        } catch (Exception e) {
+//            if (e instanceof CardException) {
+//                String errorCode = ((CardException) e).getCode();
+//                if ("card_declined".equals(errorCode)) {
+//                    updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
+//                } else {
+//                    updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
+//                }
+//            } else {
+//                updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
+//            }
+//
+//            LOGGER.error("An error occurred trying to make the payment: {}", payment);
+//
+//            throw new RuntimeException(e);
         } catch (Exception e) {
-            if (e instanceof CardException) {
-                String errorCode = ((CardException) e).getCode();
-                if ("card_declined".equals(errorCode)) {
-                    updateFfcContributionStatus(payment, PaymentStatus.DECLINED, "Payment was declined");
-                } else {
-                    updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
-                }
-            } else {
-                updateFfcContributionStatus(payment, PaymentStatus.UNKNOWN_ERROR, e.getMessage());
-            }
-
+            updateFfcContributionStatus(payment, PaymentStatus.UNABLE_TO_START_STRIPE_SESSION, e.getMessage());
             LOGGER.error("An error occurred trying to make the payment: {}", payment);
-
             throw new RuntimeException(e);
         }
+    }
+
+    private void addStripeSessionIdToPayment(Payment payment, String stripeSessionId) {
+        LOGGER.info("Going to update contribution: {} stripeSessionId to : {}", payment, stripeSessionId);
+
+        String updateSql = "update " + contributionsTableName() + " set `stripe_session_id` = ? where id = ?;";
+
+        LOGGER.info("Going to execute update sql: {}", updateSql);
+
+        int result = jdbcTemplate.update(
+                updateSql,
+                stripeSessionId,
+                payment.getId()
+        );
+
+        LOGGER.info("Update result: {}", result);
     }
 
     private Map<String, String> filterEmptyStringValues(Map<String, Object> description, List<String> excludeProperties) {
@@ -221,7 +296,8 @@ public class PaymentService {
                 rs.getString("signature_data"),
                 rs.getBoolean("has_provided_signature"),
                 rs.getBytes("signed_contribution_agreement"),
-                dateFromMyBbRow(rs, "contribution_agreement_signature_date")
+                dateFromMyBbRow(rs, "contribution_agreement_signature_date"),
+                rs.getString("stripe_session_id")
         );
     }
 
@@ -287,5 +363,43 @@ public class PaymentService {
         );
 
         LOGGER.info("Update result: {}", result);
+    }
+
+    public boolean paymentHasBeenProcessedByStripe(Payment payment) {
+        if (payment.getPaymentStatus() == PaymentStatus.AUTHORIZED) {
+            return true;
+        }
+
+        Stripe.apiKey = secretStripeApiKey;
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("type", "checkout.session.completed");
+        params.put("gte", oneHourAgo());
+        Iterable<Event> events;
+
+        try {
+            events = Event.list(params).autoPagingIterable();
+
+            for (Event event : events) {
+                EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+
+                if (deserializer.getObject().isPresent()) {
+                    Session session = (Session) deserializer.getObject().get();
+
+                    if (session.getId().equalsIgnoreCase(payment.getStripeSessionId())) {
+                        updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
+                        return true;
+                    }
+                }
+            }
+        } catch (StripeException e) {
+            LOGGER.error("Unable to process completed transactions", e);
+        }
+
+        return false;
+    }
+
+    private int oneHourAgo() {
+        return (int) ((System.currentTimeMillis() / 1000) - 60 * 60);
     }
 }

@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS `i7b0_ffc_contributions` (
   `has_provided_signature` tinyint(1) NOT NULL DEFAULT 0,
   `signed_contribution_agreement` blob,
   `contribution_agreement_signature_date` int(10) unsigned NOT NULL DEFAULT 0,
+  `stripe_session_id` varchar(120) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

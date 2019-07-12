@@ -26,6 +26,7 @@ import static uk.co.novinet.service.PersistenceUtils.*;
 public class MemberService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
     private static final String LCAG_FFC_CONTRIBUTOR_ENHANCED_SUPPORT_GROUP = "9";
+    public static final String STRIPE_TOPKEN_DEPRECATED = "<DEPRECATED>";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -294,6 +295,11 @@ public class MemberService {
         }
 
         payment.setGuid(guid());
+
+        if (payment.getStripeToken() == null) {
+            //no strip token required anymore.
+            payment.setStripeToken(STRIPE_TOPKEN_DEPRECATED);
+        }
 
         switch (payment.getPaymentType()) {
             case NEW_LCAG_MEMBER:
