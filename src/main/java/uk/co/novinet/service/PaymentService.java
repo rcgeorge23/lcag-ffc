@@ -1,5 +1,7 @@
 package uk.co.novinet.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -374,25 +376,21 @@ public class PaymentService {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("type", "checkout.session.completed");
-        params.put("gte", oneHourAgo());
+//        params.put("gte", oneHourAgo());
         Iterable<Event> events;
 
         try {
             events = Event.list(params).autoPagingIterable();
 
             for (Event event : events) {
-                EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+                Map<String, Object> stripeResponseMap = new ObjectMapper().readValue(event.getData().getObject().toJson(), new TypeReference<Map<String, Object>>() {});
 
-                if (deserializer.getObject().isPresent()) {
-                    Session session = (Session) deserializer.getObject().get();
-
-                    if (session.getId().equalsIgnoreCase(payment.getStripeSessionId())) {
-                        updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
-                        return true;
-                    }
+                if (((String) stripeResponseMap.get("id")).equalsIgnoreCase(payment.getStripeSessionId())) {
+                    updateFfcContributionStatus(payment, PaymentStatus.AUTHORIZED, "");
+                    return true;
                 }
             }
-        } catch (StripeException e) {
+        } catch (Exception e) {
             LOGGER.error("Unable to process completed transactions", e);
         }
 

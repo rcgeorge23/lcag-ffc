@@ -164,7 +164,7 @@
                                             <label for="emailAddress">Email address:</label>
                                             <div class="input-group">
                                                 <div class="input-group-addon">@</div>
-                                                <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
+                                                <input type="text" name="emailAddress" class="form-control" id="emailAddress" placeholder="Please enter your email address" required />
                                             </div>
                                         </div>
                                     </div>

@@ -106,11 +106,17 @@ lcag.Validation = lcag.Validation || {
             'Please specify an amount in GBP'
         );
 
+        jQuery.validator.addMethod('emailAddress',
+            function(value, element) {
+                var result = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test(value);
+                console.log("validation result", result);
+                return result;
+            },
+            'Please enter a valid email address.'
+        );
+
         jQuery.validator.addMethod('lcagUsername',
             function(value, element) {
-                console.log("value", value);
-                console.log("element", element);
-
                 var validationResult = false;
 
                 jQuery.ajax({
@@ -127,6 +133,8 @@ lcag.Validation = lcag.Validation || {
             'This is not a valid LCAG username'
         );
 
+
+
         $("#payment-form").validate({
             rules: {
                 grossAmount: {
@@ -138,6 +146,10 @@ lcag.Validation = lcag.Validation || {
                 username: {
                     required: true,
                     lcagUsername: true
+                },
+                emailAddress: {
+                    required: true,
+                    emailAddress: true
                 }
             },
             errorElement: "em",
