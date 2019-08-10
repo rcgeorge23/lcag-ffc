@@ -59,8 +59,13 @@ class IndividualIT extends GebSpec {
             username = "testuser1"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 600)
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "John Smith", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -103,8 +108,13 @@ class IndividualIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 600)
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "John Smith", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -148,16 +158,17 @@ class IndividualIT extends GebSpec {
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 10)
             enterContributionAgreementAddressDetails(browser, "John", "Smith", "user1@something.com")
             amountInput = "10.00"
-            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
             payNowButton.click()
 
-        then: "i remain on the same page with a payment declined banner"
-            waitFor { at LcagFfcFormPage }
-            waitFor { paymentDeclinedSection.displayed == true }
-            sleep(3000)
-            waitFor { getEmails("user1@something.com", "Inbox").size() == 0 }
-            waitFor { getUserRows().get(0).getGroup() == "8" }
-            waitFor { isBlank(getUserRows().get(0).getAdditionalGroups()) }
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter a declined credit card number and click pay"
+            enterCardDetails(browser, DECLINED_CARD, "0222", "111",  "John Smith","33333")
+
+        then: "i remain on the stripe payment page and am invited to enter a different credit card number"
+            waitFor(10) { at StripePaymentPage }
+            waitFor(10) { cardWasDeclinedErrorText == "Your card was declined." }
     }
 
     def "i can complete the payment flow for a new lcag applicant for less than £250"() {
@@ -169,8 +180,13 @@ class IndividualIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 200)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "John Smith", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -217,23 +233,20 @@ class IndividualIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 200)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter a declined credit card number and click pay"
+            enterCardDetails(browser, DECLINED_CARD, "0222", "111", "Harry Generous", "33333")
 
         then:
-            waitFor(10) { at LcagFfcFormPage }
-            waitFor(10) { paymentDeclinedSection.displayed == true }
-            sleep(3000) //wait for member cache to be refreshed
+            waitFor(10) { at StripePaymentPage }
+            waitFor(10) { cardWasDeclinedErrorText == "Your card was declined." }
 
-        when:
-            GebTestUtils.driveToPaymentType(browser, "200", PaymentType.NEW_LCAG_MEMBER)
-            contributionAgreementAddressFieldsAreDisplayed(browser, true, 200)
-            enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            firstNameInput = "Harry"
-            lastNameInput = "Generous"
-            emailAddressInput = "harry@generous.com"
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
-            payNowButton.click()
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Harry Generous", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -283,8 +296,13 @@ class IndividualIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 2000)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Harry Generous", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -343,8 +361,13 @@ class IndividualIT extends GebSpec {
             username = "testuser1"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 300)
             enterContributionAgreementAddressDetails(browser, "Test", "Name1", "user1@something.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Test Name1", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -368,8 +391,13 @@ class IndividualIT extends GebSpec {
             username = "testuser1"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 300)
             enterContributionAgreementAddressDetails(browser, "Test", "Name1", "user1@something.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Test Name1", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -399,8 +427,13 @@ class IndividualIT extends GebSpec {
         when: "i enter valid lcag username value and payment details and click pay now"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 2000)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
             payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Harry Generous", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }
@@ -434,8 +467,12 @@ class IndividualIT extends GebSpec {
             username = "harry"
             contributionAgreementAddressFieldsAreDisplayed(browser, true, 300)
             enterContributionAgreementAddressDetails(browser, "Harry", "Generous", "harry@generous.com")
-            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "33333")
-            payNowButton.click()
+
+        then: "i land on payment page"
+            waitFor(10) { at StripePaymentPage }
+
+        when: "i enter valid credit card details and click pay"
+            enterCardDetails(browser, AUTHORIZED_CARD, "0222", "111", "Harry Generous", "33333")
 
         then: "i land on the sign contribution agreement page"
             waitFor(10) { at SignContributionAgreementPage }

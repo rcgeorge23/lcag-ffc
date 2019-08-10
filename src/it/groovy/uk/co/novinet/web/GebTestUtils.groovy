@@ -10,13 +10,20 @@ import static uk.co.novinet.e2e.TestUtils.getEmails
 
 class GebTestUtils {
 
-    static void enterCardDetails(Browser browser, String creditCardNumber, String expiryMMYY, String cv2, String postalCode) {
-        browser.withFrame(browser.$("iframe")[0]) {
-            browser.page.creditCardInput = creditCardNumber
-            browser.page.expiryDateInput = expiryMMYY
-            browser.page.c2vInput = cv2
-            browser.page.paymentFormPostalCodeInput = postalCode
-        }
+    static void enterCardDetails(
+            Browser browser,
+            String creditCardNumber,
+            String expiryMMYY,
+            String cv2,
+            String billingName,
+            String postalCode) {
+
+        browser.page.creditCardInput = creditCardNumber
+        browser.page.expiryDateInput = expiryMMYY
+        browser.page.c2vInput = cv2
+        browser.page.billingNameInput = billingName
+        browser.page.postalCodeInput = postalCode
+        browser.page.submitButton.click()
     }
 
     static void verifyInitialPaymentFormQuestionsDisplayed(Browser browser) {

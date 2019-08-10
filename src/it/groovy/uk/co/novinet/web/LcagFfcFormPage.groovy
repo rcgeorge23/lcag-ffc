@@ -35,10 +35,6 @@ class LcagFfcFormPage extends Page {
         countryInput { $("#country") }
 
         amountInput { $("#grossAmount") }
-        creditCardInput { $("input[name=cardnumber]") }
-        expiryDateInput { $("input[name=exp-date]") }
-        c2vInput { $("input[name=cvc]") }
-        paymentFormPostalCodeInput { $("input[name=postal]") }
 
         payNowButton { $("#submitButton") }
 
