@@ -16,10 +16,10 @@
         <td colspan="2">
             To the Directors of<br/>
             <strong>The Loan Charge Action Group Fighting Fund Company</strong> (LCAG FFC)<br/>
-            11 Rothersthorpe<br/>
-            Giffard Park<br/>
-            Milton Keynes<br/>
-            MK14 5JL<br/><br/>
+            71-75 Shelton Street <br/>
+            Covent Garden<br/>
+            London<br/>
+            WC2H 9JQ<br/><br/>
 
             I <strong><span id="contributorName">${payment.firstName} ${payment.lastName}</span></strong> of<br/>
             <span id="addressLine1">${payment.addressLine1}</span><br/>
@@ -30,7 +30,7 @@
             <span id="postalCode">${payment.postalCode}</span><br/>
             <span id="country">${payment.country}</span><br/><br/>
 
-            declare that I have made a payment via credit / debit card to LOAN CHARGE ACTION GROUP FFC on
+            declare that I have made a payment via credit / debit card or bank transfer to LOAN CHARGE ACTION GROUP FFC on
             <span id="contributionAgreementDate">${payment.uiFriendlyPaymentReceivedDate}</span> the amount of
             <span id="grossAmount">${payment.uiFriendlyGrossAmount}</span> which amount is a contribution to be held by
             LOAN CHARGE ACTION GROUP FFC as an addition to the Trust Fund of a trust known as

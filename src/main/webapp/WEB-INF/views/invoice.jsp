@@ -5,7 +5,7 @@
     <%@page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <link rel="stylesheet" href="/css/lcag-invoice.css" />
-        <title>Loan Charge Action Group Fighting Fund Company | Invoice</title>
+        <title>Loan Charge Action Group Fighting Fund Company | Receipt</title>
     </head>
     <body>
         <div class="invoice-box">
@@ -20,7 +20,7 @@
 
                                 <td>
                                     Reference: <span id="reference">${payment.reference}</span><br/>
-                                    Invoice created: <span id="invoiceCreatedDate">${payment.uiFriendlyInvoiceCreatedDate}</span><br/>
+                                    Receipt created: <span id="invoiceCreatedDate">${payment.uiFriendlyInvoiceCreatedDate}</span><br/>
                                     Payment received: <span id="paymentReceivedDate">${payment.uiFriendlyPaymentReceivedDate}</span><br/>
                                     Payment method: <span id="paymentMethod">${payment.paymentMethod}</span><br/>
                                 </td>
@@ -78,7 +78,7 @@
         </div>
         <div class="footer">
             <small>LOAN CHARGE ACTION GROUP FFC | Company number 11528979</small><br/>
-            <small>11 Rothersthorpe, Giffard Park, Milton Keynes, MK14 5JL, United Kingdom</small><br/>
+            <small>71-75 Shelton Street, Covent Garden, London, WC2H 9JQ</small><br/>
         </div>
     </body>
 </html>
